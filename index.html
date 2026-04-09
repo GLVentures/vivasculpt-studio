@@ -525,13 +525,12 @@
     // Step 5: Remove the openPayPal() fallback function in app.js
     // ─────────────────────────────────────────────────────────
 
-    const PAYPAL_PLAN_STARTER = 'YOUR_STARTER_PLAN_ID'; // e.g. P-3RX065706M3469222
-    const PAYPAL_PLAN_PRO     = 'YOUR_PRO_PLAN_ID';     // e.g. P-8J1082716S602433B
+    const PAYPAL_PLAN_STARTER = 'PROD-68K692054D924803D'; 
+    const PAYPAL_PLAN_PRO     = 'PROD-28P82238KX789663R';  
 
-    // Uncomment this line when you have your PayPal Client ID:
-    // <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&vault=true&intent=subscription"><\/script>
-
-    if ('serviceWorker' in navigator) {
+    </script>
+</script>
+<script src="https://www.paypal.com/sdk/js?client-id=AWhC4EBUU0k5ic82g-h3CXw-ptB0t2_HAhtFm7UFhZKo7JCMGykgX7x5762_AWhSRIWrE8vnosTWjM0x&vault=true&intent=subscription"></script>    if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('service-worker.js')
           .then(r => console.log('SW:', r.scope))
