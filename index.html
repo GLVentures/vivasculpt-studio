@@ -285,9 +285,7 @@
                Then uncomment the PayPal SDK script at bottom
                ───────────────────────────────────────────── -->
           <div id="paypal-starter-btn" class="paypal-btn-wrap">
-            <button class="btn-primary btn-paypal" onclick="openPayPal('starter')">
-              Subscribe — $14/mo
-            </button>
+            <!-- PayPal button renders here automatically -->
           </div>
           <p class="plan-note">Secure payment via PayPal. Cancel anytime.</p>
         </div>
@@ -311,9 +309,7 @@
                PayPal subscription plan ID (P-XXXXXXXXXX)
                ───────────────────────────────────────────── -->
           <div id="paypal-pro-btn" class="paypal-btn-wrap">
-            <button class="btn-primary btn-paypal" onclick="openPayPal('pro')">
-              Subscribe — $29/mo
-            </button>
+            <!-- PayPal button renders here automatically -->
           </div>
           <p class="plan-note">No trial. Full access immediately. Cancel anytime.</p>
         </div>
@@ -420,8 +416,7 @@
       <h2>Your Trial Has Ended</h2>
       <p>Subscribe to continue your VivaSculpt journey.</p>
       <div style="margin-top:1.25rem;display:flex;flex-direction:column;gap:.75rem">
-        <button class="btn-primary" onclick="openPayPal('starter')">Subscribe Starter — $14/mo</button>
-        <button class="btn-outline" onclick="openPayPal('pro')">Subscribe Pro — $29/mo</button>
+        <button class="btn-primary" onclick="switchTab('pricing')">View Plans →</button>
       </div>
     </div>
   </div>
