@@ -586,11 +586,13 @@ function buildFAQ() {
 buildFAQ();
 
 /* ─────────────── PDF BUTTON ─────────────── */
+// TODO: When your PDF is ready, remove this listener and set the href in index.html:
+// <a href="assets/vivasculpt-kickstart.pdf" ...>
 document.getElementById('btn-pdf').addEventListener('click', e => {
   e.preventDefault();
-  // TODO: Replace '#' in index.html href with your real PDF URL
-  // e.g. href="assets/vivasculpt-kickstart.pdf"
-  alert('PDF guide coming soon! We\'ll notify you when it\'s ready at hello@vivasculptstudioapp.com');
+  // Just scroll to the "coming soon" note below the button — no popup
+  const note = document.querySelector('#tab-kickstart .helper-text');
+  if (note) note.scrollIntoView({ behavior: 'smooth', block: 'center' });
 });
 
 /* ─────────────── CONTACT LINK ─────────────── */
