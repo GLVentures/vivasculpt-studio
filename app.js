@@ -593,6 +593,15 @@ document.getElementById('btn-pdf').addEventListener('click', e => {
   alert('PDF guide coming soon! We\'ll notify you when it\'s ready at hello@vivasculptstudioapp.com');
 });
 
+/* ─────────────── CONTACT LINK ─────────────── */
+const contactLink = document.getElementById('contact-link');
+if (contactLink) {
+  contactLink.addEventListener('click', e => {
+    e.stopPropagation();
+    window.location.href = 'mailto:hello@vivasculptstudioapp.com';
+  });
+}
+
 /* ─────────────── INIT ─────────────── */
 function init() {
   updateTrialBanner();
