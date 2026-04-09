@@ -22,9 +22,9 @@
   <title>VivaSculpt Studio – Premium Home Fitness</title>
 </head>
 <body>
- 
+
   <div id="trial-banner" class="trial-banner hidden" role="alert" aria-live="polite"></div>
- 
+
   <!-- HEADER -->
   <header class="app-header">
     <div class="header-inner">
@@ -45,9 +45,9 @@
       </div>
     </div>
   </header>
- 
+
   <main class="app-main">
- 
+
     <!-- ══════════ TODAY ══════════ -->
     <section id="tab-today" class="tab-section active" aria-label="Today">
       <div class="section-hero">
@@ -55,7 +55,7 @@
         <h1 class="section-title">Today's<br><em>Workout</em></h1>
         <p class="section-sub">15–25 minutes. Home-friendly. Real results.</p>
       </div>
- 
+
       <div class="card session-card">
         <div class="session-config">
           <div class="config-group">
@@ -86,7 +86,7 @@
           Start Workout
         </button>
       </div>
- 
+
       <div class="stats-row">
         <div class="stat-item"><div class="stat-num">40s</div><div class="stat-lbl">Work</div></div>
         <div class="stat-divider"></div>
@@ -96,7 +96,7 @@
         <div class="stat-divider"></div>
         <div class="stat-item"><div class="stat-num">Zero</div><div class="stat-lbl">Equipment</div></div>
       </div>
- 
+
       <!-- REVIEWS -->
       <div class="reviews-section">
         <div class="reviews-header">
@@ -105,7 +105,7 @@
         </div>
         <div class="reviews-track" id="reviews-track"></div>
       </div>
- 
+
       <div class="trust-row">
         <div class="trust-item">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="2.2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -121,7 +121,7 @@
         </div>
       </div>
     </section>
- 
+
     <!-- ══════════ WORKOUTS ══════════ -->
     <section id="tab-workouts" class="tab-section" aria-label="Workouts" hidden>
       <div class="section-hero">
@@ -129,12 +129,12 @@
         <h1 class="section-title">Workouts</h1>
         <p class="section-sub">Every session designed for real life.</p>
       </div>
- 
+
       <div class="info-block emerald-border">
         <strong>Warm up first — 5 minutes</strong>
         <p>March in place · arm circles · hip circles · slow squats · torso twists. Never skip — prevents injury and improves output.</p>
       </div>
- 
+
       <div class="card accordion-card">
         <button class="accordion-trigger" aria-expanded="false" aria-controls="acc-low">
           <div class="acc-header">
@@ -147,7 +147,7 @@
           <div class="workout-list" id="workout-list-low"></div>
         </div>
       </div>
- 
+
       <div class="card accordion-card">
         <button class="accordion-trigger" aria-expanded="false" aria-controls="acc-classic">
           <div class="acc-header">
@@ -160,13 +160,13 @@
           <div class="workout-list" id="workout-list-classic"></div>
         </div>
       </div>
- 
+
       <div class="info-block">
         <strong>Cool down — 5 minutes</strong>
         <p>Quad stretch · hamstring · cat-cow · child's pose · deep breathing. Drink at least 500ml of water afterward.</p>
       </div>
     </section>
- 
+
     <!-- ══════════ MEALS ══════════ -->
     <section id="tab-meals" class="tab-section" aria-label="Meals" hidden>
       <div class="section-hero">
@@ -174,18 +174,18 @@
         <h1 class="section-title">Meals</h1>
         <p class="section-sub">Protein-forward. Real food. No obsessing.</p>
       </div>
- 
+
       <div class="safety-note" role="note">
         <strong>⚕️ Not medical advice.</strong> These are general wellness templates. Consult a healthcare professional for personalised nutrition guidance.
       </div>
- 
+
       <div class="plan-tabs" role="tablist">
         <button class="plan-tab active" data-plan="starter" role="tab" aria-selected="true">Starter Meals</button>
         <button class="plan-tab" data-plan="pro" role="tab" aria-selected="false">
           Pro Meals <span class="pro-only-tag">Pro</span>
         </button>
       </div>
- 
+
       <div id="meals-starter" class="meals-panel">
         <div class="meals-grid" id="meals-grid-starter"></div>
         <button class="btn-primary" id="btn-grocery-starter" style="width:100%;margin-top:.75rem">
@@ -194,7 +194,7 @@
         </button>
         <div class="card" id="grocery-list-starter" hidden></div>
       </div>
- 
+
       <div id="meals-pro" class="meals-panel hidden">
         <div class="pro-gate" id="pro-meal-gate">
           <div class="pro-gate-icon">🌿</div>
@@ -208,7 +208,7 @@
           <div class="card" id="grocery-list-pro" hidden></div>
         </div>
       </div>
- 
+
       <div class="card fasting-card">
         <h3>🌙 Optional Gentle Fasting</h3>
         <p class="fasting-intro">Completely optional. Never force it. Always listen to your body first.</p>
@@ -220,7 +220,7 @@
         <p style="font-size:.78rem;color:var(--text-muted);margin-top:.75rem">Not suitable if pregnant, nursing, or have a history of eating disorders.</p>
       </div>
     </section>
- 
+
     <!-- ══════════ KICKSTART ══════════ -->
     <section id="tab-kickstart" class="tab-section" aria-label="7-Day Kickstart" hidden>
       <div class="section-hero">
@@ -228,13 +228,13 @@
         <h1 class="section-title">7‑Day<br><em>Kickstart</em></h1>
         <p class="section-sub">One week to build the habit that changes everything.</p>
       </div>
- 
+
       <div class="card kickstart-intro-card">
         <p>Three focused HIIT sessions, strategic recovery days, and a final check-in. Follow it exactly for the best results in your first week.</p>
       </div>
- 
+
       <div class="day-plan" id="day-plan"></div>
- 
+
       <div class="card how-to-card">
         <h3>📋 How to follow this plan</h3>
         <ol class="how-to-list">
@@ -245,7 +245,7 @@
           <li>After Week 1, repeat or progress to the full 4-week program.</li>
         </ol>
       </div>
- 
+
       <!-- TODO: Replace '#' with real PDF URL: href="assets/vivasculpt-kickstart.pdf" -->
       <a href="#" class="btn-primary btn-download" id="btn-pdf">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -253,7 +253,7 @@
       </a>
       <p class="helper-text" style="text-align:center;margin-top:.5rem">PDF guide coming soon!</p>
     </section>
- 
+
     <!-- ══════════ PRICING ══════════ -->
     <section id="tab-pricing" class="tab-section" aria-label="Pricing" hidden>
       <div class="section-hero">
@@ -261,9 +261,9 @@
         <h1 class="section-title">Choose<br><em>Your Plan</em></h1>
         <p class="section-sub">Cancel anytime. No hidden fees. Powered by PayPal.</p>
       </div>
- 
+
       <div id="active-plan-card" class="card active-plan-card hidden"></div>
- 
+
       <div class="pricing-grid">
         <!-- STARTER -->
         <div class="plan-card" id="plan-starter">
@@ -291,7 +291,7 @@
           </div>
           <p class="plan-note">Secure payment via PayPal. Cancel anytime.</p>
         </div>
- 
+
         <!-- PRO -->
         <div class="plan-card plan-card--pro" id="plan-pro">
           <div class="plan-badge pro-badge">Most complete</div>
@@ -318,17 +318,17 @@
           <p class="plan-note">No trial. Full access immediately. Cancel anytime.</p>
         </div>
       </div>
- 
+
       <div class="pricing-legal">
         Subscriptions renew automatically. Cancel before renewal to avoid charges. Starter trial renews at $14/mo. Pro begins at $29/mo immediately. Payments processed securely by PayPal — we never see your card details.
       </div>
- 
+
       <!-- FAQ -->
       <div class="faq-section">
         <h3 class="faq-title">Common questions</h3>
         <div id="faq-list"></div>
       </div>
- 
+
       <div class="footer-links">
         <button class="link-btn" data-modal="terms">Terms of Service</button>
         <span>·</span>
@@ -339,9 +339,9 @@
         <button class="link-btn" id="contact-link" onclick="window.open('mailto:hello@vivasculptstudioapp.com','_self')">Contact Us</button>
       </div>
     </section>
- 
+
   </main>
- 
+
   <!-- TAB BAR -->
   <nav class="tab-bar" aria-label="Main navigation">
     <button class="tab-btn active" data-tab="today" aria-current="page">
@@ -365,7 +365,7 @@
       <span>Pricing</span>
     </button>
   </nav>
- 
+
   <!-- WORKOUT PLAYER -->
   <div id="modal-workout" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Workout player" hidden>
     <div class="workout-player">
@@ -401,7 +401,7 @@
       </div>
     </div>
   </div>
- 
+
   <!-- WORKOUT COMPLETE -->
   <div id="modal-complete" class="modal-overlay" role="dialog" aria-modal="true" hidden>
     <div class="modal-box" style="text-align:center">
@@ -412,7 +412,7 @@
       <button class="btn-primary" data-close="modal-complete" style="width:100%;margin-top:1.5rem">Done</button>
     </div>
   </div>
- 
+
   <!-- PAYWALL -->
   <div id="modal-paywall" class="modal-overlay modal-center" role="dialog" aria-modal="true" hidden>
     <div class="modal-box">
@@ -425,7 +425,7 @@
       </div>
     </div>
   </div>
- 
+
   <!-- SECURITY -->
   <div id="modal-security" class="modal-overlay" role="dialog" aria-modal="true" hidden>
     <div class="modal-box modal-scroll">
@@ -442,7 +442,7 @@
       </ul>
     </div>
   </div>
- 
+
   <!-- TERMS -->
   <div id="modal-terms" class="modal-overlay" role="dialog" aria-modal="true" hidden>
     <div class="modal-box modal-scroll">
@@ -465,7 +465,7 @@
       </div>
     </div>
   </div>
- 
+
   <!-- PRIVACY -->
   <div id="modal-privacy" class="modal-overlay" role="dialog" aria-modal="true" hidden>
     <div class="modal-box modal-scroll">
@@ -485,7 +485,7 @@
       </div>
     </div>
   </div>
- 
+
   <!-- REGIONAL -->
   <div id="modal-regional" class="modal-overlay" role="dialog" aria-modal="true" hidden>
     <div class="modal-box modal-scroll">
@@ -514,24 +514,13 @@
       </div>
     </div>
   </div>
- 
+
   <script src="app.js"></script>
   <script>
-    // ─────────────────────────────────────────────────────────
-    // PAYPAL INTEGRATION
-    // Step 1: Create subscription plans in your PayPal dashboard
-    // Step 2: Replace the plan IDs below with your real ones
-    // Step 3: Replace YOUR_PAYPAL_CLIENT_ID with your client ID
-    // Step 4: Uncomment the SDK script tag below
-    // Step 5: Remove the openPayPal() fallback function in app.js
-    // ─────────────────────────────────────────────────────────
-
-    const PAYPAL_PLAN_STARTER = 'PROD-68K692054D924803D'; 
-    const PAYPAL_PLAN_PRO     = 'PROD-28P82238KX789663R';  
-
-    </script>
-</script>
-<script src="https://www.paypal.com/sdk/js?client-id=AWhC4EBUU0k5ic82g-h3CXw-ptB0t2_HAhtFm7UFhZKo7JCMGykgX7x5762_AWhSRIWrE8vnosTWjM0x&vault=true&intent=subscription"></script>    
+    // PAYPAL: When ready, paste your plan IDs into app.js
+    // and add the PayPal SDK as a separate script tag below this one.
+    // Example:
+    // <scr ipt src="https://www.paypal.com/sdk/js?client-id=AWhC4EBUU0k5ic82g-h3CXw-ptB0t2_HAhtFm7UFhZKo7JCMGykgX7x5762_AWhSRIWrE8vnosTWjM0x&vault=true&intent=subscription"></scr ipt>
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -543,4 +532,3 @@
   </script>
 </body>
 </html>
- 
