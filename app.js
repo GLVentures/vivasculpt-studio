@@ -181,8 +181,9 @@ function startTrial() {
   setPlan('trial_starter');
 }
 
-// Called from index.html when user clicks a PayPal-linked button
-// Replace with real PayPal SDK rendering once you have your plan IDs
+const PAYPAL_CLIENT_ID    = 'AWhC4EBUU0k5ic82g-h3CXw-ptB0t2_HAhtFm7UFhZKo7JCMGykgX7x5762_AWhSRIWrE8vnosTWjM0x';
+const PAYPAL_PLAN_STARTER = 'PROD-68K692054D924803D';
+const PAYPAL_PLAN_PRO     = 'PROD-28P82238KX789663R';
 window.openPayPal = function(planType) {
   const plan = planType === 'pro' ? 'Pro — $29/mo' : 'Starter — $14/mo';
   // TODO: Once you have PayPal plan IDs, remove this alert and
