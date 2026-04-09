@@ -188,7 +188,7 @@ const PAYPAL_PLAN_PRO     = 'PROD-28P82238KX789663R';
 function renderPayPalButton(containerId, planId, planLabel) {
   const container = document.getElementById(containerId);
   if (!container || typeof paypal === 'undefined') return;
-  container.innerHTML = ''; // clear any previous button
+  container.innerHTML = '';
   paypal.Buttons({
     style: {
       shape: 'rect',
@@ -212,8 +212,12 @@ function renderPayPalButton(containerId, planId, planLabel) {
       box.appendChild(msg);
       document.body.appendChild(box);
     },
+    onCancel: function() {
+      console.log('Subscription cancelled by user');
+    },
     onError: function(err) {
       console.error('PayPal error:', err);
+      alert('Something went wrong with PayPal. Please try again or contact hello@vivasculptstudioapp.com');
     }
   }).render('#' + containerId);
 }
