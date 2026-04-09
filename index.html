@@ -279,8 +279,10 @@
             <li><span class="fc">✓</span> 7‑Day Kickstart plan</li>
           </ul>
           <!-- ─────────────────────────────────────────────
-            const starterPlanId = "PROD-68K692054D924803D";
-            const proPlanId = "PROD-28P82238KX789663R";
+               PAYPAL STARTER BUTTON
+               Replace YOUR_STARTER_PLAN_ID with your real
+               PayPal subscription plan ID (P-XXXXXXXXXX)
+               Then uncomment the PayPal SDK script at bottom
                ───────────────────────────────────────────── -->
           <div id="paypal-starter-btn" class="paypal-btn-wrap">
             <button class="btn-primary btn-paypal" onclick="openPayPal('starter')">
@@ -513,10 +515,28 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <!-- PAYPAL COMING SOON MODAL -->
+  <div id="modal-paypal-soon" class="modal-overlay modal-center" role="dialog" aria-modal="true" hidden>
+    <div class="modal-box" style="text-align:center">
+      <button class="modal-close" aria-label="Close" data-close="modal-paypal-soon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="modal-emerald-bar" style="margin:0 auto 1rem"></div>
+      <div style="font-size:2rem;margin-bottom:.75rem">🔒</div>
+      <h2 style="margin-bottom:.5rem">Payments Coming Soon</h2>
+      <p id="paypal-soon-plan" style="font-weight:700;color:var(--emerald);margin-bottom:.75rem"></p>
+      <p>We're setting up secure PayPal billing. To get early access or join the waitlist, email us directly:</p>
+      <a href="mailto:hello@vivasculptstudioapp.com" class="btn-primary" style="display:block;margin:1.25rem 0 .75rem;text-decoration:none">
+        hello@vivasculptstudioapp.com
+      </a>
+      <p style="font-size:.78rem;color:var(--text-muted)">We'll notify you the moment billing goes live.</p>
+    </div>
+  </div>
+
+  <!-- PayPal SDK -->
   <script src="https://www.paypal.com/sdk/js?client-id=AWhC4EBUU0k5ic82g-h3CXw-ptB0t2_HAhtFm7UFhZKo7JCMGykgX7x5762_AWhSRIWrE8vnosTWjM0x&vault=true&intent=subscription"></script>
   <script src="app.js"></script>
-
+  <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('service-worker.js')

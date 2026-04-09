@@ -181,15 +181,59 @@ function startTrial() {
   setPlan('trial_starter');
 }
 
-const PAYPAL_CLIENT_ID    = 'AWhC4EBUU0k5ic82g-h3CXw-ptB0t2_HAhtFm7UFhZKo7JCMGykgX7x5762_AWhSRIWrE8vnosTWjM0x'; 
-const PAYPAL_PLAN_STARTER = 'PROD-68K692054D924803D'; 
-const PAYPAL_PLAN_PRO     = 'PROD-28P82238KX789663R'; 
+/* ─────────────── PAYPAL SUBSCRIPTION IDs ─────────────── */
+const PAYPAL_PLAN_STARTER = 'PROD-68K692054D924803D';
+const PAYPAL_PLAN_PRO     = 'PROD-28P82238KX789663R';
 
+function renderPayPalButton(containerId, planId, planLabel) {
+  const container = document.getElementById(containerId);
+  if (!container || typeof paypal === 'undefined') return;
+  container.innerHTML = ''; // clear any previous button
+  paypal.Buttons({
+    style: {
+      shape: 'rect',
+      color: 'gold',
+      layout: 'vertical',
+      label: 'subscribe'
+    },
+    createSubscription: function(data, actions) {
+      return actions.subscription.create({ plan_id: planId });
+    },
+    onApprove: function(data) {
+      setPlan(planLabel === 'pro' ? 'pro' : 'starter');
+      updatePlanBadge();
+      updateTrialBanner();
+      closeModal('modal-paywall');
+      const box = document.createElement('div');
+      box.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999';
+      const msg = document.createElement('div');
+      msg.style.cssText = 'background:#fff;border-radius:16px;padding:2rem;text-align:center;max-width:320px';
+      msg.innerHTML = '<div style="font-size:2.5rem;margin-bottom:.75rem">🎉</div><h2 style="font-family:serif;margin-bottom:.5rem">Welcome to VivaSculpt!</h2><p style="color:#6B7280;margin-bottom:1rem">Your subscription is active. Enjoy full access!</p><button onclick="this.closest(\'[style*=fixed]\').remove()" style="background:#0F766E;color:#fff;border:none;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:1rem">Start Training →</button>';
+      box.appendChild(msg);
+      document.body.appendChild(box);
+    },
+    onError: function(err) {
+      console.error('PayPal error:', err);
+    }
+  }).render('#' + containerId);
+}
+
+// Render PayPal buttons once SDK is ready
+window.addEventListener('load', function() {
+  if (typeof paypal !== 'undefined') {
+    renderPayPalButton('paypal-starter-btn', PAYPAL_PLAN_STARTER, 'starter');
+    renderPayPalButton('paypal-pro-btn', PAYPAL_PLAN_PRO, 'pro');
+    renderPayPalButton('paywall-paypal-starter', PAYPAL_PLAN_STARTER, 'starter');
+    renderPayPalButton('paywall-paypal-pro', PAYPAL_PLAN_PRO, 'pro');
+  }
+});
+
+// Fallback if PayPal SDK not yet loaded (keeps buttons working)
 window.openPayPal = function(planType) {
-  const planLabel = planType === 'pro' ? 'Pro — $29/mo' : 'Starter — $14/mo (7-day free trial)';
-  const el = document.getElementById('paypal-soon-plan');
-  if (el) safeText(el, planLabel);
-  openModal('modal-paypal-soon');
+  const containerId = planType === 'pro' ? 'paypal-pro-btn' : 'paypal-starter-btn';
+  const el = document.getElementById(containerId);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  switchTab('pricing');
 };
 
 function updatePlanBadge() {
