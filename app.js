@@ -181,15 +181,15 @@ function startTrial() {
   setPlan('trial_starter');
 }
 
-const PAYPAL_CLIENT_ID    = 'AWhC4EBUU0k5ic82g-h3CXw-ptB0t2_HAhtFm7UFhZKo7JCMGykgX7x5762_AWhSRIWrE8vnosTWjM0x';
-const PAYPAL_PLAN_STARTER = 'PROD-68K692054D924803D';
-const PAYPAL_PLAN_PRO     = 'PROD-28P82238KX789663R';
+const PAYPAL_CLIENT_ID    = 'AWhC4EBUU0k5ic82g-h3CXw-ptB0t2_HAhtFm7UFhZKo7JCMGykgX7x5762_AWhSRIWrE8vnosTWjM0x'; 
+const PAYPAL_PLAN_STARTER = 'PROD-68K692054D924803D'; 
+const PAYPAL_PLAN_PRO     = 'PROD-28P82238KX789663R'; 
+
 window.openPayPal = function(planType) {
-  const plan = planType === 'pro' ? 'Pro — $29/mo' : 'Starter — $14/mo';
-  // TODO: Once you have PayPal plan IDs, remove this alert and
-  // render the PayPal subscription button here using the SDK:
-  //   paypal.Buttons({ createSubscription: (data, actions) => actions.subscription.create({ plan_id: PAYPAL_PLAN_ID }) }).render('#paypal-container');
-  alert('PayPal subscription for ' + plan + '.\n\nTo activate: paste your PayPal plan IDs into the PAYPAL_PLAN_STARTER and PAYPAL_PLAN_PRO variables in index.html and uncomment the PayPal SDK script.');
+  const planLabel = planType === 'pro' ? 'Pro — $29/mo' : 'Starter — $14/mo (7-day free trial)';
+  const el = document.getElementById('paypal-soon-plan');
+  if (el) safeText(el, planLabel);
+  openModal('modal-paypal-soon');
 };
 
 function updatePlanBadge() {
