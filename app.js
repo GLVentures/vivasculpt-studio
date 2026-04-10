@@ -820,19 +820,15 @@ document.getElementById('post-done-btn').addEventListener('click', () => {
   document.body.style.overflow = '';
   switchTab('today');
 });
-const contactLink = document.getElementById('contact-link');
-if (contactLink) {
-  contactLink.addEventListener('click', e => {
-    e.stopPropagation();
-    window.location.href = 'mailto:hello@vivasculptstudioapp.com';
-  });
-}
+/* ─────────────── COPYRIGHT YEAR ─────────────── */
+var yearEl = document.getElementById('copy-year');
+if (yearEl) yearEl.textContent = new Date().getFullYear();
 
 /* ─────────────── INIT ─────────────── */
 function init() {
   updateTrialBanner();
   updatePlanBadge();
   checkPaywall();
-  setInterval(() => { updateTrialBanner(); checkPaywall(); }, 60000);
+  setInterval(function() { updateTrialBanner(); checkPaywall(); }, 60000);
 }
 init();

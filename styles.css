@@ -656,7 +656,7 @@ ul { list-style:none; }
   background:var(--bg-card); box-shadow:var(--shadow-sm);
 }
 .cpb-icon { font-size:2rem; flex-shrink:0; }
-.cpb-body 
+.cpb-body {}
 .cpb-phase-name {
   font-weight:800; font-size:.95rem; margin-bottom:.15rem;
 }
@@ -783,7 +783,7 @@ ul { list-style:none; }
   border-radius:var(--radius-sm); border:1px solid var(--border-light);
 }
 .protocol-block-icon { font-size:1.4rem; flex-shrink:0; line-height:1; }
-.protocol-block-content 
+.protocol-block-content {}
 .protocol-block-label {
   font-size:.68rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
   color:var(--emerald); margin-bottom:.2rem;
@@ -856,3 +856,70 @@ ul { list-style:none; }
   cursor:pointer; transition:opacity .2s;
 }
 .post-done-btn:hover { opacity:.9; }
+
+/* ── Subscribe buttons ── */
+.subscribe-btns { display:flex; flex-direction:column; gap:.5rem; margin-top:.25rem; }
+.btn-subscribe {
+  display:flex; align-items:center; justify-content:center;
+  gap:.5rem; text-decoration:none; width:100%;
+}
+.pay-methods {
+  display:flex; align-items:center; justify-content:center;
+  gap:.3rem; flex-wrap:wrap;
+}
+.pay-method {
+  font-size:.68rem; font-weight:700; color:var(--text-muted);
+  background:var(--bg-subtle); border:1px solid var(--border);
+  padding:.15rem .45rem; border-radius:4px; letter-spacing:.02em;
+}
+.pay-method-dot { font-size:.6rem; color:var(--border); }
+.pay-note {
+  font-size:.68rem; color:var(--text-muted);
+  text-align:center; line-height:1.4;
+}
+
+/* ── Copyright bar ── */
+.copyright-bar {
+  text-align:center; padding:1rem;
+  font-size:.72rem; color:var(--text-muted);
+  border-top:1px solid var(--border);
+  margin-top:.5rem; line-height:1.8;
+}
+.copyright-bar span { color:var(--text-light); }
+
+/* ── Dual payment buttons (PayPal + Stripe) ── */
+.subscribe-btns { display:flex; flex-direction:column; gap:.5rem; margin-top:.25rem; }
+
+.btn-subscribe-paypal,
+.btn-subscribe-card {
+  display:flex; align-items:center; justify-content:center;
+  gap:.5rem; text-decoration:none; width:100%;
+  padding:.75rem 1rem; border-radius:var(--radius-sm);
+  font-size:.88rem; font-weight:700;
+  transition:all .2s var(--ease); letter-spacing:.01em;
+}
+
+.btn-subscribe-paypal {
+  background:#003087; color:#fff; border:2px solid #003087;
+}
+.btn-subscribe-paypal:hover {
+  background:#001f5b; border-color:#001f5b;
+  transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,48,135,.3);
+}
+
+.btn-subscribe-card {
+  background:var(--emerald); color:#fff; border:2px solid var(--emerald);
+}
+.btn-subscribe-card:hover {
+  background:var(--emerald-dark); border-color:var(--emerald-dark);
+  transform:translateY(-1px); box-shadow:var(--shadow-emerald);
+}
+
+.btn-sub-price {
+  margin-left:auto; font-size:.8rem;
+  opacity:.85; font-weight:600;
+}
+.pay-note {
+  font-size:.68rem; color:var(--text-muted);
+  text-align:center; line-height:1.5;
+}
