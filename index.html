@@ -19,6 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="cycle-styles.css" />
+  <link rel="stylesheet" href="calendar-styles.css" />
   <link rel="stylesheet" href="styles.css" />
   <title>VivaSculpt Studio – Premium Home Fitness</title>
 </head>
@@ -337,6 +338,93 @@
       </div>
     </section>
 
+    <!-- ══════════ CYCLE CALENDAR TAB ══════════ -->
+    <section id="tab-cycle" class="tab-section" aria-label="Cycle Calendar" hidden>
+      <div class="section-hero">
+        <div class="hero-eyebrow">Know your body</div>
+        <h1 class="section-title">Cycle<br><em>Calendar</em></h1>
+        <p class="section-sub">Track your period. Predict your phases.</p>
+      </div>
+
+      <!-- Current phase banner -->
+      <div id="current-phase-banner" class="current-phase-banner cpb-unknown">
+        <div class="cpb-icon">📅</div>
+        <div class="cpb-body">
+          <div class="cpb-phase-name">No cycle data yet</div>
+          <div class="cpb-phase-desc">Tap days below to mark when your period started.</div>
+        </div>
+      </div>
+
+      <!-- Cycle stats -->
+      <div class="cycle-stats">
+        <div class="cycle-stat">
+          <div class="cycle-stat-num" id="stat-cycles">–</div>
+          <div class="cycle-stat-lbl">Cycles tracked</div>
+        </div>
+        <div class="cycle-stat">
+          <div class="cycle-stat-num" id="stat-cycle-len">–</div>
+          <div class="cycle-stat-lbl">Avg length</div>
+        </div>
+        <div class="cycle-stat">
+          <div class="cycle-stat-num" id="stat-marked">0</div>
+          <div class="cycle-stat-lbl">Days marked</div>
+        </div>
+      </div>
+
+      <!-- Calendar -->
+      <div class="card" style="padding:1.25rem">
+        <p class="cal-instructions">Tap any day to mark it as a period day 🩸 — tap again to unmark</p>
+
+        <!-- Month nav -->
+        <div class="cal-nav">
+          <button class="cal-nav-btn" id="cal-prev" aria-label="Previous month">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15,18 9,12 15,6"/></svg>
+          </button>
+          <div class="cal-month-label" id="cal-month-label">Month</div>
+          <button class="cal-nav-btn" id="cal-next" aria-label="Next month">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9,18 15,12 9,6"/></svg>
+          </button>
+        </div>
+
+        <!-- Day of week headers -->
+        <div class="cal-dow">
+          <div class="cal-dow-item">Mo</div>
+          <div class="cal-dow-item">Tu</div>
+          <div class="cal-dow-item">We</div>
+          <div class="cal-dow-item">Th</div>
+          <div class="cal-dow-item">Fr</div>
+          <div class="cal-dow-item">Sa</div>
+          <div class="cal-dow-item">Su</div>
+        </div>
+
+        <!-- Calendar grid -->
+        <div class="cal-grid" id="cal-grid" role="grid" aria-label="Cycle calendar"></div>
+
+        <!-- Legend -->
+        <div class="phase-legend">
+          <div class="legend-item"><div class="legend-dot marked"></div> Period day (you marked)</div>
+          <div class="legend-item"><div class="legend-dot menstrual"></div> Menstrual (predicted)</div>
+          <div class="legend-item"><div class="legend-dot follicular"></div> Follicular</div>
+          <div class="legend-item"><div class="legend-dot ovulation"></div> Ovulation</div>
+          <div class="legend-item"><div class="legend-dot luteal"></div> Luteal</div>
+        </div>
+      </div>
+
+      <!-- Next period prediction -->
+      <div class="next-period-card" id="next-period-card" style="display:none">
+        <div class="npc-icon">🩸</div>
+        <div>
+          <div class="npc-label">Next period predicted</div>
+          <div class="npc-date" id="npc-date">–</div>
+          <div class="npc-days" id="npc-days">–</div>
+        </div>
+      </div>
+
+      <div class="safety-note" style="margin-top:1rem" role="note">
+        <strong>Not medical advice.</strong> Cycle tracking is for personal energy planning only. Predictions are estimates based on your logged data. Always consult a healthcare professional for medical concerns.
+      </div>
+    </section>
+
     <!-- ══════════ PROTOCOL TAB ══════════ -->
     <section id="tab-protocol" class="tab-section" aria-label="Daily Protocol" hidden>
       <div class="section-hero">
@@ -449,9 +537,13 @@
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
       <span>Pricing</span>
     </button>
+    <button class="tab-btn" data-tab="cycle">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+      <span>Cycle</span>
+    </button>
     <button class="tab-btn" data-tab="protocol">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-      <span>Today</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/></svg>
+      <span>Protocol</span>
     </button>
   </nav>
 
@@ -653,6 +745,7 @@
   <!-- PayPal SDK -->
   <script src="https://www.paypal.com/sdk/js?client-id=AWhC4EBUU0k5ic82g-h3CXw-ptB0t2_HAhtFm7UFhZKo7JCMGykgX7x5762_AWhSRIWrE8vnosTWjM0x&vault=true&intent=subscription&disable-funding=credit,card&enable-funding=paypal"></script>
   <script src="app.js"></script>
+  <script src="calendar.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
