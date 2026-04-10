@@ -182,8 +182,8 @@ function startTrial() {
 }
 
 /* ─────────────── PAYPAL SUBSCRIPTION IDs ─────────────── */
-const PAYPAL_PLAN_STARTER = 'PROD-68K692054D924803D';
-const PAYPAL_PLAN_PRO     = 'PROD-28P82238KX789663R';
+const PAYPAL_PLAN_STARTER = 'P-1DD23981LB678535ENHKLPHI ';
+const PAYPAL_PLAN_PRO     = 'P-4UP82455HM149604SNHKLU3Y';
 
 function renderPayPalButton(containerId, planId, planLabel) {
   const container = document.getElementById(containerId);
@@ -644,7 +644,199 @@ document.getElementById('btn-pdf').addEventListener('click', e => {
   if (note) note.scrollIntoView({ behavior: 'smooth', block: 'center' });
 });
 
-/* ─────────────── CONTACT LINK ─────────────── */
+/* ═══════════════════════════════════════════════════
+   DAILY PROTOCOL — Cycle + Mood Engine
+   ═══════════════════════════════════════════════════ */
+
+const PROTOCOL_DATA = {
+  // [mood][phase] → protocol
+  low: {
+    menstrual:  { workout:{ name:'Recovery Flow', desc:'Gentle bodyweight movement — honour your body today', moves: DEFAULT_MOVES.slice(0,3) }, meal:{ name:'Iron-Rich Warm Bowl', desc:'Lentil soup · dark leafy greens · beetroot · warm ginger tea · dark chocolate square' }, recovery:{ name:'Box Breathing', desc:'4s inhale · 4s hold · 4s exhale · 4s hold — repeat 5×' }, header:'Gentle day. Full credit.', icon:'🌸' },
+    follicular: { workout:{ name:'Light Strength Flow', desc:'Low-intensity · 2 rounds · no jumping', moves: DEFAULT_MOVES.slice(0,3) }, meal:{ name:'Fresh Protein Plate', desc:'Eggs · avocado · mixed greens · lemon · pumpkin seeds' }, recovery:{ name:'Hip Mobility Flow', desc:'5 min · deep hip circles · cat-cow · child\'s pose' }, header:'Easy does it. Still showing up.', icon:'🌱' },
+    ovulation:  { workout:{ name:'Balanced HIIT', desc:'Moderate intensity · your body can handle more today', moves: DEFAULT_MOVES }, meal:{ name:'High-Energy Bowl', desc:'Chicken · quinoa · roasted veg · olive oil · lemon' }, recovery:{ name:'Shoulder Roll & Stretch', desc:'3 min · roll tension away before rest' }, header:'Even on low days, you move.', icon:'⚡' },
+    luteal:     { workout:{ name:'Slow Strength', desc:'Low-impact · focus on form not speed', moves: MOVES_LOWER }, meal:{ name:'Fibre-Rich Comfort', desc:'Sweet potato · black beans · spinach · tahini · warming spices' }, recovery:{ name:'Legs Up the Wall', desc:'5 min · elevate legs · deep breathing · reduce bloating' }, header:'Stable. Steady. Strong.', icon:'🌙' },
+    none:       { workout:{ name:'Recovery Flow', desc:'Gentle movement · honour where you are', moves: DEFAULT_MOVES.slice(0,3) }, meal:{ name:'Protein & Greens', desc:'Greek yogurt · spinach · walnuts · lemon · honey' }, recovery:{ name:'Box Breathing', desc:'2–5 min · calm the nervous system' }, header:'Rest is productive.', icon:'🧘' }
+  },
+  neutral: {
+    menstrual:  { workout:{ name:'Low-Impact HIIT', desc:'Apartment-friendly · no jumping · 20 min', moves: DEFAULT_MOVES }, meal:{ name:'Iron & Warmth', desc:'Lentils · spinach · roasted sweet potato · ginger · turmeric' }, recovery:{ name:'Seated Mobility', desc:'5 min · seated twists · neck rolls · wrist circles' }, header:'Balanced day. Balanced effort.', icon:'⚖️' },
+    follicular: { workout:{ name:'Full Body HIIT', desc:'Energy is building — use it · 20 min', moves: DEFAULT_MOVES }, meal:{ name:'Fresh & Protein-Forward', desc:'Grilled chicken · mixed greens · cucumber · olive oil · lemon' }, recovery:null, header:'Rising energy. Rise with it.', icon:'🌱' },
+    ovulation:  { workout:{ name:'Classic HIIT', desc:'Peak energy phase · go for it · 25 min', moves: [...DEFAULT_MOVES, ...MOVES_UPPER.slice(0,2)] }, meal:{ name:'Performance Plate', desc:'Salmon · brown rice · broccoli · avocado · sesame' }, recovery:null, header:'Peak phase. Peak effort.', icon:'🔥' },
+    luteal:     { workout:{ name:'Strength & Core', desc:'Focus on control · no rushing · 20 min', moves: [...MOVES_LOWER, ...MOVES_CORE.slice(0,2)] }, meal:{ name:'Craving-Stable Meal', desc:'Turkey wrap · hummus · spinach · roasted peppers · complex carbs' }, recovery:{ name:'Foam Roll + Stretch', desc:'5 min · quads · hamstrings · lower back' }, header:'Steady wins. Every time.', icon:'🌙' },
+    none:       { workout:{ name:'Balanced HIIT', desc:'Solid session · 20 min · you\'ve got this', moves: DEFAULT_MOVES }, meal:{ name:'Balanced Plate', desc:'Eggs · veg · olive oil · whole grain toast' }, recovery:null, header:'Show up. Do the work.', icon:'💪' }
+  },
+  high: {
+    menstrual:  { workout:{ name:'Low-Impact Power', desc:'Channel that energy gently · protect your body', moves: DEFAULT_MOVES }, meal:{ name:'Iron Power Bowl', desc:'Spinach · lentils · pumpkin seeds · beetroot · tahini dressing' }, recovery:null, header:'Energy up. Intensity smart.', icon:'⚡' },
+    follicular: { workout:{ name:'Strength Builder', desc:'Follicular + fired up = ideal combo · 25 min', moves: [...DEFAULT_MOVES, ...MOVES_UPPER.slice(0,3)] }, meal:{ name:'Build & Recover', desc:'Chicken breast · quinoa · roasted veg · almonds · lemon' }, recovery:null, header:'Best time to push. Push.', icon:'🚀' },
+    ovulation:  { workout:{ name:'Performance HIIT', desc:'Peak phase + peak mood · full power · 25 min', moves: [...DEFAULT_MOVES, ...MOVES_CORE] }, meal:{ name:'Performance Fuel', desc:'Salmon · sweet potato · edamame · avocado · ginger-soy' }, recovery:null, header:'No ceiling today.', icon:'🔥' },
+    luteal:     { workout:{ name:'Endurance Flow', desc:'High mood, but body needs balance · 20 min', moves: [...MOVES_LOWER, ...DEFAULT_MOVES.slice(0,3)] }, meal:{ name:'Fibre + Protein Balance', desc:'Oats · protein powder · chia · banana · almond butter' }, recovery:{ name:'Cool Down Stretch', desc:'5 min · don\'t skip — luteal needs recovery too' }, header:'Fired up. Stay balanced.', icon:'⚡' },
+    none:       { workout:{ name:'Full Power HIIT', desc:'Energy is high — use every drop · 25 min', moves: [...DEFAULT_MOVES, ...MOVES_UPPER.slice(0,2)] }, meal:{ name:'High Performance Plate', desc:'Grilled protein · complex carbs · healthy fats · hydrate well' }, recovery:null, header:'All systems go.', icon:'🔥' }
+  }
+};
+
+const IDENTITY_MESSAGES = [
+  '"You showed up today."',
+  '"Consistency is becoming your default."',
+  '"No negotiation. Just action."',
+  '"You did the thing."',
+  '"Another day. Another rep."',
+  '"Your future self remembers this."',
+  '"One session closer."',
+  '"This is who you are now."'
+];
+
+const STREAK_KEY = 'vs_streak';
+const STREAK_DATE_KEY = 'vs_streak_date';
+
+function getStreak() {
+  const streak = parseInt(localStorage.getItem(STREAK_KEY) || '0', 10);
+  const lastDate = localStorage.getItem(STREAK_DATE_KEY);
+  const today = new Date().toDateString();
+  if (lastDate === today) return streak; // already done today
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+  return lastDate === yesterday ? streak : 0; // reset if missed day
+}
+function incrementStreak() {
+  const lastDate = localStorage.getItem(STREAK_DATE_KEY);
+  const today = new Date().toDateString();
+  if (lastDate === today) return getStreak(); // don't double count
+  const streak = getStreak() + 1;
+  localStorage.setItem(STREAK_KEY, streak.toString());
+  localStorage.setItem(STREAK_DATE_KEY, today);
+  return streak;
+}
+
+let protocolState = { mood: null, phase: 'none', protocol: null };
+let protocolWorkout = { moves:[], moveIndex:0, round:1, totalRounds:2, phase:'work', timeLeft:40, paused:false, interval:null };
+
+function buildProtocol() {
+  const { mood, phase } = protocolState;
+  if (!mood) return;
+  const phaseKey = phase || 'none';
+  const p = PROTOCOL_DATA[mood][phaseKey] || PROTOCOL_DATA[mood]['none'];
+  protocolState.protocol = p;
+
+  // Update output card
+  safeText(document.getElementById('proto-header-icon'), p.icon);
+  safeText(document.getElementById('proto-header-title'), p.header);
+  safeText(document.getElementById('proto-header-sub'), `${mood === 'low' ? '😩 Low' : mood === 'high' ? '🔥 Fired' : '😐 OK'} energy${phase !== 'none' ? ' · ' + phase : ''}`);
+  safeText(document.getElementById('proto-workout-name'), p.workout.name);
+  safeText(document.getElementById('proto-workout-desc'), p.workout.desc);
+  safeText(document.getElementById('proto-meal-name'), p.meal.name);
+  safeText(document.getElementById('proto-meal-desc'), p.meal.desc);
+
+  const recoveryBlock = document.getElementById('proto-recovery-block');
+  if (p.recovery) {
+    recoveryBlock.hidden = false;
+    safeText(document.getElementById('proto-recovery-name'), p.recovery.name);
+    safeText(document.getElementById('proto-recovery-desc'), p.recovery.desc);
+  } else {
+    recoveryBlock.hidden = true;
+  }
+
+  document.getElementById('protocol-output').classList.remove('hidden');
+  document.getElementById('btn-start-protocol').classList.remove('hidden');
+}
+
+// Mood buttons
+document.querySelectorAll('.mood-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    protocolState.mood = btn.dataset.mood;
+    buildProtocol();
+  });
+});
+
+// Phase buttons
+document.querySelectorAll('.phase-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    protocolState.phase = btn.dataset.phase;
+    buildProtocol();
+  });
+});
+
+// START button — launches full-screen player
+document.getElementById('btn-start-protocol').addEventListener('click', () => {
+  const p = protocolState.protocol;
+  if (!p) return;
+  const rounds = 2;
+  const moves = p.workout.moves || DEFAULT_MOVES;
+  Object.assign(protocolWorkout, {
+    moves, moveIndex:0, round:1, totalRounds:rounds,
+    phase:'work', timeLeft:40, paused:false
+  });
+  clearInterval(protocolWorkout.interval);
+  updateProtocolPlayerUI();
+  document.getElementById('protocol-player').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  protocolWorkout.interval = setInterval(tickProtocol, 1000);
+});
+
+function updateProtocolPlayerUI() {
+  const w = protocolWorkout;
+  const move = w.moves[w.moveIndex];
+  const CIRC = 2 * Math.PI * 72; // r=72 → 452.4
+
+  safeText(document.getElementById('pp-phase'), w.phase === 'work' ? 'WORK' : 'REST');
+  safeText(document.getElementById('pp-move'), move ? move.name : '–');
+  const modEl = document.getElementById('pp-mod');
+  if (move) safeText(modEl, protocolState.mood === 'low' ? '🟢 ' + move.low : '🔴 ' + move.classic);
+  else modEl.textContent = '';
+  safeText(document.getElementById('pp-time'), w.timeLeft);
+  safeText(document.getElementById('pp-round'), 'Round ' + w.round + ' / ' + w.totalRounds);
+  const total = w.phase === 'work' ? 40 : 20;
+  const ring = document.getElementById('pp-ring-fg');
+  ring.style.strokeDashoffset = CIRC * (1 - w.timeLeft / total);
+  const nextMove = w.moves[w.moveIndex + 1];
+  safeText(document.getElementById('pp-next-move'), nextMove ? nextMove.name : 'Last move!');
+  safeText(document.getElementById('pp-btn-pause'), w.paused ? 'Resume' : 'Pause');
+}
+
+function tickProtocol() {
+  const w = protocolWorkout;
+  if (w.paused) return;
+  w.timeLeft--;
+  if (w.timeLeft <= 0) {
+    if (w.phase === 'work') {
+      w.phase = 'rest'; w.timeLeft = 20; beep(330,.15,.08);
+    } else {
+      w.moveIndex++;
+      if (w.moveIndex >= w.moves.length) {
+        if (w.round < w.totalRounds) {
+          w.round++; w.moveIndex = 0; w.phase = 'work'; w.timeLeft = 40; beep(660,.2,.15);
+        } else { finishProtocol(); return; }
+      } else { w.phase = 'work'; w.timeLeft = 40; }
+    }
+  } else if (w.timeLeft <= 3 && w.phase === 'work') { beep(880,.08,.05); }
+  updateProtocolPlayerUI();
+}
+
+function finishProtocol() {
+  clearInterval(protocolWorkout.interval);
+  document.getElementById('protocol-player').classList.add('hidden');
+  const streak = incrementStreak();
+  const msg = IDENTITY_MESSAGES[Math.floor(Math.random() * IDENTITY_MESSAGES.length)];
+  safeText(document.getElementById('post-streak'), 'Day ' + streak + ' streak 🔥');
+  safeText(document.getElementById('post-message'), msg);
+  document.getElementById('post-action').classList.remove('hidden');
+}
+
+document.getElementById('pp-btn-pause').addEventListener('click', () => {
+  protocolWorkout.paused = !protocolWorkout.paused;
+  safeText(document.getElementById('pp-btn-pause'), protocolWorkout.paused ? 'Resume' : 'Pause');
+});
+document.getElementById('pp-btn-end').addEventListener('click', () => {
+  clearInterval(protocolWorkout.interval);
+  document.getElementById('protocol-player').classList.add('hidden');
+  document.body.style.overflow = '';
+});
+document.getElementById('post-done-btn').addEventListener('click', () => {
+  document.getElementById('post-action').classList.add('hidden');
+  document.body.style.overflow = '';
+  switchTab('today');
+});
 const contactLink = document.getElementById('contact-link');
 if (contactLink) {
   contactLink.addEventListener('click', e => {

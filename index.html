@@ -18,6 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="cycle-styles.css" />
   <link rel="stylesheet" href="styles.css" />
   <title>VivaSculpt Studio – Premium Home Fitness</title>
 </head>
@@ -336,6 +337,94 @@
       </div>
     </section>
 
+    <!-- ══════════ PROTOCOL TAB ══════════ -->
+    <section id="tab-protocol" class="tab-section" aria-label="Daily Protocol" hidden>
+      <div class="section-hero">
+        <div class="hero-eyebrow">One decision. One action.</div>
+        <h1 class="section-title">Today's<br><em>Protocol</em></h1>
+        <p class="section-sub">Tell us how you feel. We handle the rest.</p>
+      </div>
+
+      <!-- Mood -->
+      <div class="card" style="margin-bottom:1rem">
+        <span class="config-label">How's your energy right now?</span>
+        <div class="mood-row" id="mood-row">
+          <button class="mood-btn" data-mood="low" aria-label="Low energy">
+            <span>😩</span><span class="mood-lbl">Low</span>
+          </button>
+          <button class="mood-btn" data-mood="neutral" aria-label="Neutral energy">
+            <span>😐</span><span class="mood-lbl">OK</span>
+          </button>
+          <button class="mood-btn" data-mood="high" aria-label="High energy">
+            <span>🔥</span><span class="mood-lbl">Fired</span>
+          </button>
+        </div>
+
+        <!-- Cycle phase -->
+        <span class="config-label" style="margin-top:.5rem">Cycle phase <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted)">(optional — for meal & energy guidance only)</span></span>
+        <div class="phase-row" id="phase-row">
+          <button class="phase-btn" data-phase="menstrual" aria-label="Menstrual phase">
+            <span class="phase-icon">🩸</span><span>Menstrual</span>
+          </button>
+          <button class="phase-btn" data-phase="follicular" aria-label="Follicular phase">
+            <span class="phase-icon">🌱</span><span>Follicular</span>
+          </button>
+          <button class="phase-btn" data-phase="ovulation" aria-label="Ovulation phase">
+            <span class="phase-icon">🔥</span><span>Ovulation</span>
+          </button>
+          <button class="phase-btn" data-phase="luteal" aria-label="Luteal phase">
+            <span class="phase-icon">🌙</span><span>Luteal</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Daily protocol output -->
+      <div id="protocol-output" class="today-protocol hidden">
+        <div class="protocol-header">
+          <div class="protocol-header-icon" id="proto-header-icon">🏋️‍♀️</div>
+          <div class="protocol-header-text">
+            <div class="protocol-header-title" id="proto-header-title">Your protocol is ready</div>
+            <div class="protocol-header-sub" id="proto-header-sub">Based on your energy + phase</div>
+          </div>
+        </div>
+        <div class="protocol-body">
+          <div class="protocol-block">
+            <div class="protocol-block-icon">🏋️‍♀️</div>
+            <div class="protocol-block-content">
+              <div class="protocol-block-label">Exercise</div>
+              <div class="protocol-block-title" id="proto-workout-name">Recovery Flow</div>
+              <div class="protocol-block-desc" id="proto-workout-desc">Gentle movement to restore energy</div>
+            </div>
+          </div>
+          <div class="protocol-block">
+            <div class="protocol-block-icon">🥗</div>
+            <div class="protocol-block-content">
+              <div class="protocol-block-label">Meal Suggestion</div>
+              <div class="protocol-block-title" id="proto-meal-name">Nourishing Bowl</div>
+              <div class="protocol-block-desc" id="proto-meal-desc">Phase-aligned nutrition</div>
+            </div>
+          </div>
+          <div class="protocol-block" id="proto-recovery-block">
+            <div class="protocol-block-icon">🧘</div>
+            <div class="protocol-block-content">
+              <div class="protocol-block-label">Optional Recovery</div>
+              <div class="protocol-block-title" id="proto-recovery-name">Box Breathing</div>
+              <div class="protocol-block-desc" id="proto-recovery-desc">2–5 min · inhale 4s · hold 4s · exhale 4s</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-start-protocol hidden" id="btn-start-protocol">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+        START
+      </button>
+
+      <p class="helper-text" style="text-align:center;margin-top:.75rem;font-size:.75rem">
+        Not medical advice. Cycle tracking is for energy alignment only.
+      </p>
+    </section>
+
   </main>
 
   <!-- TAB BAR -->
@@ -359,6 +448,10 @@
     <button class="tab-btn" data-tab="pricing">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
       <span>Pricing</span>
+    </button>
+    <button class="tab-btn" data-tab="protocol">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      <span>Today</span>
     </button>
   </nav>
 
@@ -508,6 +601,35 @@
         <p>Subscriptions renew automatically. Cancel anytime via PayPal before the next billing date. Billing disputes: hello@vivasculptstudioapp.com within 30 days of the charge. No partial refunds unless required by local consumer law.</p>
       </div>
     </div>
+  </div>
+
+  <!-- PROTOCOL FULL-SCREEN PLAYER -->
+  <div id="protocol-player" class="protocol-player hidden" role="dialog" aria-modal="true" aria-label="Protocol workout">
+    <div class="pp-phase" id="pp-phase">WORK</div>
+    <div class="pp-move" id="pp-move">Starting...</div>
+    <div class="pp-mod" id="pp-mod"></div>
+    <div class="pp-timer-wrap">
+      <svg class="pp-ring" viewBox="0 0 160 160" aria-hidden="true">
+        <circle class="pp-ring-bg" cx="80" cy="80" r="72"/>
+        <circle class="pp-ring-fg" id="pp-ring-fg" cx="80" cy="80" r="72"/>
+      </svg>
+      <div id="pp-time" class="pp-time">40</div>
+    </div>
+    <div class="pp-next" id="pp-next">Next: <strong id="pp-next-move">–</strong></div>
+    <div class="pp-actions">
+      <button class="pp-btn-pause" id="pp-btn-pause">Pause</button>
+      <button class="pp-btn-end" id="pp-btn-end">End</button>
+    </div>
+    <div class="pp-round" id="pp-round">Round 1 / 2</div>
+  </div>
+
+  <!-- POST-ACTION SCREEN -->
+  <div id="post-action" class="post-action hidden" role="dialog" aria-modal="true">
+    <div class="post-done">✔</div>
+    <div class="post-title">Done.</div>
+    <div class="post-streak" id="post-streak">Day 1 streak 🔥</div>
+    <div class="post-message" id="post-message">"You showed up today."</div>
+    <button class="post-done-btn" id="post-done-btn">Back to home</button>
   </div>
 
   <!-- PAYPAL COMING SOON MODAL -->
