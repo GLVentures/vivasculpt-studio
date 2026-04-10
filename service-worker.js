@@ -20,11 +20,6 @@ const CORE_FILES = [
   '/icons/icon-192.png',
   '/icons/icon-512.png'
 ];
-  // '/icons/icon-192.png',
-  // '/icons/icon-512.png',
-  // Add your Google Font CSS here if you want offline font support:
-  // (Fonts themselves require additional caching or self-hosting)
-];
 
 /* ── Install: cache core files ── */
 self.addEventListener('install', event => {
