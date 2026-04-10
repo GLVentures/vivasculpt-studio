@@ -182,13 +182,15 @@ function startTrial() {
 }
 
 /* ─────────────── PAYPAL SUBSCRIPTION IDs ─────────────── */
-const PAYPAL_PLAN_STARTER = 'P-1DD23981LB678535ENHKLPHI ';
+const PAYPAL_PLAN_STARTER = 'P-1DD23981LB678535ENHKLPHI';
 const PAYPAL_PLAN_PRO     = 'P-4UP82455HM149604SNHKLU3Y';
 
 function renderPayPalButton(containerId, planId, planLabel) {
-  const container = document.getElementById(containerId);
+  var container = document.getElementById(containerId);
   if (!container || typeof paypal === 'undefined') return;
   container.innerHTML = '';
+
+  // PayPal button — opens inline checkout (not a popup)
   paypal.Buttons({
     style: {
       shape: 'rect',
@@ -200,29 +202,55 @@ function renderPayPalButton(containerId, planId, planLabel) {
       return actions.subscription.create({ plan_id: planId });
     },
     onApprove: function(data) {
-      setPlan(planLabel === 'pro' ? 'pro' : 'starter');
+      var plan = planLabel === 'pro' ? 'pro' : 'starter';
+      setPlan(plan);
       updatePlanBadge();
       updateTrialBanner();
       closeModal('modal-paywall');
-      const box = document.createElement('div');
-      box.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999';
-      const msg = document.createElement('div');
-      msg.style.cssText = 'background:#fff;border-radius:16px;padding:2rem;text-align:center;max-width:320px';
-      msg.innerHTML = '<div style="font-size:2.5rem;margin-bottom:.75rem">🎉</div><h2 style="font-family:serif;margin-bottom:.5rem">Welcome to VivaSculpt!</h2><p style="color:#6B7280;margin-bottom:1rem">Your subscription is active. Enjoy full access!</p><button onclick="this.closest(\'[style*=fixed]\').remove()" style="background:#0F766E;color:#fff;border:none;padding:.75rem 1.5rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:1rem">Start Training →</button>';
-      box.appendChild(msg);
-      document.body.appendChild(box);
+      showWelcomeScreen();
     },
-    onCancel: function() {
-      console.log('Subscription cancelled by user');
-    },
+    onCancel: function() { /* user closed PayPal — do nothing */ },
     onError: function(err) {
       console.error('PayPal error:', err);
-      alert('Something went wrong with PayPal. Please try again or contact hello@vivasculptstudioapp.com');
     }
   }).render('#' + containerId);
+
+  // Card payment button below PayPal button
+  var divider = document.createElement('div');
+  divider.style.cssText = 'text-align:center;font-size:.75rem;color:var(--text-muted);margin:.5rem 0;';
+  divider.textContent = '— or pay by card —';
+
+  var cardBtn = document.createElement('button');
+  cardBtn.className = 'btn-outline btn-card-pay';
+  cardBtn.style.cssText = 'width:100%;margin-top:.25rem;gap:.5rem;font-size:.88rem;';
+  cardBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Pay with Card';
+
+  // Card payment opens PayPal hosted page directly — no popup needed
+  var cardUrl = 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=' + planId;
+  cardBtn.addEventListener('click', function() {
+    window.location.href = cardUrl; // same tab, not a popup — no blocker issue
+  });
+
+  container.appendChild(divider);
+  container.appendChild(cardBtn);
 }
 
-// Render PayPal buttons once SDK is ready
+function showWelcomeScreen() {
+  var box = document.createElement('div');
+  box.id = 'welcome-screen';
+  box.style.cssText = 'position:fixed;inset:0;background:var(--emerald-deeper);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;padding:2rem;text-align:center;';
+  box.innerHTML = [
+    '<div style="font-size:3.5rem;margin-bottom:1rem">🎉</div>',
+    '<h2 style="font-family:var(--font-display);font-size:2rem;color:#fff;margin-bottom:.5rem">Welcome to VivaSculpt!</h2>',
+    '<p style="color:rgba(255,255,255,.75);margin-bottom:2rem;max-width:280px;line-height:1.6">Your subscription is active. Time to move.</p>',
+    '<button onclick="document.getElementById(\'welcome-screen\').remove();switchTab(\'today\')" ',
+    'style="background:#fff;color:var(--emerald-deeper);border:none;padding:.9rem 2rem;border-radius:10px;font-weight:800;font-size:1rem;cursor:pointer;">',
+    'Start Training →</button>'
+  ].join('');
+  document.body.appendChild(box);
+}
+
+// Render all PayPal buttons once SDK loads
 window.addEventListener('load', function() {
   if (typeof paypal !== 'undefined') {
     renderPayPalButton('paypal-starter-btn', PAYPAL_PLAN_STARTER, 'starter');
@@ -232,12 +260,12 @@ window.addEventListener('load', function() {
   }
 });
 
-// Fallback if PayPal SDK not yet loaded (keeps buttons working)
+// Fallback
 window.openPayPal = function(planType) {
-  const containerId = planType === 'pro' ? 'paypal-pro-btn' : 'paypal-starter-btn';
-  const el = document.getElementById(containerId);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   switchTab('pricing');
+  var id = planType === 'pro' ? 'paypal-pro-btn' : 'paypal-starter-btn';
+  var el = document.getElementById(id);
+  if (el) setTimeout(function(){ el.scrollIntoView({ behavior:'smooth', block:'center' }); }, 300);
 };
 
 function updatePlanBadge() {
