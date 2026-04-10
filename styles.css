@@ -656,7 +656,7 @@ ul { list-style:none; }
   background:var(--bg-card); box-shadow:var(--shadow-sm);
 }
 .cpb-icon { font-size:2rem; flex-shrink:0; }
-.cpb-body {}
+.cpb-body 
 .cpb-phase-name {
   font-weight:800; font-size:.95rem; margin-bottom:.15rem;
 }
@@ -783,7 +783,7 @@ ul { list-style:none; }
   border-radius:var(--radius-sm); border:1px solid var(--border-light);
 }
 .protocol-block-icon { font-size:1.4rem; flex-shrink:0; line-height:1; }
-.protocol-block-content {}
+.protocol-block-content 
 .protocol-block-label {
   font-size:.68rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
   color:var(--emerald); margin-bottom:.2rem;
