@@ -47,11 +47,12 @@ function saveDays(arr) {
 /* ── Cycle logic ── */
 function detectStarts(arr) {
   if (!arr.length) return [];
-  var sorted = arr.slice().sort();
+  var sorted = arr.slice().sort(); // sorts YYYY-MM-DD correctly
   var starts = [], lastMs = null;
   for (var i = 0; i < sorted.length; i++) {
     var ms = keyMs(sorted[i]);
-    if (lastMs === null || diffDays(lastMs, ms) >= 2) starts.push(ms);
+    // Gap of 3+ days = new cycle start (avoids treating consecutive period days as new cycles)
+    if (lastMs === null || diffDays(lastMs, ms) >= 3) starts.push(ms);
     lastMs = ms;
   }
   return starts;
@@ -273,6 +274,8 @@ function syncProtocol() {
 function attachNav() {
   var prev = document.getElementById('cal-prev');
   var next = document.getElementById('cal-next');
+  var reset = document.getElementById('cal-reset');
+
   if (prev) prev.addEventListener('click', function() {
     CAL.month--; if (CAL.month < 0) { CAL.month = 11; CAL.year--; }
     renderGrid();
@@ -280,6 +283,13 @@ function attachNav() {
   if (next) next.addEventListener('click', function() {
     CAL.month++; if (CAL.month > 11) { CAL.month = 0; CAL.year++; }
     renderGrid();
+  });
+  if (reset) reset.addEventListener('click', function() {
+    if (confirm('Clear all cycle data? This cannot be undone.')) {
+      CAL.marked = [];
+      saveDays([]);
+      renderAll();
+    }
   });
 }
 
