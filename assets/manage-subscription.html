@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Manage your VivaSculpt Studio subscription — cancel, billing, and support." />
+  <title>Manage Subscription — VivaSculpt Studio</title>
+  <link rel="icon" type="image/png" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --emerald: #0F766E; --emerald-dark: #0A5C56; --emerald-pale: #F0FDFB;
+      --emerald-light: #CCFBF1; --bg: #FAF7F2; --card: #fff;
+      --text: #0B0F14; --muted: #6B7280; --border: #E8E3DC;
+      --gold: #B45309; --gold-bg: #FFFBEB; --gold-border: #FDE68A;
+      --danger: #DC2626; --danger-bg: #FEF2F2; --danger-border: #FECACA;
+      --font-d: 'DM Serif Display', Georgia, serif;
+      --font-b: 'DM Sans', system-ui, sans-serif;
+      --r: 12px; --shadow: 0 2px 12px rgba(0,0,0,.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-b); background: var(--bg); color: var(--text); line-height: 1.65; min-height: 100vh; }
+
+    /* Header */
+    .header { background: var(--bg); border-bottom: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+    .logo { display: flex; align-items: center; gap: .6rem; text-decoration: none; }
+    .logo-img { width: 32px; height: 32px; border-radius: 6px; object-fit: cover; }
+    .logo-name { font-family: var(--font-d); font-size: 1.1rem; color: var(--text); }
+    .logo-tag { font-size: .65rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); display: block; line-height: 1; }
+    .back-link { font-size: .85rem; color: var(--emerald); text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: .3rem; }
+    .back-link:hover { text-decoration: underline; }
+
+    /* Content */
+    .container { max-width: 640px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+    .eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--emerald); margin-bottom: .4rem; display: flex; align-items: center; gap: .4rem; }
+    .eyebrow::before { content: ''; width: 18px; height: 2px; background: var(--emerald); border-radius: 1px; }
+    h1 { font-family: var(--font-d); font-size: 2.2rem; margin-bottom: .5rem; line-height: 1.15; }
+    .subtitle { color: var(--muted); font-size: .95rem; margin-bottom: 2.5rem; }
+
+    /* Cards */
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1.25rem; }
+    .card-title { font-weight: 700; font-size: 1.05rem; margin-bottom: .85rem; display: flex; align-items: center; gap: .5rem; }
+    .card-title span { font-size: 1.2rem; }
+
+    /* Steps */
+    .steps { display: flex; flex-direction: column; gap: .75rem; }
+    .step { display: flex; gap: .85rem; align-items: flex-start; }
+    .step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--emerald); color: #fff; font-size: .8rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: .05rem; }
+    .step-text { font-size: .9rem; color: var(--text); line-height: 1.5; padding-top: .2rem; }
+    .step-text strong { color: var(--emerald); }
+
+    /* Warning box */
+    .warning-box { background: var(--gold-bg); border: 1px solid var(--gold-border); border-radius: var(--r); padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; gap: .75rem; align-items: flex-start; }
+    .warning-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .warning-text { font-size: .88rem; color: #92400E; line-height: 1.55; }
+    .warning-text strong { display: block; margin-bottom: .2rem; }
+
+    /* Risk shield */
+    .risk-shield { background: var(--danger-bg); border: 1px solid var(--danger-border); border-radius: var(--r); padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; gap: .75rem; align-items: flex-start; }
+    .risk-text { font-size: .88rem; color: #991B1B; line-height: 1.55; }
+    .risk-text strong { display: block; margin-bottom: .2rem; font-size: .95rem; }
+
+    /* Contact card */
+    .contact-card { background: var(--emerald-pale); border: 1px solid var(--emerald-light); border-radius: var(--r); padding: 1.25rem; margin-bottom: 1.25rem; }
+    .contact-card p { font-size: .9rem; color: var(--text); margin-bottom: .75rem; }
+    .btn-email { display: inline-flex; align-items: center; gap: .5rem; background: var(--emerald); color: #fff; padding: .7rem 1.25rem; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: .88rem; transition: background .2s; }
+    .btn-email:hover { background: var(--emerald-dark); }
+
+    /* FAQ items */
+    .faq-item { border-bottom: 1px solid var(--border); padding: .85rem 0; }
+    .faq-q { font-weight: 700; font-size: .9rem; margin-bottom: .35rem; }
+    .faq-a { font-size: .85rem; color: var(--muted); line-height: 1.6; }
+    .faq-a a { color: var(--emerald); }
+
+    /* Footer */
+    .page-footer { text-align: center; font-size: .75rem; color: var(--muted); padding: 2rem 1rem; border-top: 1px solid var(--border); margin-top: 2rem; }
+    .page-footer a { color: var(--emerald); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="/" class="logo">
+      <img src="icons/icon-192.png" alt="VivaSculpt" class="logo-img" />
+      <div>
+        <span class="logo-name">VivaSculpt</span>
+        <span class="logo-tag">Studio</span>
+      </div>
+    </a>
+    <a href="/" class="back-link">← Back to app</a>
+  </header>
+
+  <div class="container">
+
+    <div class="eyebrow">Billing &amp; Subscription</div>
+    <h1>Manage Your<br>Subscription</h1>
+    <p class="subtitle">All subscriptions are processed securely via PayPal. You can cancel anytime.</p>
+
+    <!-- Risk shield -->
+    <div class="risk-shield">
+      <div class="warning-icon">🛡️</div>
+      <div class="risk-text">
+        <strong>Important — Cancellation Deadline</strong>
+        You must cancel at least <strong>24 hours before your next billing date</strong> to avoid being charged for the next cycle. No partial refunds are issued for unused periods.
+      </div>
+    </div>
+
+    <!-- Cancel via PayPal account -->
+    <div class="card">
+      <div class="card-title"><span>🔵</span> Cancel via PayPal Account</div>
+      <p style="font-size:.88rem;color:var(--muted);margin-bottom:1rem;">If you subscribed using your PayPal account, follow these steps:</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-text">Log in to your PayPal account at <strong>paypal.com</strong></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-text">Click your <strong>profile icon</strong> → <strong>Settings</strong> (gear icon)</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-text">Click <strong>Payments</strong> in the top menu</div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-text">Select <strong>"Manage automatic payments"</strong></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-text">Find <strong>VivaSculpt Studio</strong> in the list</div></div>
+        <div class="step"><div class="step-num">6</div><div class="step-text">Click <strong>Cancel</strong> → confirm cancellation</div></div>
+      </div>
+    </div>
+
+    <!-- Cancel via card (no PayPal account) -->
+    <div class="card">
+      <div class="card-title"><span>💳</span> Paid by Card Without a PayPal Account?</div>
+      <p style="font-size:.88rem;color:var(--muted);margin-bottom:.75rem;">If you paid with a debit or credit card as a guest (without logging into PayPal), you will need to contact PayPal support directly to cancel the billing agreement.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-text">Go to <strong>paypal.com/smarthelp/home</strong></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-text">Click <strong>"Contact Us"</strong> or start a chat</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-text">Tell them you want to cancel a billing agreement for <strong>VivaSculpt Studio</strong></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-text">Provide the email address you used at checkout</div></div>
+      </div>
+    </div>
+
+    <!-- Warning -->
+    <div class="warning-box">
+      <div class="warning-icon">⚠️</div>
+      <div class="warning-text">
+        <strong>After cancellation</strong>
+        Your access continues until the end of your current billing period. After that date, you will lose access to VivaSculpt Studio. You can resubscribe at any time.
+      </div>
+    </div>
+
+    <!-- Contact us -->
+    <div class="contact-card">
+      <div class="card-title" style="margin-bottom:.5rem"><span>💬</span> Need help? Contact us directly</div>
+      <p>If you're having trouble cancelling or have a billing question, email us and we'll respond within 24 hours.</p>
+      <a href="mailto:hello@vivasculptstudioapp.com" class="btn-email">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+        hello@vivasculptstudioapp.com
+      </a>
+    </div>
+
+    <!-- FAQ -->
+    <div class="card">
+      <div class="card-title"><span>❓</span> Billing FAQ</div>
+      <div class="faq-item">
+        <div class="faq-q">When will I be charged?</div>
+        <div class="faq-a">Starter: after your 7-day free trial ends, then every 30 days. Pro: immediately upon subscribing, then every 30 days.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I get a refund?</div>
+        <div class="faq-a">We don't offer refunds for partial billing periods unless required by your local consumer protection law. Contact us within 48 hours of an unexpected charge and we'll do our best to help.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Can I switch from Starter to Pro?</div>
+        <div class="faq-a">Yes — cancel your Starter plan and subscribe to Pro. Your Starter access continues until the end of the current period.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What happens to my data if I cancel?</div>
+        <div class="faq-a">Your cycle tracking data and progress are stored locally in your browser. Cancelling your subscription does not delete this data — it remains on your device.</div>
+      </div>
+      <div class="faq-item" style="border-bottom:none;">
+        <div class="faq-q">I cancelled but was still charged. What do I do?</div>
+        <div class="faq-a">Email us at <a href="mailto:hello@vivasculptstudioapp.com">hello@vivasculptstudioapp.com</a> with your PayPal transaction ID and we'll resolve it within 24 hours.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="page-footer">
+    © <script>document.write(new Date().getFullYear())</script> VivaSculpt Studio. All rights reserved.<br>
+    <a href="/">Back to app</a> · <a href="mailto:hello@vivasculptstudioapp.com">hello@vivasculptstudioapp.com</a>
+  </footer>
+
+</body>
+</html>

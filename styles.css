@@ -923,3 +923,20 @@ ul { list-style:none; }
   font-size:.68rem; color:var(--text-muted);
   text-align:center; line-height:1.5;
 }
+
+/* ── Progress Dashboard ── */
+.progress-dashboard { padding: 1rem 1.1rem; }
+.dash-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.5rem; margin-bottom:.9rem; }
+.dash-stat { text-align:center; }
+.dash-num { font-family:var(--font-display); font-size:1.5rem; color:var(--emerald); line-height:1; }
+.dash-lbl { font-size:.65rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--text-muted); margin-top:.2rem; }
+.dash-goal { display:flex; align-items:center; gap:.6rem; padding:.65rem .75rem; background:var(--emerald-pale); border-radius:var(--radius-xs); margin-bottom:.85rem; border:1px solid var(--emerald-light); }
+.dash-goal-label { font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--emerald); white-space:nowrap; }
+.dash-goal-text { font-size:.82rem; color:var(--text); font-weight:500; }
+.dash-checklist { display:flex; flex-direction:column; gap:.4rem; }
+.dash-check-header { display:flex; justify-content:space-between; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:.25rem; }
+.dash-check-count { color:var(--emerald); }
+.dash-check-item { display:flex; align-items:center; gap:.6rem; font-size:.83rem; color:var(--text-muted); padding:.3rem 0; }
+.dash-check-item.done { color:var(--text); }
+.dash-check-icon { width:20px; height:20px; border-radius:50%; border:1.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:.7rem; flex-shrink:0; }
+.dash-check-item.done .dash-check-icon { background:var(--emerald); border-color:var(--emerald); color:#fff; font-weight:800; }

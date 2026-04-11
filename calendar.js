@@ -18,14 +18,17 @@ var MONTH_NAMES   = ['January','February','March','April','May','June',
 
 /* ── Date helpers ── */
 function todayMs() {
-  var d = new Date(); d.setHours(0,0,0,0); return d.getTime();
+  var d = new Date();
+  // Use UTC midnight to avoid timezone issues
+  return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
 }
 function makeKey(y, m, d) {
   return y + '-' + (m+1<10?'0':'') + (m+1) + '-' + (d<10?'0':'') + d;
 }
 function keyMs(key) {
   var p = key.split('-');
-  return new Date(+p[0], +p[1]-1, +p[2]).getTime();
+  // Use UTC to match todayMs() — prevents timezone off-by-one
+  return Date.UTC(+p[0], +p[1]-1, +p[2]);
 }
 function diffDays(msA, msB) {
   return Math.round((msB - msA) / 86400000);
@@ -138,7 +141,7 @@ function renderGrid() {
 
   for (var d = 1; d <= daysInMo; d++) {
     var key   = makeKey(CAL.year, CAL.month, d);
-    var cellMs = new Date(CAL.year, CAL.month, d).setHours(0,0,0,0);
+    var cellMs = Date.UTC(CAL.year, CAL.month, d);
     var marked = !!markedSet[key];
     var isToday = cellMs === tMs;
     var phase   = phaseFor(cellMs, starts, cycleLen);
