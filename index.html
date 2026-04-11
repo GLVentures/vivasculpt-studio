@@ -8,6 +8,14 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="VivaSculpt" />
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6F484WZT92"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6F484WZT92');
+  </script>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <!-- Favicon — your logo in browser tab and URL bar -->
@@ -288,7 +296,7 @@
                Then uncomment the PayPal SDK script at bottom
                ───────────────────────────────────────────── -->
           <div class="subscribe-btns">
-            <a href="https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-1DD23981LB678535ENHKLPHI" class="btn-primary btn-subscribe">
+            <a href="https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-1DD23981LB678535ENHKLPHI" class="btn-primary btn-subscribe" onclick="if(typeof gtag!=='undefined')gtag('event','subscribe_click',{plan:'starter'})">
               Subscribe — $14/mo
             </a>
             <p class="pay-note">Powered by PayPal · Secure checkout · Cancel anytime</p>
@@ -316,7 +324,7 @@
                ───────────────────────────────────────────── -->
           <div class="subscribe-btns">
           <div class="subscribe-btns">
-            <a href="https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-4UP82455HM149604SNHKLU3Y" class="btn-primary btn-subscribe">
+            <a href="https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-4UP82455HM149604SNHKLU3Y" class="btn-primary btn-subscribe" onclick="if(typeof gtag!=='undefined')gtag('event','subscribe_click',{plan:'pro'})">
               Subscribe — $29/mo
             </a>
             <p class="pay-note">Powered by PayPal · Secure checkout · Cancel anytime</p>

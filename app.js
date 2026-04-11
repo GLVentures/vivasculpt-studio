@@ -276,6 +276,10 @@ function switchTab(tabId) {
   if (sec) { sec.classList.add('active'); sec.hidden = false; }
   if (btn) { btn.classList.add('active'); btn.setAttribute('aria-current','page'); }
   if (tabId === 'pricing') updatePlanBadge();
+  // Track tab view in GA
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'page_view', { page_title: tabId, page_location: window.location.href + '#' + tabId });
+  }
 }
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -326,6 +330,10 @@ function startWorkout(moves) {
   const trial = getTrialState();
   const plan  = getPlan();
   if (trial && trial.expired && plan === 'trial_starter') { openModal('modal-paywall'); return; }
+  // Track in GA
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'workout_start', { intensity: state.intensity, duration: state.duration, level: state.level });
+  }
 
   const rounds = state.level === 'beginner' ? 2 : 3;
   clearInterval(state.workout.interval);
@@ -618,18 +626,206 @@ function buildFAQ() {
 buildFAQ();
 
 /* ─────────────── PDF BUTTON ─────────────── */
-// TODO: When your PDF is ready, remove this listener and set the href in index.html:
-// <a href="assets/vivasculpt-kickstart.pdf" ...>
-document.getElementById('btn-pdf').addEventListener('click', e => {
+document.getElementById('btn-pdf').addEventListener('click', function(e) {
   e.preventDefault();
-  // Just scroll to the "coming soon" note below the button — no popup
-  const note = document.querySelector('#tab-kickstart .helper-text');
-  if (note) note.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // PDF is served from assets folder
+  window.open('assets/vivasculpt-kickstart.pdf', '_blank');
 });
 
 /* ═══════════════════════════════════════════════════
-   DAILY PROTOCOL — Cycle + Mood Engine
+   ONBOARDING + PROGRESS DASHBOARD
    ═══════════════════════════════════════════════════ */
+
+var ONBOARD_KEY = 'vs_onboard';
+var PROGRESS_KEY = 'vs_progress';
+
+function loadOnboard() {
+  try { return JSON.parse(localStorage.getItem(ONBOARD_KEY) || '{}'); } catch(e) { return {}; }
+}
+function saveOnboard(data) {
+  try { localStorage.setItem(ONBOARD_KEY, JSON.stringify(data)); } catch(e) {}
+}
+function loadProgress() {
+  try { return JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{"workouts":0,"meals":0,"streak":0,"startDate":null}'); } catch(e) { return {workouts:0,meals:0,streak:0,startDate:null}; }
+}
+function saveProgress(data) {
+  try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(data)); } catch(e) {}
+}
+
+// Check if onboarding needed
+function checkOnboarding() {
+  var data = loadOnboard();
+  if (!data.complete) showOnboarding();
+}
+
+function showOnboarding() {
+  // Remove any existing onboarding
+  var existing = document.getElementById('onboarding-overlay');
+  if (existing) existing.remove();
+
+  var overlay = document.createElement('div');
+  overlay.id = 'onboarding-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:400;background:rgba(11,15,20,.7);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;animation:overlayIn .2s ease';
+
+  var steps = [
+    { icon:'🏋️‍♀️', title:'Set your workout style', desc:'Choose Low-Impact or Classic — you can change this anytime.', key:'workout', options:['Low-Impact (Quiet, gentle)', 'Classic (High intensity)'] },
+    { icon:'🥗', title:'Your main goal', desc:'This helps us personalise your meal suggestions.', key:'goal', options:['Lose weight', 'Build strength', 'Feel more energised', 'Improve overall health'] },
+    { icon:'🩸', title:'Track your cycle (optional)', desc:'Log your period to get phase-aligned workouts and meals automatically.', key:'cycle', options:['Yes, track my cycle', 'Skip for now'] },
+    { icon:'🎯', title:'Your Week 1 goal', desc:'Set one simple intention for your first week.', key:'goal1', options:['Complete all 3 HIIT sessions', 'Follow the meal plan daily', 'Move every day, even gently', 'Just show up consistently'] }
+  ];
+
+  var currentStep = 0;
+  var answers = {};
+
+  function renderStep() {
+    var s = steps[currentStep];
+    overlay.innerHTML = '';
+    var box = document.createElement('div');
+    box.style.cssText = 'background:#fff;border-radius:22px 22px 0 0;padding:2rem 1.5rem calc(2rem + env(safe-area-inset-bottom));width:100%;max-width:540px;animation:slideUp .3s cubic-bezier(.34,1.56,.64,1)';
+
+    var progress = document.createElement('div');
+    progress.style.cssText = 'display:flex;gap:.35rem;margin-bottom:1.5rem';
+    steps.forEach(function(_, i) {
+      var dot = document.createElement('div');
+      dot.style.cssText = 'flex:1;height:3px;border-radius:2px;background:' + (i <= currentStep ? '#0F766E' : '#E8E3DC');
+      progress.appendChild(dot);
+    });
+
+    var icon = document.createElement('div');
+    icon.style.cssText = 'font-size:2.5rem;margin-bottom:.75rem';
+    icon.textContent = s.icon;
+
+    var title = document.createElement('h2');
+    title.style.cssText = 'font-family:"DM Serif Display",serif;font-size:1.5rem;margin-bottom:.4rem';
+    title.textContent = s.title;
+
+    var desc = document.createElement('p');
+    desc.style.cssText = 'font-size:.88rem;color:#6B7280;margin-bottom:1.25rem';
+    desc.textContent = s.desc;
+
+    var optionsWrap = document.createElement('div');
+    optionsWrap.style.cssText = 'display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.5rem';
+
+    s.options.forEach(function(opt) {
+      var btn = document.createElement('button');
+      btn.style.cssText = 'padding:.8rem 1rem;border:1.5px solid #E8E3DC;border-radius:10px;text-align:left;font-size:.9rem;font-family:inherit;background:#FAF7F2;cursor:pointer;transition:all .15s;font-weight:500';
+      btn.textContent = opt;
+      btn.addEventListener('mouseenter', function() { btn.style.borderColor='#0F766E'; btn.style.color='#0F766E'; });
+      btn.addEventListener('mouseleave', function() { if(!btn.classList.contains('selected')){ btn.style.borderColor='#E8E3DC'; btn.style.color=''; } });
+      btn.addEventListener('click', function() {
+        optionsWrap.querySelectorAll('button').forEach(function(b){ b.style.background='#FAF7F2'; b.style.borderColor='#E8E3DC'; b.style.color=''; b.classList.remove('selected'); });
+        btn.style.background='#F0FDFB'; btn.style.borderColor='#0F766E'; btn.style.color='#0F766E'; btn.classList.add('selected');
+        answers[s.key] = opt;
+        setTimeout(nextStep, 400);
+      });
+      optionsWrap.appendChild(btn);
+    });
+
+    var skipBtn = document.createElement('button');
+    skipBtn.style.cssText = 'width:100%;padding:.6rem;font-size:.8rem;color:#9CA3AF;background:none;border:none;cursor:pointer;font-family:inherit';
+    skipBtn.textContent = currentStep === steps.length - 1 ? '' : 'Skip this step';
+    skipBtn.addEventListener('click', nextStep);
+
+    box.appendChild(progress); box.appendChild(icon); box.appendChild(title);
+    box.appendChild(desc); box.appendChild(optionsWrap); box.appendChild(skipBtn);
+    overlay.appendChild(box);
+  }
+
+  function nextStep() {
+    currentStep++;
+    if (currentStep >= steps.length) {
+      finishOnboarding(answers);
+    } else {
+      renderStep();
+    }
+  }
+
+  renderStep();
+  document.body.appendChild(overlay);
+}
+
+function finishOnboarding(answers) {
+  var data = loadOnboard();
+  data.complete = true;
+  data.answers = answers;
+  data.date = new Date().toISOString();
+  saveOnboard(data);
+
+  var progress = loadProgress();
+  if (!progress.startDate) { progress.startDate = new Date().toISOString(); saveProgress(progress); }
+
+  // Remove overlay
+  var overlay = document.getElementById('onboarding-overlay');
+  if (overlay) overlay.remove();
+
+  // Auto-select intensity based on answer
+  if (answers.workout && answers.workout.indexOf('Low') > -1) {
+    state.intensity = 'low';
+    document.querySelectorAll('[data-group="intensity"]').forEach(function(p){
+      p.classList.remove('active');
+      if (p.dataset.value === 'low') p.classList.add('active');
+    });
+  }
+
+  // Show welcome message
+  showProgressDashboard();
+}
+
+/* ── Progress Dashboard ── */
+function buildProgressDashboard() {
+  var el = document.getElementById('progress-dashboard');
+  if (!el) return;
+
+  var progress = loadProgress();
+  var streak = getStreak();
+  var onboard = loadOnboard();
+  var phase = typeof getTodayPhase === 'function' ? getTodayPhase() : null;
+
+  el.innerHTML = '';
+
+  // Week goal from onboarding
+  var goalText = (onboard.answers && onboard.answers.goal1) ? onboard.answers.goal1 : 'Show up every day';
+
+  var html = '<div class="dash-grid">' +
+    '<div class="dash-stat"><div class="dash-num">' + streak + '</div><div class="dash-lbl">Day streak</div></div>' +
+    '<div class="dash-stat"><div class="dash-num">' + progress.workouts + '</div><div class="dash-lbl">Workouts done</div></div>' +
+    '<div class="dash-stat"><div class="dash-num">' + (phase ? phase.charAt(0).toUpperCase() + phase.slice(1) : '–') + '</div><div class="dash-lbl">Cycle phase</div></div>' +
+    '</div>' +
+    '<div class="dash-goal"><span class="dash-goal-label">Week 1 goal</span><span class="dash-goal-text">' + goalText + '</span></div>';
+
+  // Checklist
+  var checks = [
+    { label: 'Complete your profile', done: !!(onboard.complete), key: 'profile' },
+    { label: 'Log your first workout', done: progress.workouts > 0, key: 'workout' },
+    { label: 'Track your cycle', done: (typeof CAL !== 'undefined' && CAL.marked && CAL.marked.length > 0), key: 'cycle' },
+    { label: 'Try the 7-Day Kickstart', done: !!(onboard.answers && onboard.answers.kickstart), key: 'kickstart' }
+  ];
+  var done = checks.filter(function(c){ return c.done; }).length;
+
+  html += '<div class="dash-checklist">';
+  html += '<div class="dash-check-header"><span>Getting started</span><span class="dash-check-count">' + done + ' / ' + checks.length + '</span></div>';
+  checks.forEach(function(c) {
+    html += '<div class="dash-check-item ' + (c.done ? 'done' : '') + '">' +
+      '<div class="dash-check-icon">' + (c.done ? '✓' : '○') + '</div>' +
+      '<span>' + c.label + '</span></div>';
+  });
+  html += '</div>';
+
+  el.innerHTML = html;
+}
+
+function showProgressDashboard() {
+  buildProgressDashboard();
+}
+
+// Track workouts completed
+var origEndWorkout = typeof endWorkout === 'function' ? endWorkout : null;
+function trackWorkoutComplete() {
+  var progress = loadProgress();
+  progress.workouts = (progress.workouts || 0) + 1;
+  saveProgress(progress);
+  buildProgressDashboard();
+}
 
 const PROTOCOL_DATA = {
   // [mood][phase] → protocol
@@ -829,6 +1025,9 @@ function init() {
   updateTrialBanner();
   updatePlanBadge();
   checkPaywall();
+  buildProgressDashboard();
+  // Show onboarding for new users (slight delay so page renders first)
+  setTimeout(function() { checkOnboarding(); }, 800);
   setInterval(function() { updateTrialBanner(); checkPaywall(); }, 60000);
 }
 init();
