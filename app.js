@@ -651,3 +651,178 @@ function init() {
   if (typeof gtag !== 'undefined') gtag('event','app_open');
 }
 init();
+
+/* ═══════════════════════════════════════════════════
+   ADAPTIVE CYCLE SYSTEM — Integration
+   ═══════════════════════════════════════════════════ */
+
+/* ─── IDENTITY BAR ─── */
+function renderIdentityBar() {
+  var bar = document.getElementById('identity-bar');
+  if (!bar) return;
+  var streak   = getStreak();
+  var progress = getProgress();
+  var cState   = getCycleState();
+  var cycle    = getCurrentCycle();
+  var label    = getIdentityLabel(streak, cState.currentCycle);
+  var score    = getDisciplineScore(progress, streak, cState.currentCycle);
+
+  bar.innerHTML = '';
+  bar.style.display = 'flex';
+
+  var left = document.createElement('div'); left.style.cssText = 'display:flex;flex-direction:column;gap:.1rem;';
+  var lbl = document.createElement('div'); lbl.style.cssText = 'font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:' + label.color;
+  lbl.textContent = label.label;
+  var cyc = document.createElement('div'); cyc.style.cssText = 'font-size:.75rem;color:var(--text-muted);font-weight:500;';
+  cyc.textContent = cycle.icon + ' ' + cycle.name + ' · Cycle ' + cState.currentCycle;
+  left.appendChild(lbl); left.appendChild(cyc);
+
+  var right = document.createElement('div'); right.style.cssText = 'text-align:right;';
+  var scoreEl = document.createElement('div'); scoreEl.style.cssText = 'font-family:var(--font-display);font-size:1.1rem;color:var(--emerald);';
+  scoreEl.textContent = score;
+  var scoreLbl = document.createElement('div'); scoreLbl.style.cssText = 'font-size:.65rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;';
+  scoreLbl.textContent = 'Discipline Score';
+  right.appendChild(scoreEl); right.appendChild(scoreLbl);
+
+  bar.appendChild(left); bar.appendChild(right);
+}
+
+/* ─── CYCLE TRANSITION SCREEN ─── */
+function showCycleTransition() {
+  var modal = document.getElementById('modal-cycle-transition');
+  if (!modal) return;
+
+  var cState = getCycleState();
+  var streak = getStreak();
+  var progress = getProgress();
+  var score  = getDisciplineScore(progress, streak, cState.currentCycle);
+  var nextCycle = CYCLES.find(function(c) { return c.num === Math.min(cState.currentCycle + 1, 5); });
+  var isPaidUser = isPaid();
+
+  // Fill in content
+  var scoreEl   = document.getElementById('ct-score');
+  var streakEl  = document.getElementById('ct-streak');
+  var nextNameEl = document.getElementById('ct-next-name');
+  var nextDescEl = document.getElementById('ct-next-desc');
+  var nextIconEl = document.getElementById('ct-next-icon');
+  var ctLockEl  = document.getElementById('ct-lock-msg');
+
+  if (scoreEl)   scoreEl.textContent   = score;
+  if (streakEl)  streakEl.textContent  = streak + ' day streak';
+  if (nextIconEl && nextCycle) nextIconEl.textContent = nextCycle.icon;
+  if (nextNameEl && nextCycle) nextNameEl.textContent = nextCycle.name;
+  if (nextDescEl && nextCycle) nextDescEl.textContent = nextCycle.description;
+
+  var needsPro = nextCycle && nextCycle.tier === 'pro' && !isPro();
+  if (ctLockEl) ctLockEl.style.display = needsPro ? 'block' : 'none';
+
+  var startBtn = document.getElementById('ct-start-btn');
+  var proBtn   = document.getElementById('ct-pro-btn');
+  if (startBtn) startBtn.style.display = needsPro ? 'none' : 'block';
+  if (proBtn)   proBtn.style.display   = needsPro ? 'block' : 'none';
+
+  openModal('modal-cycle-transition');
+}
+
+/* ─── START NEXT CYCLE ─── */
+function startNextCycle() {
+  var nextCycle = advanceToNextCycle();
+  // Reset 28-day progress for new cycle
+  var newProgress = { currentDay: 1, completedDays: [], startDate: new Date().toISOString() };
+  saveProgress(newProgress);
+  closeModal('modal-cycle-transition');
+  renderTodayView();
+  renderIdentityBar();
+  if (typeof gtag !== 'undefined') gtag('event', 'cycle_started', { cycle: nextCycle.num, name: nextCycle.name });
+}
+
+/* ─── CHECK FOR CYCLE COMPLETION ─── */
+function checkCycleCompletion() {
+  var progress = getProgress();
+  if (isCycleComplete(progress)) {
+    setTimeout(showCycleTransition, 800);
+  }
+}
+
+/* ─── OVERRIDE markDayComplete to check cycle ─── */
+var _originalMarkDay = markDayComplete;
+markDayComplete = function(n) {
+  _originalMarkDay(n);
+  checkCycleCompletion();
+  renderIdentityBar();
+};
+
+/* ─── RE-ENTRY SYSTEM ─── */
+function checkReEntry() {
+  var lastDate = localStorage.getItem(STREAK_DATE);
+  if (!lastDate) return;
+  var daysSince = Math.floor((Date.now() - new Date(lastDate).getTime()) / 86400000);
+  if (daysSince >= 3) {
+    var reEntryBanner = document.getElementById('re-entry-banner');
+    if (reEntryBanner) {
+      reEntryBanner.classList.remove('hidden');
+      var msg = daysSince >= 7
+        ? 'Your system is waiting. Resume at reduced intensity.'
+        : 'Don\'t lose your progress. Pick up where you left off.';
+      var msgEl = document.getElementById('re-entry-msg');
+      if (msgEl) msgEl.textContent = msg;
+    }
+  }
+}
+
+/* ─── PROGRAM VIEW — update to show cycles ─── */
+var _origRenderProgram = renderProgramView;
+renderProgramView = function() {
+  _origRenderProgram();
+
+  // Add cycle roadmap after program view
+  var el = document.getElementById('program-view');
+  if (!el || !isPaid()) return;
+
+  var cState   = getCycleState();
+  var roadmap  = document.createElement('div');
+  roadmap.className = 'cycle-roadmap';
+
+  var header = document.createElement('div'); header.className = 'roadmap-header';
+  header.innerHTML = '<h3>Your Progression Path</h3><p>Complete 28 days to unlock the next cycle</p>';
+  roadmap.appendChild(header);
+
+  CYCLES.forEach(function(cycle) {
+    var isCompleted = cycle.num < cState.currentCycle;
+    var isCurrent   = cycle.num === cState.currentCycle;
+    var isLocked    = cycle.num > cState.currentCycle;
+    var needsPro    = cycle.tier === 'pro' && !isPro();
+
+    var row = document.createElement('div');
+    row.className = 'cycle-row' + (isCurrent ? ' current' : '') + (isCompleted ? ' done' : '') + (isLocked ? ' locked' : '');
+
+    var icon = document.createElement('div'); icon.className = 'cycle-row-icon';
+    icon.textContent = isCompleted ? '✅' : (isLocked ? '🔒' : cycle.icon);
+
+    var info = document.createElement('div'); info.className = 'cycle-row-info';
+    var name = document.createElement('div'); name.className = 'cycle-row-name';
+    name.textContent = 'Cycle ' + cycle.num + ' — ' + cycle.name;
+    var tag = document.createElement('div'); tag.className = 'cycle-row-tag';
+    tag.textContent = cycle.tagline;
+    info.appendChild(name); info.appendChild(tag);
+
+    var status = document.createElement('div'); status.className = 'cycle-row-status';
+    if (isCurrent) { status.textContent = 'Active'; status.style.color = 'var(--emerald)'; status.style.fontWeight = '700'; }
+    else if (isCompleted) { status.textContent = 'Done ✓'; status.style.color = 'var(--emerald)'; }
+    else if (needsPro) { status.textContent = 'Pro'; status.style.color = 'var(--gold)'; }
+    else { status.textContent = 'Locked'; status.style.color = 'var(--text-muted)'; }
+
+    row.appendChild(icon); row.appendChild(info); row.appendChild(status);
+    roadmap.appendChild(row);
+  });
+
+  el.appendChild(roadmap);
+};
+
+/* ─── INIT IDENTITY BAR ─── */
+var origInit = init;
+init = function() {
+  origInit();
+  renderIdentityBar();
+  checkReEntry();
+};

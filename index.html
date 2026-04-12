@@ -100,6 +100,20 @@
 
       <!-- PAID VIEW -->
       <div id="paid-today" class="hidden">
+
+        <!-- Identity bar -->
+        <div id="identity-bar" class="identity-bar"></div>
+
+        <!-- Re-entry banner -->
+        <div id="re-entry-banner" class="re-entry-banner hidden">
+          <span style="font-size:1.4rem">💪</span>
+          <div style="flex:1">
+            <strong>Welcome back.</strong>
+            <p id="re-entry-msg" style="font-size:.8rem;color:var(--text-muted);margin-top:.1rem">Pick up where you left off.</p>
+          </div>
+          <button onclick="document.getElementById('re-entry-banner').classList.add('hidden')" style="background:none;border:none;color:var(--emerald);font-weight:700;cursor:pointer;font-family:inherit;font-size:.85rem;white-space:nowrap">Resume →</button>
+        </div>
+
         <!-- Progress -->
         <div class="progress-header">
           <div class="progress-meta">
@@ -266,35 +280,50 @@
         <p class="section-sub">Cancel anytime. No hidden fees.</p>
       </div>
       <div id="active-plan-card" class="card active-plan-card hidden"></div>
+
+      <!-- Tier positioning labels -->
+      <div class="tier-intro">
+        <div class="tier-pill free">Free → Awareness + identity shift</div>
+        <div class="tier-pill starter">Starter → Structure (discipline system)</div>
+        <div class="tier-pill pro">Pro → Intelligence (adaptive system)</div>
+      </div>
+
       <div class="pricing-grid">
+        <!-- STARTER -->
         <div class="plan-card" id="plan-starter">
           <div class="plan-badge trial-badge">7‑day free trial</div>
           <div class="plan-name">Starter</div>
           <div class="plan-price">$14<span>/mo</span></div>
+          <div class="plan-subtitle">28-Day Structured System</div>
           <ul class="plan-features">
-            <li><span class="fc">✓</span> Week 1 access</li>
-            <li><span class="fc">✓</span> Daily structure</li>
-            <li><span class="fc">✓</span> 4 meal templates</li>
-            <li><span class="fc">✓</span> Grocery list</li>
-            <li><span class="fc">✓</span> Cycle calendar</li>
+            <li><span class="fc">✓</span> Full 28-day cycle</li>
+            <li><span class="fc">✓</span> Daily workout + meals</li>
+            <li><span class="fc">✓</span> Streak system</li>
+            <li><span class="fc">✓</span> Basic progress tracking</li>
+            <li><span class="fc">✓</span> Cycle 1 — Foundation Reset</li>
           </ul>
+          <p class="plan-positioning">"Follow the system. No thinking required."</p>
           <div class="subscribe-btns">
             <a href="https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-1DD23981LB678535ENHKLPHI" class="btn-primary btn-subscribe" onclick="if(typeof gtag!=='undefined')gtag('event','subscribe_click',{plan:'starter'})">Subscribe — $14/mo</a>
             <p class="pay-note">Powered by PayPal · Cancel anytime</p>
           </div>
         </div>
+
+        <!-- PRO — DOMINANT -->
         <div class="plan-card plan-card--pro plan-card--featured" id="plan-pro">
           <div class="plan-badge pro-badge">⭐ Best value</div>
           <div class="plan-name">Pro</div>
           <div class="plan-price">$29<span>/mo</span></div>
-          <div class="pro-highlight">Full 28-Day System</div>
+          <div class="pro-highlight">Adaptive Transformation System</div>
           <ul class="plan-features">
-            <li><span class="fc pro-fc">✓</span> Full 28-day unlock</li>
-            <li><span class="fc pro-fc">✓</span> Daily discipline system</li>
-            <li><span class="fc pro-fc">✓</span> Streak + progress tools</li>
-            <li><span class="fc pro-fc">✓</span> 7-day rotating meals</li>
-            <li><span class="fc pro-fc">✓</span> Next cycle access</li>
+            <li><span class="fc pro-fc">✓</span> Everything in Starter</li>
+            <li><span class="fc pro-fc">✓</span> Cycles 2–5 unlocked</li>
+            <li><span class="fc pro-fc">✓</span> Adaptive difficulty</li>
+            <li><span class="fc pro-fc">✓</span> AI-style progression</li>
+            <li><span class="fc pro-fc">✓</span> Discipline score system</li>
+            <li><span class="fc pro-fc">✓</span> Dynamic cycle upgrades</li>
           </ul>
+          <p class="plan-positioning">"Your body adapts. So does your system."</p>
           <div class="subscribe-btns">
             <a href="https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-4UP82455HM149604SNHKLU3Y" class="btn-primary btn-subscribe" onclick="if(typeof gtag!=='undefined')gtag('event','subscribe_click',{plan:'pro'})">Subscribe — $29/mo</a>
             <p class="pay-note">Powered by PayPal · Cancel anytime</p>
@@ -475,7 +504,37 @@
     </div>
   </div>
 
+  <!-- CYCLE TRANSITION MODAL -->
+  <div id="modal-cycle-transition" class="modal-overlay modal-center" role="dialog" aria-modal="true" hidden>
+    <div class="modal-box cycle-transition-box" style="text-align:center">
+      <div class="modal-emerald-bar" style="margin:0 auto 1rem"></div>
+      <div class="ct-badge">CYCLE COMPLETE</div>
+      <div style="font-size:3rem;margin:.75rem 0" id="ct-next-icon">🔥</div>
+      <h2 style="margin-bottom:.25rem">Your transformation continues.</h2>
+      <div class="ct-stats">
+        <div class="ct-stat"><div class="ct-stat-num" id="ct-score">0</div><div class="ct-stat-lbl">Discipline Score</div></div>
+        <div class="ct-stat"><div class="ct-stat-num" id="ct-streak">0</div><div class="ct-stat-lbl">Streak</div></div>
+      </div>
+      <div class="ct-next-block">
+        <div class="ct-next-label">Next Level Unlocked</div>
+        <div class="ct-next-name" id="ct-next-name">Sculpt+</div>
+        <div class="ct-next-desc" id="ct-next-desc"></div>
+      </div>
+      <div id="ct-lock-msg" class="ct-lock" style="display:none">
+        🔒 This cycle requires Pro. Upgrade to continue your transformation.
+        <button id="ct-pro-btn" class="btn-primary" style="width:100%;margin-top:.75rem" onclick="closeModal('modal-cycle-transition');switchTab('pricing')">Upgrade to Pro →</button>
+      </div>
+      <button id="ct-start-btn" class="btn-primary" style="width:100%;margin-top:1rem" onclick="startNextCycle()">
+        Start Next Cycle →
+      </button>
+      <button class="btn-outline" style="width:100%;margin-top:.5rem" onclick="closeModal('modal-cycle-transition')">
+        Stay in current cycle
+      </button>
+    </div>
+  </div>
+
   <script src="program-data.js"></script>
+  <script src="cycles.js"></script>
   <script src="app.js"></script>
   <script src="calendar.js"></script>
   <script>

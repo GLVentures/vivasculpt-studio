@@ -1114,3 +1114,70 @@ ul { list-style:none; }
 /* Pro pricing highlight */
 .plan-card--featured { box-shadow: 0 8px 32px rgba(15,118,110,.25) !important; transform: scale(1.01); }
 .pro-highlight { font-size: .78rem; font-weight: 700; color: var(--emerald); background: var(--emerald-pale); padding: .3rem .7rem; border-radius: 999px; display: inline-block; margin-bottom: .5rem; border: 1px solid var(--emerald-light); }
+
+/* ══════════════════════════════════════════════
+   ADAPTIVE CYCLE SYSTEM STYLES
+══════════════════════════════════════════════ */
+
+/* Identity bar */
+.identity-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: .7rem 1rem;
+  margin-bottom: 1rem; box-shadow: var(--shadow-xs);
+}
+
+/* Re-entry banner */
+.re-entry-banner {
+  display: flex; align-items: center; gap: .75rem;
+  background: var(--emerald-pale); border: 1px solid var(--emerald-light);
+  border-radius: var(--radius-sm); padding: .85rem 1rem;
+  margin-bottom: 1rem;
+}
+.re-entry-banner strong { font-size: .88rem; display: block; color: var(--emerald-dark); }
+
+/* Cycle transition modal */
+.cycle-transition-box { max-width: 400px; }
+.ct-badge {
+  display: inline-block; background: var(--emerald); color: #fff;
+  font-size: .65rem; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; padding: .25rem .75rem; border-radius: 999px; margin-bottom: .5rem;
+}
+.ct-stats { display: flex; gap: 1rem; justify-content: center; margin: 1rem 0; }
+.ct-stat { text-align: center; }
+.ct-stat-num { font-family: var(--font-display); font-size: 1.8rem; color: var(--emerald); line-height: 1; }
+.ct-stat-lbl { font-size: .68rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-top: .2rem; }
+.ct-next-block { background: var(--emerald-pale); border: 1px solid var(--emerald-light); border-radius: var(--radius-sm); padding: 1rem; margin: 1rem 0; }
+.ct-next-label { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: var(--emerald); margin-bottom: .25rem; }
+.ct-next-name { font-family: var(--font-display); font-size: 1.2rem; margin-bottom: .3rem; }
+.ct-next-desc { font-size: .82rem; color: var(--text-muted); line-height: 1.5; }
+.ct-lock { background: var(--gold-bg); border: 1px solid var(--gold-border); border-radius: var(--radius-sm); padding: .85rem; font-size: .82rem; color: #92400E; }
+
+/* Cycle roadmap */
+.cycle-roadmap { margin-top: 1.5rem; }
+.roadmap-header { margin-bottom: .85rem; }
+.roadmap-header h3 { font-family: var(--font-display); font-size: 1.15rem; margin-bottom: .2rem; }
+.roadmap-header p { font-size: .8rem; color: var(--text-muted); }
+.cycle-row {
+  display: grid; grid-template-columns: 36px 1fr auto; align-items: center;
+  gap: .75rem; padding: .85rem 1rem;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); margin-bottom: .5rem;
+  transition: all .15s;
+}
+.cycle-row.current { border-color: var(--emerald); background: var(--emerald-pale); }
+.cycle-row.done { opacity: .7; }
+.cycle-row.locked { opacity: .5; }
+.cycle-row-icon { font-size: 1.3rem; text-align: center; }
+.cycle-row-name { font-weight: 700; font-size: .88rem; }
+.cycle-row-tag  { font-size: .75rem; color: var(--text-muted); margin-top: .1rem; }
+.cycle-row-status { font-size: .75rem; white-space: nowrap; }
+
+/* ── Tier intro ── */
+.tier-intro { display: flex; flex-direction: column; gap: .35rem; margin-bottom: 1rem; }
+.tier-pill { font-size: .75rem; font-weight: 600; padding: .35rem .75rem; border-radius: 999px; }
+.tier-pill.free    { background: #F3F4F6; color: var(--text-muted); }
+.tier-pill.starter { background: var(--emerald-pale); color: var(--emerald-dark); border: 1px solid var(--emerald-light); }
+.tier-pill.pro     { background: var(--emerald); color: #fff; }
+.plan-subtitle { font-size: .78rem; font-weight: 700; color: var(--text-muted); margin-bottom: .5rem; }
+.plan-positioning { font-size: .78rem; font-style: italic; color: var(--text-muted); margin: .5rem 0; text-align: center; border-top: 1px solid var(--border-light); padding-top: .5rem; }
