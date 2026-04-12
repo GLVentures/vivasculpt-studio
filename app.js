@@ -1016,6 +1016,49 @@ document.getElementById('post-done-btn').addEventListener('click', () => {
   document.body.style.overflow = '';
   switchTab('today');
 });
+/* ─────────────── PWA INSTALL PROMPT ─────────────── */
+var deferredPrompt = null;
+var PWA_DISMISSED_KEY = 'vs_pwa_dismissed';
+
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Only show if not previously dismissed
+  if (!localStorage.getItem(PWA_DISMISSED_KEY)) {
+    setTimeout(function() {
+      var banner = document.getElementById('pwa-banner');
+      if (banner) banner.classList.remove('hidden');
+    }, 3000); // Show after 3 seconds
+  }
+});
+
+document.getElementById('pwa-install-btn') && document.getElementById('pwa-install-btn').addEventListener('click', function() {
+  var banner = document.getElementById('pwa-banner');
+  if (banner) banner.classList.add('hidden');
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(result) {
+      if (result.outcome === 'accepted' && typeof gtag !== 'undefined') {
+        gtag('event', 'pwa_installed');
+      }
+      deferredPrompt = null;
+    });
+  }
+});
+
+document.getElementById('pwa-dismiss') && document.getElementById('pwa-dismiss').addEventListener('click', function() {
+  var banner = document.getElementById('pwa-banner');
+  if (banner) banner.classList.add('hidden');
+  localStorage.setItem(PWA_DISMISSED_KEY, '1');
+});
+
+// Detect if already installed
+window.addEventListener('appinstalled', function() {
+  var banner = document.getElementById('pwa-banner');
+  if (banner) banner.classList.add('hidden');
+  if (typeof gtag !== 'undefined') gtag('event', 'pwa_installed');
+});
+
 /* ─────────────── COPYRIGHT YEAR ─────────────── */
 var yearEl = document.getElementById('copy-year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();

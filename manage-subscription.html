@@ -121,25 +121,33 @@
       <div class="card-title"><span>🔵</span> Cancel via PayPal Account</div>
       <p style="font-size:.88rem;color:var(--muted);margin-bottom:1rem;">If you subscribed using your PayPal account, follow these steps:</p>
       <div class="steps">
-        <div class="step"><div class="step-num">1</div><div class="step-text">Log in to your PayPal account at <strong>paypal.com</strong></div></div>
+        <div class="step"><div class="step-num">1</div><div class="step-text">Log in at <a href="https://www.paypal.com" target="_blank" rel="noopener" style="color:#0F766E;font-weight:700">paypal.com</a></div></div>
         <div class="step"><div class="step-num">2</div><div class="step-text">Click your <strong>profile icon</strong> → <strong>Settings</strong> (gear icon)</div></div>
         <div class="step"><div class="step-num">3</div><div class="step-text">Click <strong>Payments</strong> in the top menu</div></div>
         <div class="step"><div class="step-num">4</div><div class="step-text">Select <strong>"Manage automatic payments"</strong></div></div>
         <div class="step"><div class="step-num">5</div><div class="step-text">Find <strong>VivaSculpt Studio</strong> in the list</div></div>
         <div class="step"><div class="step-num">6</div><div class="step-text">Click <strong>Cancel</strong> → confirm cancellation</div></div>
       </div>
+      <a href="https://www.paypal.com/myaccount/autopay" target="_blank" rel="noopener"
+        style="display:inline-flex;align-items:center;gap:.4rem;margin-top:1rem;padding:.65rem 1rem;background:#003087;color:#fff;border-radius:8px;text-decoration:none;font-size:.85rem;font-weight:700;">
+        → Go directly to PayPal Automatic Payments
+      </a>
     </div>
 
     <!-- Cancel via card (no PayPal account) -->
     <div class="card">
       <div class="card-title"><span>💳</span> Paid by Card Without a PayPal Account?</div>
-      <p style="font-size:.88rem;color:var(--muted);margin-bottom:.75rem;">If you paid with a debit or credit card as a guest (without logging into PayPal), you will need to contact PayPal support directly to cancel the billing agreement.</p>
+      <p style="font-size:.88rem;color:var(--muted);margin-bottom:.75rem;">If you paid as a guest with a card, contact PayPal support directly to cancel.</p>
       <div class="steps">
-        <div class="step"><div class="step-num">1</div><div class="step-text">Go to <strong>paypal.com/smarthelp/home</strong></div></div>
-        <div class="step"><div class="step-num">2</div><div class="step-text">Click <strong>"Contact Us"</strong> or start a chat</div></div>
-        <div class="step"><div class="step-num">3</div><div class="step-text">Tell them you want to cancel a billing agreement for <strong>VivaSculpt Studio</strong></div></div>
+        <div class="step"><div class="step-num">1</div><div class="step-text">Go to <a href="https://www.paypal.com/smarthelp/home" target="_blank" rel="noopener" style="color:#0F766E;font-weight:700">paypal.com/smarthelp/home</a></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-text">Click <strong>"Contact Us"</strong> or start a live chat</div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-text">Say: <em>"I want to cancel a billing agreement for VivaSculpt Studio"</em></div></div>
         <div class="step"><div class="step-num">4</div><div class="step-text">Provide the email address you used at checkout</div></div>
       </div>
+      <a href="https://www.paypal.com/smarthelp/home" target="_blank" rel="noopener"
+        style="display:inline-flex;align-items:center;gap:.4rem;margin-top:1rem;padding:.65rem 1rem;background:#0F766E;color:#fff;border-radius:8px;text-decoration:none;font-size:.85rem;font-weight:700;">
+        → Go to PayPal Support
+      </a>
     </div>
 
     <!-- Warning -->
@@ -154,14 +162,29 @@
     <!-- Contact us -->
     <div class="contact-card">
       <div class="card-title" style="margin-bottom:.5rem"><span>💬</span> Need help? Contact us directly</div>
-      <p>If you're having trouble cancelling or have a billing question, email us and we'll respond within 24 hours.</p>
+      <p>Email us and we'll respond within 24 hours.</p>
+
+      <!-- Option 1: Open mail app (works on mobile + desktop with mail client) -->
       <button class="btn-email" onclick="window.location.href='mailto:hello@vivasculptstudioapp.com'">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
-        hello@vivasculptstudioapp.com
+        Open in Mail App
       </button>
-      <p style="margin-top:.6rem;font-size:.78rem;color:#6B7280;text-align:center">
-        Or copy: <strong style="user-select:all;cursor:text">hello@vivasculptstudioapp.com</strong>
-      </p>
+
+      <!-- Option 2: Open Gmail in browser (works on all desktop) -->
+      <a href="https://mail.google.com/mail/?view=cm&to=hello@vivasculptstudioapp.com&su=Subscription%20Help" target="_blank" rel="noopener"
+        style="display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:.5rem;padding:.65rem 1rem;background:#EA4335;color:#fff;border-radius:8px;text-decoration:none;font-size:.85rem;font-weight:700;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+        Send via Gmail
+      </a>
+
+      <!-- Option 3: Copy email -->
+      <div style="margin-top:.75rem;padding:.6rem;background:#F5F2ED;border-radius:6px;text-align:center;">
+        <p style="font-size:.72rem;color:#6B7280;margin-bottom:.2rem">Or copy the email address:</p>
+        <p style="font-weight:700;user-select:all;cursor:text;font-size:.9rem;color:#0B0F14" onclick="navigator.clipboard&&navigator.clipboard.writeText('hello@vivasculptstudioapp.com').then(function(){var t=document.getElementById('copy-confirm');t.style.display='block';setTimeout(function(){t.style.display='none'},2000)})">
+          hello@vivasculptstudioapp.com
+        </p>
+        <span id="copy-confirm" style="display:none;font-size:.72rem;color:#0F766E;font-weight:700">✓ Copied!</span>
+      </div>
     </div>
 
     <!-- FAQ -->
