@@ -1,1113 +1,653 @@
 'use strict';
 
 /* ═══════════════════════════════════════════════════
-   VivaSculpt Studio – app.js  (Premium Edition)
-   Security: all user text via textContent only.
-   No innerHTML with user data. No eval. No secrets.
+   VivaSculpt Studio — app.js (28-Day System)
    ═══════════════════════════════════════════════════ */
 
-/* ─────────────── WORKOUT DATA ─────────────── */
-const DEFAULT_MOVES = [
-  { name:'Squat',            low:'Chair squat — touch seat, rise slowly', classic:'Full squat — drive through heels, chest tall' },
-  { name:'Incline Push‑Up',  low:'Hands on counter/wall — slow tempo',    classic:'Hands on floor — full range push-up' },
-  { name:'Reverse Lunge',    low:'Shallow range, hold wall for balance',  classic:'Drop knee low — drive front heel to rise' },
-  { name:'Mountain Climbers',low:'Slow alternating knee drives on bench', classic:'High-speed knee drives on floor' },
-  { name:'Plank Hold',       low:'Forearm plank on knees — steady breath',classic:'Full forearm plank — brace entire core' }
-];
-const MOVES_LOWER = [
-  { name:'Glute Bridge',        low:'Feet flat, slow squeeze at top',        classic:'Single-leg, 3s hold at top' },
-  { name:'Side-Lying Clam',     low:'Slow controlled rotation, ankle band',  classic:'Resistance band, full range' },
-  { name:'Sumo Squat',          low:'Narrow stance, touch chair',            classic:'Wide stance, pulse at bottom' },
-  { name:'Standing Hip Abduction',low:'Hold wall, slow controlled lift',     classic:'No support, add resistance band' },
-  { name:'Donkey Kick',         low:'On hands & knees, small controlled arc',classic:'Full extension, squeeze glute at top' }
-];
-const MOVES_UPPER = [
-  { name:'Wall Push-Up',        low:'Hands on wall — slow 4-count',          classic:'Floor push-up — full ROM' },
-  { name:'Tricep Dip (Chair)',  low:'Bent knees, small range',               classic:'Legs extended, full dip' },
-  { name:'Arm Circle',          low:'Small controlled circles, 30s each way', classic:'Large fast circles with light weights' },
-  { name:'Shoulder Press (No Weight)',low:'Slow with control, feel the burn', classic:'Full ROM overhead press' },
-  { name:'Superman Hold',       low:'Arms by sides, gentle back extension',   classic:'Arms overhead, 3s hold, lower slowly' }
-];
-const MOVES_CORE = [
-  { name:'Dead Bug',            low:'Arms only variation, lower back pressed down',classic:'Opposite arm+leg, slow & controlled' },
-  { name:'Bird Dog',            low:'Hold 2s, small range of motion',        classic:'Full extension, 3s hold, no spine rotation' },
-  { name:'Standing Oblique Crunch',low:'Slow, hold at peak contraction',     classic:'Fast reps, add light dumbbell' },
-  { name:'Plank Shoulder Tap',  low:'Knees down, slow alternating taps',     classic:'Full plank, minimal hip movement' },
-  { name:'Glute Bridge Marching',low:'One foot lift at a time, small range', classic:'Alternating knee drives, hips high' }
-];
+function safeText(el, str) { if (el) el.textContent = String(str); }
+function $(id) { return document.getElementById(id); }
 
-const WORKOUTS_LOW = [
-  { name:'Total Body Burn',        duration:'20 min', moves: DEFAULT_MOVES },
-  { name:'Quiet Cardio Boost',     duration:'15 min', moves: [...DEFAULT_MOVES].reverse() },
-  { name:'Standing Strength Flow', duration:'25 min', moves: DEFAULT_MOVES },
-  { name:'Apartment HIIT Express', duration:'15 min', moves: DEFAULT_MOVES.slice(0,4) },
-  { name:'Lower Body Tone',        duration:'20 min', moves: MOVES_LOWER },
-  { name:'Morning Wake-Up Flow',   duration:'15 min', moves: DEFAULT_MOVES.slice(1) }
-];
-const WORKOUTS_CLASSIC = [
-  { name:'Classic Full-Body HIIT', duration:'20 min', moves: DEFAULT_MOVES },
-  { name:'Power Cardio Blast',     duration:'25 min', moves: [...DEFAULT_MOVES].reverse() },
-  { name:'Core & Glute Shred',     duration:'20 min', moves: MOVES_CORE },
-  { name:'Upper Body Finisher',    duration:'25 min', moves: MOVES_UPPER },
-  { name:'HIIT Express',           duration:'15 min', moves: DEFAULT_MOVES.slice(0,4) },
-  { name:'Strength & Sweat',       duration:'20 min', moves: [...MOVES_LOWER,...DEFAULT_MOVES.slice(0,2)] }
-];
+/* ─── STORAGE ─── */
+var PLAN_KEY      = 'vs_plan';
+var PROGRESS_KEY  = 'vs_28_progress';
+var STREAK_KEY    = 'vs_streak';
+var STREAK_DATE   = 'vs_streak_date';
+var INTENSITY_KEY = 'vs_intensity';
+var PWA_KEY       = 'vs_pwa_dismissed';
 
-/* ─────────────── MEAL DATA ─────────────── */
-const MEALS_STARTER = [
-  {
-    icon:'🫙', name:'Greek Yogurt Power Bowl',
-    desc:'Full-fat Greek yogurt · mixed berries · walnuts · drizzle of raw honey · pinch of cinnamon',
-    macros:['~25g protein','Healthy fats','Antioxidants']
-  },
-  {
-    icon:'🥚', name:'Eggs, Veg & Olive Oil',
-    desc:'2–3 eggs scrambled or poached · sautéed spinach & peppers · drizzle of extra-virgin olive oil · sea salt',
-    macros:['~20g protein','Good fats','Iron-rich']
-  },
-  {
-    icon:'🥗', name:'Chicken or Tofu Salad',
-    desc:'Grilled chicken or firm tofu · mixed greens · cucumber · cherry tomatoes · olive oil & lemon dressing',
-    macros:['~30g protein','Omega-3s','High fibre']
-  },
-  {
-    icon:'🐟', name:'Salmon + Roasted Veg',
-    desc:'Baked salmon or tofu · roasted broccoli & sweet potato · sliced avocado · squeeze of lemon',
-    macros:['~35g protein','Omega-3 rich','Anti-inflammatory']
-  }
-];
+function getPlan() { return localStorage.getItem(PLAN_KEY) || null; }
+function setPlan(p) { localStorage.setItem(PLAN_KEY, p); localStorage.setItem('vs_plan_date', Date.now().toString()); }
+function isPaid() { var p = getPlan(); return p === 'starter' || p === 'pro'; }
+function isPro()  { return getPlan() === 'pro'; }
 
-/* Pro meals — 7 days rotating */
-const MEALS_PRO = [
-  { day:'Monday', icon:'🍳', name:'Protein Scramble & Rye Toast', desc:'3 eggs + egg white · baby spinach · feta · 1 slice rye toast · black coffee or green tea', macros:['~32g protein','Complex carbs','B12 rich'], calories:'420 kcal' },
-  { day:'Tuesday', icon:'🥣', name:'Overnight Oats + Protein', desc:'Rolled oats · protein powder (vanilla) · almond milk · chia seeds · sliced banana · almond butter drizzle', macros:['~28g protein','Slow-release energy','Gut health'], calories:'480 kcal' },
-  { day:'Wednesday', icon:'🍗', name:'Herb Chicken & Quinoa Bowl', desc:'Grilled herb chicken breast · cooked quinoa · roasted courgette & red pepper · tahini drizzle · parsley', macros:['~40g protein','Complete amino acids','Anti-inflammatory'], calories:'510 kcal' },
-  { day:'Thursday', icon:'🥑', name:'Smashed Avo & Cottage Cheese', desc:'2-egg omelette · smashed avocado on sourdough · cottage cheese · cherry tomatoes · chilli flakes', macros:['~26g protein','Healthy fats','Probiotic'], calories:'440 kcal' },
-  { day:'Friday', icon:'🐟', name:'Teriyaki Salmon Rice Bowl', desc:'Baked salmon fillet · brown rice · edamame · shredded cabbage · ginger-soy dressing · sesame seeds', macros:['~38g protein','Omega-3 rich','Zinc & selenium'], calories:'530 kcal' },
-  { day:'Saturday', icon:'🥙', name:'Turkey & Hummus Wrap', desc:'Lean turkey slices · wholegrain wrap · hummus · baby spinach · roasted peppers · cucumber · lemon squeeze', macros:['~34g protein','High fibre','Gut friendly'], calories:'460 kcal' },
-  { day:'Sunday', icon:'🍲', name:'Lentil & Vegetable Stew', desc:'Red lentils · diced tomatoes · sweet potato · spinach · cumin & turmeric · served with sourdough', macros:['~22g protein','Plant-based iron','Anti-inflammatory'], calories:'490 kcal' }
-];
-
-const GROCERY_STARTER = {
-  'Protein': ['Greek yogurt (full-fat)','Eggs (×12)','Chicken breast','Firm tofu','Salmon fillet','Cottage cheese'],
-  'Produce': ['Baby spinach','Broccoli','Sweet potato','Bell peppers','Cucumber','Cherry tomatoes','Mixed berries','Lemon','Avocado'],
-  'Healthy Fats': ['Extra-virgin olive oil','Walnuts','Almonds','Almond butter'],
-  'Pantry': ['Raw honey','Garlic','Sea salt','Black pepper','Cinnamon','Apple cider vinegar']
-};
-const GROCERY_PRO = {
-  'Proteins': ['Eggs (×18)','Chicken breast (×4)','Salmon fillets (×2)','Lean turkey slices','Red lentils','Edamame (frozen)','Protein powder (vanilla)','Cottage cheese','Feta cheese'],
-  'Produce': ['Baby spinach (large bag)','Courgette','Red pepper (×3)','Broccoli','Sweet potato (×2)','Cherry tomatoes','Cucumber','Banana (×4)','Avocado (×2)','Parsley','Cabbage'],
-  'Grains': ['Brown rice','Rolled oats','Quinoa','Rye bread','Sourdough bread','Wholegrain wraps'],
-  'Fats & Sauces': ['Extra-virgin olive oil','Tahini','Almond butter','Sesame seeds','Ginger','Soy sauce (low sodium)','Hummus'],
-  'Pantry': ['Chia seeds','Almond milk','Cumin','Turmeric','Chilli flakes','Sea salt','Black pepper','Lemon (×4)']
-};
-
-/* ─────────────── REVIEWS ─────────────── */
-const REVIEWS = [
-  { text:'"I lost 4kg in my first month. The 20-min sessions are genuinely challenging — I never feel like I\'m cutting corners."', author:'Sofia M.', tag:'Lost 4kg in 30 days', stars:5 },
-  { text:'"Finally a fitness app that respects I live in a flat. Zero jumping, zero noise complaints. My neighbours have no idea."', author:'Priya R.', tag:'Apartment-friendly convert', stars:5 },
-  { text:'"The meal templates changed everything. Simple, protein-rich, and I actually enjoy eating this way now."', author:'Camille D.', tag:'Starter plan member', stars:5 },
-  { text:'"I\'ve tried so many programmes. VivaSculpt is the first one I\'ve stuck with past week 2. The 15-min option is my secret weapon."', author:'Amara T.', tag:'3-month member', stars:5 },
-  { text:'"The low-impact option isn\'t easier — it\'s smarter. My knees feel great and I\'m stronger than I\'ve been in years."', author:'Laura K.', tag:'Low-impact devotee', stars:5 },
-  { text:'"Upgraded to Pro for the meal plans. Worth every penny. I meal prep on Sunday using the grocery list — takes 1 hour."', author:'Natasha B.', tag:'Pro member', stars:5 }
-];
-
-/* ─────────────── FAQ ─────────────── */
-const FAQ = [
-  { q:'Can I cancel anytime?', a:'Yes. Cancel anytime through your PayPal account before your next renewal date and you won\'t be charged again. No penalties, no questions.' },
-  { q:'What\'s the difference between Starter and Pro?', a:'Starter gives you all HIIT workouts, the today builder, 4 meal templates, and the 7-Day Kickstart. Pro adds 7-day rotating meal plans with full macros, weekly prep guides, and priority support.' },
-  { q:'Do I need equipment?', a:'No equipment required. Every exercise has a bodyweight version. You need only a small clear floor space and an optional chair for some modifications.' },
-  { q:'I\'m a complete beginner — is this for me?', a:'Absolutely. Choose the Low-Impact intensity and Beginner level (2 rounds). Every move has a modification shown during the workout. Start with 15-minute sessions.' },
-  { q:'How does the 7-day trial work?', a:'You start the Starter plan trial — no payment is taken for 7 days. If you cancel before the trial ends, you are never charged. After 7 days it renews at $14/month via PayPal.' },
-  { q:'Is this safe if I have a health condition?', a:'Always consult your doctor before starting any new exercise programme. All content is general wellness information, not medical advice. Choose Low-Impact and start slowly.' }
-];
-
-/* ─────────────── KICKSTART PLAN ─────────────── */
-const DAY_PLAN = [
-  { label:'Day 1', workout:'HIIT A — Full Body', desc:'Today tab · Classic or Low-Impact · 20 min', tag:'hiit', tagLabel:'HIIT' },
-  { label:'Day 2', workout:'Recovery + Steps',    desc:'20–30 min walk · light stretching · hydrate', tag:'rest', tagLabel:'Rest' },
-  { label:'Day 3', workout:'HIIT B — Lower Body + Core', desc:'Today tab · Beginner or Intermediate · 20 min', tag:'hiit', tagLabel:'HIIT' },
-  { label:'Day 4', workout:'Recovery + Reset',    desc:'Yoga stretches · foam roll · good sleep', tag:'rest', tagLabel:'Rest' },
-  { label:'Day 5', workout:'HIIT C — Upper Body + Finisher', desc:'Today tab · push to Intermediate · 25 min', tag:'hiit', tagLabel:'HIIT' },
-  { label:'Day 6', workout:'Optional 15-min Burner', desc:'Only if energy allows — never force it', tag:'optional', tagLabel:'Optional' },
-  { label:'Day 7', workout:'Recovery + Check-in', desc:'Weigh in · progress photos · 3-word reflection', tag:'rest', tagLabel:'Rest' }
-];
-
-/* ─────────────── STATE ─────────────── */
-const state = {
-  duration:'15', intensity:'low', level:'beginner',
-  audioEnabled:true,
-  plan: null, // 'starter' | 'pro' | null
-  workout:{
-    moves:[], moveIndex:0, round:1, totalRounds:2,
-    phase:'work', timeLeft:40, paused:false, interval:null
-  }
-};
-
-/* ─────────────── SECURITY UTILS ─────────────── */
-// All user-provided text rendered with textContent ONLY.
-// This function is a reminder — never pass user strings to innerHTML.
-function safeText(el, str) {
-  el.textContent = String(str);
+function getProgress() {
+  try { var r = localStorage.getItem(PROGRESS_KEY); return r ? JSON.parse(r) : {currentDay:1,completedDays:[],startDate:null}; }
+  catch(e) { return {currentDay:1,completedDays:[],startDate:null}; }
 }
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(email).trim());
+function saveProgress(p) { try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(p)); } catch(e) {} }
+function isDayCompleted(n) { return getProgress().completedDays.indexOf(n) !== -1; }
+function getCurrentDay() { return Math.min(getProgress().currentDay || 1, 28); }
+function markDayComplete(n) {
+  var p = getProgress();
+  if (p.completedDays.indexOf(n) === -1) p.completedDays.push(n);
+  if (!p.startDate) p.startDate = new Date().toISOString();
+  if (n >= p.currentDay && n < 28) p.currentDay = n + 1;
+  saveProgress(p);
+  incrementStreak();
 }
 
-/* ─────────────── PLAN / PAYPAL ─────────────── */
-const PLAN_KEY  = 'vs_plan';
-const PLAN_DATE = 'vs_plan_date';
-const TRIAL_KEY = 'vs_trial_start';
-const TRIAL_DAYS = 7;
-
-function getPlan() {
-  return localStorage.getItem(PLAN_KEY) || null;
+function getStreak() { return parseInt(localStorage.getItem(STREAK_KEY) || '0', 10); }
+function incrementStreak() {
+  var last = localStorage.getItem(STREAK_DATE);
+  var today = new Date().toDateString();
+  if (last === today) return;
+  localStorage.setItem(STREAK_KEY, (getStreak() + 1).toString());
+  localStorage.setItem(STREAK_DATE, today);
 }
-function setPlan(plan) {
-  // Only store plan identifier — no sensitive data
-  localStorage.setItem(PLAN_KEY, plan);
-  localStorage.setItem(PLAN_DATE, Date.now().toString());
-}
-function getTrialState() {
-  const start = localStorage.getItem(TRIAL_KEY);
-  if (!start) return null;
-  const startMs = parseInt(start, 10);
-  const endMs   = startMs + TRIAL_DAYS * 86400000;
-  const now     = Date.now();
-  return { active: now < endMs, expired: now >= endMs, daysLeft: Math.max(0, Math.ceil((endMs - now) / 86400000)), endDate: new Date(endMs) };
-}
-function startTrial() {
-  localStorage.setItem(TRIAL_KEY, Date.now().toString());
-  setPlan('trial_starter');
+function didMissYesterday() {
+  var last = localStorage.getItem(STREAK_DATE);
+  if (!last) return false;
+  var today = new Date().toDateString();
+  var yesterday = new Date(Date.now() - 86400000).toDateString();
+  return last !== today && last !== yesterday;
 }
 
-/* ─────────────── PAYPAL SUBSCRIPTION IDs ─────────────── */
-const PAYPAL_PLAN_STARTER = 'P-1DD23981LB678535ENHKLPHI';
-const PAYPAL_PLAN_PRO     = 'P-4UP82455HM149604SNHKLU3Y';
+var currentIntensity = localStorage.getItem(INTENSITY_KEY) || 'low';
 
-function renderPayPalButton(containerId, planId, planLabel) {
-  var container = document.getElementById(containerId);
-  if (!container) return;
-  container.innerHTML = '';
-
-  // Single button — opens PayPal hosted checkout in same tab
-  // User can pay with PayPal account OR credit/debit card on that page
-  var btn = document.createElement('button');
-  btn.className = 'btn-primary';
-  btn.style.cssText = 'width:100%;font-size:.95rem;gap:.6rem;';
-  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Subscribe — ' + (planLabel === 'pro' ? '$29/mo' : '$14/mo');
-
-  var url = 'https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=' + planId;
-  btn.addEventListener('click', function() {
-    window.location.href = url;
-  });
-
-  var note = document.createElement('p');
-  note.style.cssText = 'font-size:.7rem;color:var(--text-muted);text-align:center;margin-top:.4rem;';
-  note.textContent = 'Pay with PayPal or any card · Powered by PayPal';
-
-  container.appendChild(btn);
-  container.appendChild(note);
-}
-
-function showWelcomeScreen() {
-  var box = document.createElement('div');
-  box.id = 'welcome-screen';
-  box.style.cssText = 'position:fixed;inset:0;background:var(--emerald-deeper);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;padding:2rem;text-align:center;';
-  box.innerHTML = '<div style="font-size:3.5rem;margin-bottom:1rem">🎉</div><h2 style="font-family:var(--font-display);font-size:2rem;color:#fff;margin-bottom:.5rem">Welcome to VivaSculpt!</h2><p style="color:rgba(255,255,255,.75);margin-bottom:2rem;max-width:280px;line-height:1.6">Your subscription is active. Time to move.</p><button onclick="document.getElementById(\'welcome-screen\').remove();switchTab(\'today\')" style="background:#fff;color:var(--emerald-deeper);border:none;padding:.9rem 2rem;border-radius:10px;font-weight:800;font-size:1rem;cursor:pointer;">Start Training →</button>';
-  document.body.appendChild(box);
-}
-
-// Buttons are now pure HTML links — no JS injection needed
-window.openPayPal = function(planType) {
-  switchTab('pricing');
-};
-
-function updatePlanBadge() {
-  const plan   = getPlan();
-  const trial  = getTrialState();
-  const badge  = document.getElementById('header-plan-badge');
-  const planCard = document.getElementById('active-plan-card');
-
-  if (!plan) { badge.classList.add('hidden'); return; }
-
-  badge.classList.remove('hidden');
-
-  if (plan === 'trial_starter' && trial && trial.active) {
-    safeText(badge, 'Trial · ' + trial.daysLeft + 'd left');
-    if (planCard) {
-      planCard.classList.remove('hidden');
-      safeText(planCard, '🎉 Trial active — ' + trial.daysLeft + ' days remaining. Ends ' + trial.endDate.toLocaleDateString());
-    }
-  } else if (plan === 'starter') {
-    safeText(badge, 'Starter');
-    if (planCard) { planCard.classList.remove('hidden'); safeText(planCard, '✅ Starter plan active'); }
-  } else if (plan === 'pro') {
-    safeText(badge, 'Pro ✦');
-    if (planCard) { planCard.classList.remove('hidden'); safeText(planCard, '✨ Pro plan active — full access'); }
-  }
-}
-
-function updateTrialBanner() {
-  const banner = document.getElementById('trial-banner');
-  const trial  = getTrialState();
-  if (trial && trial.active) {
-    banner.classList.remove('hidden');
-    safeText(banner, 'Trial active · ' + trial.daysLeft + ' day' + (trial.daysLeft !== 1 ? 's' : '') + ' left · Subscribe to continue after trial.');
-  } else {
-    banner.classList.add('hidden');
-  }
-}
-
-function checkPaywall() {
-  const trial = getTrialState();
-  const plan  = getPlan();
-  if (trial && trial.expired && plan === 'trial_starter') {
-    openModal('modal-paywall');
-  }
-}
-
-/* ─────────────── TAB NAVIGATION ─────────────── */
+/* ─── TAB NAVIGATION ─── */
 function switchTab(tabId) {
-  document.querySelectorAll('.tab-section').forEach(s => { s.classList.remove('active'); s.hidden = true; });
-  document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.removeAttribute('aria-current'); });
-  const sec = document.getElementById('tab-' + tabId);
-  const btn = document.querySelector('[data-tab="' + tabId + '"]');
+  document.querySelectorAll('.tab-section').forEach(function(s) { s.classList.remove('active'); s.hidden = true; });
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); b.removeAttribute('aria-current'); });
+  var sec = document.getElementById('tab-' + tabId);
+  var btn = document.querySelector('[data-tab="' + tabId + '"]');
   if (sec) { sec.classList.add('active'); sec.hidden = false; }
   if (btn) { btn.classList.add('active'); btn.setAttribute('aria-current','page'); }
+  if (tabId === 'today') renderTodayView();
+  if (tabId === 'program') renderProgramView();
   if (tabId === 'pricing') updatePlanBadge();
-  // Track tab view in GA
-  if (typeof gtag !== 'undefined') {
-    gtag('event', 'page_view', { page_title: tabId, page_location: window.location.href + '#' + tabId });
-  }
+  if (typeof gtag !== 'undefined') gtag('event','page_view',{page_title:tabId});
 }
-
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() { switchTab(btn.dataset.tab); });
 });
 
-/* ─────────────── MODALS ─────────────── */
+/* ─── MODALS ─── */
 function openModal(id) {
-  const m = document.getElementById(id);
-  if (!m) return;
-  m.hidden = false;
-  requestAnimationFrame(() => {
-    const f = m.querySelector('button,input,a[href]');
-    if (f) f.focus();
-  });
+  var m = document.getElementById(id); if (!m) return; m.hidden = false;
+  requestAnimationFrame(function() { var f = m.querySelector('button,input,a'); if (f) f.focus(); });
 }
-function closeModal(id) {
-  const m = document.getElementById(id);
-  if (m) m.hidden = true;
+function closeModal(id) { var m = document.getElementById(id); if (m) m.hidden = true; }
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay:not([hidden])').forEach(function(m) {
+    if (m.id !== 'modal-paywall') closeModal(m.id);
+  });
+});
+document.querySelectorAll('.modal-overlay').forEach(function(o) {
+  o.addEventListener('click', function(e) { if (e.target === o && o.id !== 'modal-paywall') closeModal(o.id); });
+});
+document.querySelectorAll('[data-close]').forEach(function(btn) { btn.addEventListener('click', function() { closeModal(btn.dataset.close); }); });
+document.querySelectorAll('[data-modal]').forEach(function(btn) { btn.addEventListener('click', function() { openModal('modal-' + btn.dataset.modal); }); });
+var secBtn = document.getElementById('btn-security');
+if (secBtn) secBtn.addEventListener('click', function() { openModal('modal-security'); });
+
+/* ─── PLAN BADGE ─── */
+function updatePlanBadge() {
+  var badge = document.getElementById('header-plan-badge');
+  var card  = document.getElementById('active-plan-card');
+  var plan  = getPlan();
+  if (!badge) return;
+  if (!plan) { badge.classList.add('hidden'); if (card) card.classList.add('hidden'); return; }
+  badge.classList.remove('hidden');
+  safeText(badge, plan === 'pro' ? 'Pro ✦' : 'Starter');
+  if (card) { card.classList.remove('hidden'); safeText(card, plan === 'pro' ? '✨ Pro plan active — full 28-day access' : '✅ Starter plan active'); }
 }
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    document.querySelectorAll('.modal-overlay:not([hidden])').forEach(m => {
-      if (m.id !== 'modal-paywall') closeModal(m.id);
+/* ─── TODAY VIEW ─── */
+function renderTodayView() {
+  var paid = isPaid();
+  var freeEl  = document.getElementById('free-today');
+  var paidEl  = document.getElementById('paid-today');
+  if (!freeEl || !paidEl) return;
+
+  if (!paid) {
+    freeEl.classList.remove('hidden');
+    paidEl.classList.add('hidden');
+    buildWeekPreviews();
+    buildReviews('reviews-track-free');
+    return;
+  }
+
+  freeEl.classList.add('hidden');
+  paidEl.classList.remove('hidden');
+
+  var dayNum  = getCurrentDay();
+  var dayData = ALL_DAYS[dayNum - 1];
+  if (!dayData) return;
+
+  // Progress bar
+  var pct = Math.round(((dayNum - 1) / 28) * 100);
+  var fill = document.getElementById('progress-bar-fill');
+  var pctEl = document.getElementById('progress-pct');
+  var dayLbl = document.getElementById('progress-day-label');
+  var wkLbl  = document.getElementById('week-label');
+  if (fill) fill.style.width = pct + '%';
+  safeText(pctEl, pct + '%');
+  safeText(dayLbl, 'Day ' + dayNum + ' of 28');
+  safeText(wkLbl, 'Week ' + dayData.week + ' — ' + dayData.weekName);
+
+  // Streak
+  var streak = getStreak();
+  safeText(document.getElementById('streak-count'), streak);
+  var missWarn = document.getElementById('missed-warning');
+  if (missWarn) {
+    if (didMissYesterday() && streak > 0) missWarn.classList.remove('hidden');
+    else missWarn.classList.add('hidden');
+  }
+
+  // Already completed today?
+  if (isDayCompleted(dayNum)) {
+    showCompletedState(dayNum, dayData);
+    return;
+  }
+
+  // Show mission or recovery
+  if (dayData.type === 'recovery') {
+    showRecoveryCard(dayNum, dayData);
+  } else {
+    showMissionCard(dayNum, dayData);
+  }
+
+  // Locked future days
+  buildLockedPreview(dayNum);
+}
+
+function showMissionCard(dayNum, dayData) {
+  document.getElementById('mission-card').classList.remove('hidden');
+  document.getElementById('recovery-card').classList.add('hidden');
+  document.getElementById('completed-card').classList.add('hidden');
+
+  safeText(document.getElementById('mission-day-num'), 'Day ' + dayNum);
+  safeText(document.getElementById('mission-week-tag'), 'Week ' + dayData.week + ' · ' + dayData.weekPhase.charAt(0).toUpperCase() + dayData.weekPhase.slice(1));
+  safeText(document.getElementById('mission-title'), dayData.title);
+  safeText(document.getElementById('mission-duration'), dayData.duration + ' min');
+  safeText(document.getElementById('mission-tag'), dayData.tag);
+  safeText(document.getElementById('mission-rounds'), dayData.rounds + ' rounds');
+
+  // Moves list
+  var movesEl = document.getElementById('mission-moves');
+  if (movesEl) {
+    movesEl.innerHTML = '';
+    dayData.moves.forEach(function(move) {
+      var row = document.createElement('div'); row.className = 'move-row';
+      var name = document.createElement('div'); name.className = 'move-name'; safeText(name, move.name);
+      var reps = document.createElement('div'); reps.className = 'move-reps'; safeText(reps, move.reps);
+      var mod  = document.createElement('div'); mod.className  = 'move-mod';
+      safeText(mod, currentIntensity === 'low' ? '🟢 ' + move.low : '🔴 ' + move.classic);
+      row.appendChild(name); row.appendChild(reps); row.appendChild(mod);
+      movesEl.appendChild(row);
     });
-  }
-});
-document.querySelectorAll('.modal-overlay').forEach(overlay => {
-  overlay.addEventListener('click', e => {
-    if (e.target === overlay && overlay.id !== 'modal-paywall') closeModal(overlay.id);
-  });
-});
-document.querySelectorAll('[data-close]').forEach(btn => {
-  btn.addEventListener('click', () => closeModal(btn.dataset.close));
-});
-document.querySelectorAll('[data-modal]').forEach(btn => {
-  btn.addEventListener('click', () => openModal('modal-' + btn.dataset.modal));
-});
-document.getElementById('btn-security').addEventListener('click', () => openModal('modal-security'));
 
-/* ─────────────── WORKOUT PLAYER ─────────────── */
-const WORK_TIME = 40;
-const REST_TIME = 20;
-const CIRC = 2 * Math.PI * 54; // 339.3
-
-function startWorkout(moves) {
-  const trial = getTrialState();
-  const plan  = getPlan();
-  if (trial && trial.expired && plan === 'trial_starter') { openModal('modal-paywall'); return; }
-  // Track in GA
-  if (typeof gtag !== 'undefined') {
-    gtag('event', 'workout_start', { intensity: state.intensity, duration: state.duration, level: state.level });
+    // Intensity toggle
+    var toggle = document.createElement('div'); toggle.className = 'intensity-toggle';
+    var lowBtn = document.createElement('button'); lowBtn.className = 'itog-btn' + (currentIntensity === 'low' ? ' active' : '');
+    safeText(lowBtn, '🟢 Low-Impact');
+    var clsBtn = document.createElement('button'); clsBtn.className = 'itog-btn' + (currentIntensity === 'classic' ? ' active' : '');
+    safeText(clsBtn, '🔴 Classic');
+    lowBtn.addEventListener('click', function() { setIntensity('low'); renderTodayView(); });
+    clsBtn.addEventListener('click', function() { setIntensity('classic'); renderTodayView(); });
+    toggle.appendChild(lowBtn); toggle.appendChild(clsBtn);
+    movesEl.appendChild(toggle);
   }
 
-  const rounds = state.level === 'beginner' ? 2 : 3;
-  clearInterval(state.workout.interval);
-  Object.assign(state.workout, {
-    moves: moves || DEFAULT_MOVES, moveIndex:0, round:1,
-    totalRounds:rounds, phase:'work', timeLeft:WORK_TIME, paused:false, interval:null
-  });
+  // Meal card
+  buildMealCard(document.getElementById('mission-meal'), dayData.meal);
+}
+
+function showRecoveryCard(dayNum, dayData) {
+  document.getElementById('mission-card').classList.add('hidden');
+  document.getElementById('completed-card').classList.add('hidden');
+  document.getElementById('recovery-card').classList.remove('hidden');
+
+  safeText(document.getElementById('recovery-title'), 'Day ' + dayNum + ' — ' + dayData.title);
+  safeText(document.getElementById('recovery-desc'), dayData.description);
+  buildMealCard(document.getElementById('recovery-meal'), dayData.meal);
+}
+
+function showCompletedState(dayNum, dayData) {
+  document.getElementById('mission-card').classList.add('hidden');
+  document.getElementById('recovery-card').classList.add('hidden');
+  document.getElementById('completed-card').classList.remove('hidden');
+
+  var nextDay = dayNum < 28 ? dayNum + 1 : null;
+  var sub = nextDay ? 'Come back tomorrow for Day ' + nextDay + '.' : 'You completed the full 28-day system. 🏆';
+  safeText(document.getElementById('completed-sub'), sub);
+  safeText(document.getElementById('streak-reward'), '🔥 ' + getStreak() + ' day streak');
+}
+
+function buildMealCard(el, meal) {
+  if (!el || !meal) return;
+  el.innerHTML = '';
+  var wrap = document.createElement('div'); wrap.className = 'meal-highlight';
+  var lbl  = document.createElement('div'); lbl.className  = 'meal-highlight-label'; safeText(lbl, "Today's Meal");
+  var name = document.createElement('div'); name.className = 'meal-highlight-name';  safeText(name, meal.name);
+  var desc = document.createElement('div'); desc.className = 'meal-highlight-desc';  safeText(desc, meal.desc);
+  var mac  = document.createElement('div'); mac.className  = 'meal-highlight-macro'; safeText(mac, meal.macros);
+  wrap.appendChild(lbl); wrap.appendChild(name); wrap.appendChild(desc); wrap.appendChild(mac);
+  el.appendChild(wrap);
+}
+
+function buildLockedPreview(currentDay) {
+  var el = document.getElementById('locked-preview'); if (!el) return;
+  el.innerHTML = '';
+  var header = document.createElement('div'); header.className = 'locked-header'; safeText(header, 'Coming up 🔒');
+  el.appendChild(header);
+  var count = 0;
+  for (var i = currentDay; i <= 28 && count < 5; i++) {
+    var d = ALL_DAYS[i];
+    if (!d) break;
+    var item = document.createElement('div'); item.className = 'locked-day-item';
+    var dayLabel = document.createElement('div'); dayLabel.className = 'locked-day-label'; safeText(dayLabel, 'Day ' + d.day);
+    var dayTitle = document.createElement('div'); dayTitle.className = 'locked-day-title'; safeText(dayTitle, d.title);
+    var lockIcon = document.createElement('div'); lockIcon.className = 'lock-icon'; safeText(lockIcon, '🔒');
+    item.appendChild(dayLabel); item.appendChild(dayTitle); item.appendChild(lockIcon);
+    el.appendChild(item);
+    count++;
+  }
+}
+
+/* ─── START WORKOUT ─── */
+var workoutState = { moves:[], idx:0, round:1, totalRounds:3, phase:'work', timeLeft:40, paused:false, interval:null, dayNum:0 };
+
+document.getElementById('btn-mission-start').addEventListener('click', function() {
+  var dayNum  = getCurrentDay();
+  var dayData = ALL_DAYS[dayNum - 1];
+  if (!dayData || !dayData.moves.length) return;
+  startWorkoutSession(dayData.moves, dayData.rounds, dayNum);
+});
+
+function startWorkoutSession(moves, rounds, dayNum) {
+  clearInterval(workoutState.interval);
+  workoutState = { moves:moves, idx:0, round:1, totalRounds:rounds, phase:'work', timeLeft:40, paused:false, interval:null, dayNum:dayNum };
   updatePlayerUI();
   openModal('modal-workout');
-  runInterval();
+  if (typeof gtag !== 'undefined') gtag('event','workout_start',{day:dayNum});
+  workoutState.interval = setInterval(tickWorkout, 1000);
 }
 
+var CIRC = 2 * Math.PI * 54;
 function updatePlayerUI() {
-  const w = state.workout;
-  const move = w.moves[w.moveIndex];
+  var w = workoutState;
+  var move = w.moves[w.idx];
   safeText(document.getElementById('player-round'), 'Round ' + w.round + ' / ' + w.totalRounds);
-  const phaseEl = document.getElementById('player-phase');
-  safeText(phaseEl, w.phase === 'work' ? 'WORK' : 'REST');
-  phaseEl.classList.toggle('rest-phase', w.phase === 'rest');
-  const ring = document.getElementById('ring-fg');
-  const total = w.phase === 'work' ? WORK_TIME : REST_TIME;
-  ring.style.strokeDashoffset = CIRC * (1 - w.timeLeft / total);
-  ring.classList.toggle('rest-ring', w.phase === 'rest');
+  var phEl = document.getElementById('player-phase');
+  safeText(phEl, w.phase === 'work' ? 'WORK' : 'REST');
+  phEl.classList.toggle('rest-phase', w.phase === 'rest');
+  var ring = document.getElementById('ring-fg');
+  var total = w.phase === 'work' ? 40 : 20;
+  if (ring) { ring.style.strokeDashoffset = CIRC * (1 - w.timeLeft / total); ring.classList.toggle('rest-ring', w.phase === 'rest'); }
   safeText(document.getElementById('player-time'), w.timeLeft);
   safeText(document.getElementById('player-move'), move ? move.name : '–');
-  const modEl = document.getElementById('player-mod');
-  if (move) safeText(modEl, (state.intensity === 'low' ? '🟢 ' + move.low : '🔴 ' + move.classic));
-  else modEl.textContent = '';
-  const nextEl = document.getElementById('player-next-move');
-  const nextLabel = document.querySelector('.next-label');
-  if (w.phase === 'rest') {
-    safeText(nextEl, move ? move.name : '–');
-    if (nextLabel) safeText(nextLabel, 'Up next:');
-  } else {
-    const nm = w.moves[w.moveIndex + 1];
-    safeText(nextEl, nm ? nm.name : 'Last move!');
-    if (nextLabel) safeText(nextLabel, 'Next:');
-  }
+  var modEl = document.getElementById('player-mod');
+  if (modEl) safeText(modEl, move ? (currentIntensity === 'low' ? '🟢 ' + move.low : '🔴 ' + move.classic) : '');
+  var nextMove = w.moves[w.idx + 1];
+  var nextEl = document.getElementById('player-next-move');
+  var nextLbl = document.querySelector('.next-label');
+  if (w.phase === 'rest') { safeText(nextEl, move ? move.name : '–'); if (nextLbl) safeText(nextLbl, 'Up next:'); }
+  else { safeText(nextEl, nextMove ? nextMove.name : 'Last move!'); if (nextLbl) safeText(nextLbl, 'Next:'); }
   safeText(document.getElementById('btn-pause'), w.paused ? 'Resume' : 'Pause');
 }
 
-function runInterval() {
-  clearInterval(state.workout.interval);
-  state.workout.interval = setInterval(tick, 1000);
-}
-
-function tick() {
-  const w = state.workout;
+function tickWorkout() {
+  var w = workoutState;
   if (w.paused) return;
   w.timeLeft--;
   if (w.timeLeft <= 0) {
-    if (w.phase === 'work') {
-      w.phase = 'rest'; w.timeLeft = REST_TIME; beep(330,.15,.08);
-    } else {
-      w.moveIndex++;
-      if (w.moveIndex >= w.moves.length) {
-        if (w.round < w.totalRounds) {
-          w.round++; w.moveIndex = 0; w.phase = 'work'; w.timeLeft = WORK_TIME; beep(660,.2,.15);
-        } else { endWorkout(true); return; }
-      } else {
-        w.phase = 'work'; w.timeLeft = WORK_TIME;
-      }
+    if (w.phase === 'work') { w.phase = 'rest'; w.timeLeft = 20; beep(330,.15,.08); }
+    else {
+      w.idx++;
+      if (w.idx >= w.moves.length) {
+        if (w.round < w.totalRounds) { w.round++; w.idx = 0; w.phase = 'work'; w.timeLeft = 40; beep(660,.2,.15); }
+        else { finishWorkout(); return; }
+      } else { w.phase = 'work'; w.timeLeft = 40; }
     }
-  } else if (w.timeLeft <= 3 && w.phase === 'work') { beep(880,.08,.05); }
+  } else if (w.timeLeft <= 3 && w.phase === 'work') beep(880,.08,.05);
   updatePlayerUI();
 }
 
-function endWorkout(complete) {
-  clearInterval(state.workout.interval);
-  state.workout.interval = null;
+function finishWorkout() {
+  clearInterval(workoutState.interval);
+  workoutState.interval = null;
   closeModal('modal-workout');
-  if (complete) openModal('modal-complete');
+  openModal('modal-complete');
 }
 
-let audioCtx = null;
+document.getElementById('btn-complete-done').addEventListener('click', function() {
+  closeModal('modal-complete');
+  completeTodayDay();
+});
+
+document.getElementById('btn-done-day').addEventListener('click', function() { completeTodayDay(); });
+document.getElementById('btn-done-recovery').addEventListener('click', function() { completeTodayDay(); });
+
+function completeTodayDay() {
+  var dayNum = getCurrentDay();
+  markDayComplete(dayNum);
+  var streak = getStreak();
+  var dayData = ALL_DAYS[dayNum - 1];
+  var msgs = ['"You showed up today."','"Consistency is becoming your default."','"No negotiation. Just action."','"Another day. Another rep."','"Your future self remembers this."','"One session closer."','"This is who you are now."'];
+  var msg = msgs[Math.floor(Math.random() * msgs.length)];
+  safeText(document.getElementById('day-done-title'), dayNum === 28 ? 'System Complete! 🏆' : 'Day ' + dayNum + ' Done.');
+  safeText(document.getElementById('day-done-message'), msg);
+  safeText(document.getElementById('day-done-streak'), '🔥 ' + streak + ' day' + (streak !== 1 ? 's' : '') + ' disciplined');
+  openModal('modal-day-done');
+  setTimeout(function() { renderTodayView(); }, 300);
+}
+
+/* ─── AUDIO ─── */
+var audioCtx = null;
+var audioEnabled = true;
 function beep(freq, dur, vol) {
-  if (!state.audioEnabled) return;
+  if (!audioEnabled) return;
   try {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
+    var osc = audioCtx.createOscillator(); var gain = audioCtx.createGain();
     osc.connect(gain); gain.connect(audioCtx.destination);
     osc.type = 'sine'; osc.frequency.value = freq;
     gain.gain.setValueAtTime(vol, audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime + dur);
     osc.start(); osc.stop(audioCtx.currentTime + dur);
-  } catch(_) {}
+  } catch(e) {}
 }
-
-/* ─────────────── PLAYER BUTTONS ─────────────── */
-document.getElementById('btn-start-today').addEventListener('click', () => startWorkout(null));
-document.getElementById('btn-audio').addEventListener('click', () => {
-  state.audioEnabled = !state.audioEnabled;
-  document.getElementById('btn-audio').setAttribute('aria-pressed', state.audioEnabled);
-  document.getElementById('icon-audio-on').style.display  = state.audioEnabled ? '' : 'none';
-  document.getElementById('icon-audio-off').style.display = state.audioEnabled ? 'none' : '';
+var audioBtn = document.getElementById('btn-audio');
+if (audioBtn) audioBtn.addEventListener('click', function() {
+  audioEnabled = !audioEnabled;
+  audioBtn.setAttribute('aria-pressed', audioEnabled);
+  document.getElementById('icon-audio-on').style.display  = audioEnabled ? '' : 'none';
+  document.getElementById('icon-audio-off').style.display = audioEnabled ? 'none' : '';
 });
-document.getElementById('btn-pause').addEventListener('click', () => {
-  state.workout.paused = !state.workout.paused;
-  safeText(document.getElementById('btn-pause'), state.workout.paused ? 'Resume' : 'Pause');
+var pauseBtn = document.getElementById('btn-pause');
+if (pauseBtn) pauseBtn.addEventListener('click', function() {
+  workoutState.paused = !workoutState.paused;
+  safeText(pauseBtn, workoutState.paused ? 'Resume' : 'Pause');
 });
-document.getElementById('btn-next-move').addEventListener('click', () => {
-  const w = state.workout;
-  w.moveIndex++;
-  if (w.moveIndex >= w.moves.length) {
-    if (w.round < w.totalRounds) { w.round++; w.moveIndex = 0; w.phase = 'work'; w.timeLeft = WORK_TIME; }
-    else { endWorkout(true); return; }
-  } else { w.phase = 'work'; w.timeLeft = WORK_TIME; }
+var nextBtn = document.getElementById('btn-next-move');
+if (nextBtn) nextBtn.addEventListener('click', function() {
+  var w = workoutState; w.idx++;
+  if (w.idx >= w.moves.length) { if (w.round < w.totalRounds) { w.round++; w.idx = 0; w.phase = 'work'; w.timeLeft = 40; } else { finishWorkout(); return; } }
+  else { w.phase = 'work'; w.timeLeft = 40; }
   updatePlayerUI();
 });
-document.getElementById('btn-end-workout').addEventListener('click', () => endWorkout(false));
-
-/* ─────────────── PILL GROUPS ─────────────── */
-document.querySelectorAll('.pill').forEach(pill => {
-  pill.addEventListener('click', () => {
-    const g = pill.dataset.group;
-    document.querySelectorAll('[data-group="'+g+'"]').forEach(p => p.classList.remove('active'));
-    pill.classList.add('active');
-    state[g] = pill.dataset.value;
-  });
+var endBtn = document.getElementById('btn-end-workout');
+if (endBtn) endBtn.addEventListener('click', function() {
+  clearInterval(workoutState.interval); closeModal('modal-workout');
 });
 
-/* ─────────────── ACCORDIONS (workouts) ─────────────── */
-document.querySelectorAll('.accordion-trigger').forEach(t => {
-  t.addEventListener('click', () => {
-    const expanded = t.getAttribute('aria-expanded') === 'true';
-    t.setAttribute('aria-expanded', !expanded);
-    document.getElementById(t.getAttribute('aria-controls')).hidden = expanded;
-  });
-});
-
-/* ─────────────── BUILD WORKOUT LISTS ─────────────── */
-function buildWorkoutList(containerId, workouts) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
+/* ─── PROGRAM VIEW ─── */
+function renderProgramView() {
+  var el = document.getElementById('program-view'); if (!el) return;
   el.innerHTML = '';
-  workouts.forEach(w => {
-    const item = document.createElement('div'); item.className = 'workout-item';
-    const info = document.createElement('div');
-    const name = document.createElement('div'); name.className = 'workout-name'; safeText(name, w.name);
-    const meta = document.createElement('div'); meta.className = 'workout-meta'; safeText(meta, w.duration);
-    info.appendChild(name); info.appendChild(meta);
-    const btn = document.createElement('button'); btn.className = 'workout-start';
-    safeText(btn, 'Start'); btn.setAttribute('aria-label', 'Start ' + w.name);
-    btn.addEventListener('click', () => startWorkout(w.moves));
-    item.appendChild(info); item.appendChild(btn); el.appendChild(item);
-  });
-}
-buildWorkoutList('workout-list-low', WORKOUTS_LOW);
-buildWorkoutList('workout-list-classic', WORKOUTS_CLASSIC);
+  var paid = isPaid();
+  var currentDay = getCurrentDay();
 
-/* ─────────────── BUILD MEALS ─────────────── */
-function buildMealCard(meal, includeDay) {
-  const card = document.createElement('div'); card.className = 'meal-card';
-  const icon = document.createElement('div'); icon.className = 'meal-icon'; safeText(icon, meal.icon);
-  const body = document.createElement('div');
-  if (includeDay && meal.day) {
-    const dayLbl = document.createElement('div'); dayLbl.className = 'meal-day-label'; safeText(dayLbl, meal.day);
-    body.appendChild(dayLbl);
-  }
-  const name = document.createElement('div'); name.className = 'meal-name'; safeText(name, meal.name);
-  const desc = document.createElement('div'); desc.className = 'meal-desc'; safeText(desc, meal.desc);
-  const macros = document.createElement('div'); macros.className = 'meal-macro';
-  (meal.macros || []).forEach(m => {
-    const pill = document.createElement('span'); pill.className = 'macro-pill'; safeText(pill, m); macros.appendChild(pill);
-  });
-  if (meal.calories) {
-    const cal = document.createElement('span'); cal.className = 'macro-pill';
-    cal.style.background = 'var(--gold-bg)'; cal.style.color = 'var(--gold)'; cal.style.borderColor = 'var(--gold-border)';
-    safeText(cal, meal.calories); macros.appendChild(cal);
-  }
-  body.appendChild(name); body.appendChild(desc); body.appendChild(macros);
-  card.appendChild(icon); card.appendChild(body);
-  return card;
-}
+  PROGRAM.weeks.forEach(function(week) {
+    var weekCard = document.createElement('div'); weekCard.className = 'week-card';
 
-function buildMealsGrid(containerId, meals, includeDay) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  el.innerHTML = '';
-  meals.forEach(m => el.appendChild(buildMealCard(m, includeDay)));
-}
-buildMealsGrid('meals-grid-starter', MEALS_STARTER, false);
-buildMealsGrid('meals-grid-pro', MEALS_PRO, true);
+    var weekHeader = document.createElement('div'); weekHeader.className = 'week-header';
+    weekHeader.style.borderLeftColor = week.color;
+    var wNum = document.createElement('div'); wNum.className = 'week-num'; safeText(wNum, 'Week ' + week.num);
+    var wName = document.createElement('div'); wName.className = 'week-name'; safeText(wName, week.name);
+    var wGoal = document.createElement('div'); wGoal.className = 'week-goal'; safeText(wGoal, week.goal);
+    weekHeader.appendChild(wNum); weekHeader.appendChild(wName); weekHeader.appendChild(wGoal);
+    weekCard.appendChild(weekHeader);
 
-/* ─────────────── MEAL PLAN TABS ─────────────── */
-document.querySelectorAll('.plan-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.plan-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
-    tab.classList.add('active'); tab.setAttribute('aria-selected','true');
-    const plan = tab.dataset.plan;
-    document.querySelectorAll('.meals-panel').forEach(p => p.classList.add('hidden'));
-    document.getElementById('meals-' + plan).classList.remove('hidden');
-    // Check if user has Pro access
-    if (plan === 'pro') {
-      const userPlan = getPlan();
-      if (userPlan === 'pro') {
-        document.getElementById('pro-meal-gate').classList.add('hidden');
-        document.getElementById('meals-pro-content').classList.remove('hidden');
+    var dayList = document.createElement('div'); dayList.className = 'day-list';
+
+    week.days.forEach(function(day) {
+      var isCompleted = isDayCompleted(day.day);
+      var isCurrent   = day.day === currentDay;
+      var isLocked    = !paid && day.day > 1;
+
+      var item = document.createElement('div');
+      item.className = 'day-list-item' + (isCompleted ? ' completed' : '') + (isCurrent ? ' current' : '') + (isLocked ? ' locked' : '');
+
+      var dayNum = document.createElement('div'); dayNum.className = 'dli-num';
+      safeText(dayNum, isCompleted ? '✓' : (isLocked ? '🔒' : day.day));
+
+      var info = document.createElement('div'); info.className = 'dli-info';
+      var title = document.createElement('div'); title.className = 'dli-title'; safeText(title, day.title);
+      var meta  = document.createElement('div'); meta.className  = 'dli-meta';
+      safeText(meta, day.type === 'recovery' ? 'Recovery · ' + day.duration + ' min' : day.duration + ' min · ' + day.tag);
+      info.appendChild(title); info.appendChild(meta);
+
+      var status = document.createElement('div'); status.className = 'dli-status';
+      if (isCompleted) safeText(status, '✅');
+      else if (isCurrent) safeText(status, '▶');
+      else if (isLocked) safeText(status, '🔒');
+
+      item.appendChild(dayNum); item.appendChild(info); item.appendChild(status);
+
+      if (isCurrent && !isLocked) {
+        item.addEventListener('click', function() { switchTab('today'); });
+        item.style.cursor = 'pointer';
       }
-    }
-  });
-});
-document.getElementById('btn-upgrade-meals').addEventListener('click', () => {
-  switchTab('pricing'); window.openPayPal('pro');
-});
 
-/* ─────────────── GROCERY LISTS ─────────────── */
-function buildGroceryList(containerId, data) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-  el.innerHTML = '';
-  Object.entries(data).forEach(([section, items]) => {
-    const lbl = document.createElement('span'); lbl.className = 'grocery-section'; safeText(lbl, section); el.appendChild(lbl);
-    const grid = document.createElement('div'); grid.className = 'grocery-grid';
-    items.forEach(item => {
-      const div = document.createElement('div'); div.className = 'grocery-item'; safeText(div, item); grid.appendChild(div);
+      dayList.appendChild(item);
     });
-    el.appendChild(grid);
+
+    weekCard.appendChild(dayList);
+    el.appendChild(weekCard);
+  });
+
+  if (!paid) {
+    var unlock = document.createElement('div'); unlock.className = 'unlock-cta';
+    unlock.innerHTML = '<div style="font-size:2rem;margin-bottom:.5rem">🔒</div><h3>Unlock your full 28-day system</h3><p>Days 2–28 are waiting. One day at a time.</p>';
+    var btn = document.createElement('button'); btn.className = 'btn-primary'; btn.style.width = '100%'; btn.style.marginTop = '1rem';
+    safeText(btn, 'Unlock Full Program →');
+    btn.addEventListener('click', function() { switchTab('pricing'); });
+    unlock.appendChild(btn);
+    el.appendChild(unlock);
+  }
+}
+
+/* ─── WEEK PREVIEWS (free view) ─── */
+function buildWeekPreviews() {
+  var el = document.getElementById('week-previews'); if (!el) return;
+  el.innerHTML = '';
+  PROGRAM.weeks.forEach(function(week, i) {
+    var row = document.createElement('div'); row.className = 'week-preview-row';
+    var num = document.createElement('div'); num.className = 'wpv-num'; safeText(num, 'Week ' + week.num);
+    var info = document.createElement('div');
+    var name = document.createElement('div'); name.className = 'wpv-name'; safeText(name, week.name);
+    var goal = document.createElement('div'); goal.className = 'wpv-goal'; safeText(goal, week.goal);
+    info.appendChild(name); info.appendChild(goal);
+    var lock = document.createElement('div'); lock.className = 'wpv-lock';
+    safeText(lock, i === 0 ? 'Day 1 Free' : '🔒');
+    row.appendChild(num); row.appendChild(info); row.appendChild(lock);
+    el.appendChild(row);
   });
 }
-document.getElementById('btn-grocery-starter').addEventListener('click', () => {
-  const el = document.getElementById('grocery-list-starter');
-  buildGroceryList('grocery-list-starter', GROCERY_STARTER);
-  el.hidden = false;
-  el.scrollIntoView({ behavior:'smooth', block:'start' });
-});
-document.getElementById('btn-grocery-pro').addEventListener('click', () => {
-  const el = document.getElementById('grocery-list-pro');
-  buildGroceryList('grocery-list-pro', GROCERY_PRO);
-  el.hidden = false;
-  el.scrollIntoView({ behavior:'smooth', block:'start' });
+
+/* ─── FREE DAY 1 START ─── */
+var freeStartBtn = document.getElementById('btn-free-start');
+if (freeStartBtn) freeStartBtn.addEventListener('click', function() {
+  // Temporarily grant access to day 1 for preview
+  var dayData = ALL_DAYS[0];
+  if (dayData) startWorkoutSession(dayData.moves, dayData.rounds, 1);
 });
 
-/* ─────────────── REVIEWS ─────────────── */
-function buildReviews() {
-  const track = document.getElementById('reviews-track');
-  if (!track) return;
-  REVIEWS.forEach(r => {
-    const card = document.createElement('div'); card.className = 'review-card';
-    const stars = document.createElement('div'); stars.className = 'review-stars'; safeText(stars, '★'.repeat(r.stars));
-    const text = document.createElement('div'); text.className = 'review-text'; safeText(text, r.text);
-    const author = document.createElement('div'); author.className = 'review-author'; safeText(author, r.author);
-    const tag = document.createElement('div'); tag.className = 'review-tag'; safeText(tag, r.tag);
-    card.appendChild(stars); card.appendChild(text); card.appendChild(author); card.appendChild(tag);
+/* ─── REVIEWS ─── */
+var REVIEWS = [
+  { text:'"I lost 4kg in my first month. The sessions are genuinely challenging."', author:'Sofia M.', tag:'Lost 4kg in 30 days', stars:5 },
+  { text:'"Finally a fitness app that respects I live in a flat. Zero jumping."', author:'Priya R.', tag:'Apartment-friendly convert', stars:5 },
+  { text:'"The meal templates changed everything. Simple and protein-rich."', author:'Camille D.', tag:'Starter plan member', stars:5 },
+  { text:'"VivaSculpt is the first programme I\'ve stuck with past week 2."', author:'Amara T.', tag:'3-month member', stars:5 },
+  { text:'"The 28-day structure removes all decision-making. That\'s the magic."', author:'Laura K.', tag:'Pro member', stars:5 },
+  { text:'"Upgraded to Pro. Worth every penny. I prep on Sunday in 1 hour."', author:'Natasha B.', tag:'Pro member', stars:5 }
+];
+
+function buildReviews(containerId) {
+  var track = document.getElementById(containerId); if (!track) return;
+  track.innerHTML = '';
+  REVIEWS.forEach(function(r) {
+    var card = document.createElement('div'); card.className = 'review-card';
+    var stars = document.createElement('div'); stars.className = 'review-stars'; safeText(stars, '★'.repeat(r.stars));
+    var text  = document.createElement('div'); text.className  = 'review-text';  safeText(text,  r.text);
+    var auth  = document.createElement('div'); auth.className  = 'review-author'; safeText(auth,  r.author);
+    var tag   = document.createElement('div'); tag.className   = 'review-tag';   safeText(tag,   r.tag);
+    card.appendChild(stars); card.appendChild(text); card.appendChild(auth); card.appendChild(tag);
     track.appendChild(card);
   });
 }
-buildReviews();
 
-/* ─────────────── DAY PLAN ─────────────── */
-function buildDayPlan() {
-  const el = document.getElementById('day-plan');
-  if (!el) return;
-  DAY_PLAN.forEach(day => {
-    const item = document.createElement('div'); item.className = 'day-item';
-    const lbl = document.createElement('div'); lbl.className = 'day-label'; safeText(lbl, day.label);
-    const info = document.createElement('div');
-    const name = document.createElement('div'); name.className = 'day-workout'; safeText(name, day.workout);
-    const desc = document.createElement('div'); desc.className = 'day-desc'; safeText(desc, day.desc);
-    info.appendChild(name); info.appendChild(desc);
-    const tag = document.createElement('div'); tag.className = 'day-tag ' + day.tag; safeText(tag, day.tagLabel);
-    item.appendChild(lbl); item.appendChild(info); item.appendChild(tag); el.appendChild(item);
-  });
-}
-buildDayPlan();
-
-/* ─────────────── FAQ ─────────────── */
-function buildFAQ() {
-  const el = document.getElementById('faq-list');
-  if (!el) return;
-  FAQ.forEach((item, i) => {
-    const wrapper = document.createElement('div'); wrapper.className = 'faq-item';
-    const btn = document.createElement('button'); btn.className = 'faq-trigger';
-    btn.setAttribute('aria-expanded','false'); btn.setAttribute('aria-controls','faq-body-'+i);
-    btn.setAttribute('type','button');
-    const qText = document.createElement('span'); safeText(qText, item.q);
-    const arrow = document.createElement('svg'); arrow.setAttribute('class','faq-arrow'); arrow.setAttribute('width','18'); arrow.setAttribute('height','18'); arrow.setAttribute('viewBox','0 0 24 24'); arrow.setAttribute('fill','none'); arrow.setAttribute('stroke','currentColor'); arrow.setAttribute('stroke-width','2'); arrow.setAttribute('aria-hidden','true');
-    arrow.innerHTML = '<polyline points="6,9 12,15 18,9"/>';
-    btn.appendChild(qText); btn.appendChild(arrow);
-    const body = document.createElement('div'); body.className = 'faq-body'; body.id = 'faq-body-'+i; body.hidden = true;
-    safeText(body, item.a);
-    btn.addEventListener('click', () => {
-      const expanded = btn.getAttribute('aria-expanded') === 'true';
-      btn.setAttribute('aria-expanded', !expanded); body.hidden = expanded;
-    });
-    wrapper.appendChild(btn); wrapper.appendChild(body); el.appendChild(wrapper);
-  });
-}
-buildFAQ();
-
-/* ─────────────── PDF BUTTON ─────────────── */
-document.getElementById('btn-pdf').addEventListener('click', function(e) {
-  e.preventDefault();
-  // PDF is served from assets folder
-  window.open('assets/vivasculpt-kickstart.pdf', '_blank');
-});
-
-/* ═══════════════════════════════════════════════════
-   ONBOARDING + PROGRESS DASHBOARD
-   ═══════════════════════════════════════════════════ */
-
-var ONBOARD_KEY = 'vs_onboard';
-var PROGRESS_KEY = 'vs_progress';
-
-function loadOnboard() {
-  try { return JSON.parse(localStorage.getItem(ONBOARD_KEY) || '{}'); } catch(e) { return {}; }
-}
-function saveOnboard(data) {
-  try { localStorage.setItem(ONBOARD_KEY, JSON.stringify(data)); } catch(e) {}
-}
-function loadProgress() {
-  try { return JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{"workouts":0,"meals":0,"streak":0,"startDate":null}'); } catch(e) { return {workouts:0,meals:0,streak:0,startDate:null}; }
-}
-function saveProgress(data) {
-  try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(data)); } catch(e) {}
-}
-
-// Check if onboarding needed
-function checkOnboarding() {
-  var data = loadOnboard();
-  if (!data.complete) showOnboarding();
-}
-
-function showOnboarding() {
-  // Remove any existing onboarding
-  var existing = document.getElementById('onboarding-overlay');
-  if (existing) existing.remove();
-
-  var overlay = document.createElement('div');
-  overlay.id = 'onboarding-overlay';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:400;background:rgba(11,15,20,.7);backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;animation:overlayIn .2s ease';
-
-  var steps = [
-    { icon:'🏋️‍♀️', title:'Set your workout style', desc:'Choose Low-Impact or Classic — you can change this anytime.', key:'workout', options:['Low-Impact (Quiet, gentle)', 'Classic (High intensity)'] },
-    { icon:'🥗', title:'Your main goal', desc:'This helps us personalise your meal suggestions.', key:'goal', options:['Lose weight', 'Build strength', 'Feel more energised', 'Improve overall health'] },
-    { icon:'🩸', title:'Track your cycle (optional)', desc:'Log your period to get phase-aligned workouts and meals automatically.', key:'cycle', options:['Yes, track my cycle', 'Skip for now'] },
-    { icon:'🎯', title:'Your Week 1 goal', desc:'Set one simple intention for your first week.', key:'goal1', options:['Complete all 3 HIIT sessions', 'Follow the meal plan daily', 'Move every day, even gently', 'Just show up consistently'] }
-  ];
-
-  var currentStep = 0;
-  var answers = {};
-
-  function renderStep() {
-    var s = steps[currentStep];
-    overlay.innerHTML = '';
-    var box = document.createElement('div');
-    box.style.cssText = 'background:#fff;border-radius:22px 22px 0 0;padding:2rem 1.5rem calc(2rem + env(safe-area-inset-bottom));width:100%;max-width:540px;animation:slideUp .3s cubic-bezier(.34,1.56,.64,1)';
-
-    var progress = document.createElement('div');
-    progress.style.cssText = 'display:flex;gap:.35rem;margin-bottom:1.5rem';
-    steps.forEach(function(_, i) {
-      var dot = document.createElement('div');
-      dot.style.cssText = 'flex:1;height:3px;border-radius:2px;background:' + (i <= currentStep ? '#0F766E' : '#E8E3DC');
-      progress.appendChild(dot);
-    });
-
-    var icon = document.createElement('div');
-    icon.style.cssText = 'font-size:2.5rem;margin-bottom:.75rem';
-    icon.textContent = s.icon;
-
-    var title = document.createElement('h2');
-    title.style.cssText = 'font-family:"DM Serif Display",serif;font-size:1.5rem;margin-bottom:.4rem';
-    title.textContent = s.title;
-
-    var desc = document.createElement('p');
-    desc.style.cssText = 'font-size:.88rem;color:#6B7280;margin-bottom:1.25rem';
-    desc.textContent = s.desc;
-
-    var optionsWrap = document.createElement('div');
-    optionsWrap.style.cssText = 'display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.5rem';
-
-    s.options.forEach(function(opt) {
-      var btn = document.createElement('button');
-      btn.style.cssText = 'padding:.8rem 1rem;border:1.5px solid #E8E3DC;border-radius:10px;text-align:left;font-size:.9rem;font-family:inherit;background:#FAF7F2;cursor:pointer;transition:all .15s;font-weight:500';
-      btn.textContent = opt;
-      btn.addEventListener('mouseenter', function() { btn.style.borderColor='#0F766E'; btn.style.color='#0F766E'; });
-      btn.addEventListener('mouseleave', function() { if(!btn.classList.contains('selected')){ btn.style.borderColor='#E8E3DC'; btn.style.color=''; } });
-      btn.addEventListener('click', function() {
-        optionsWrap.querySelectorAll('button').forEach(function(b){ b.style.background='#FAF7F2'; b.style.borderColor='#E8E3DC'; b.style.color=''; b.classList.remove('selected'); });
-        btn.style.background='#F0FDFB'; btn.style.borderColor='#0F766E'; btn.style.color='#0F766E'; btn.classList.add('selected');
-        answers[s.key] = opt;
-        setTimeout(nextStep, 400);
-      });
-      optionsWrap.appendChild(btn);
-    });
-
-    var skipBtn = document.createElement('button');
-    skipBtn.style.cssText = 'width:100%;padding:.6rem;font-size:.8rem;color:#9CA3AF;background:none;border:none;cursor:pointer;font-family:inherit';
-    skipBtn.textContent = currentStep === steps.length - 1 ? '' : 'Skip this step';
-    skipBtn.addEventListener('click', nextStep);
-
-    box.appendChild(progress); box.appendChild(icon); box.appendChild(title);
-    box.appendChild(desc); box.appendChild(optionsWrap); box.appendChild(skipBtn);
-    overlay.appendChild(box);
-  }
-
-  function nextStep() {
-    currentStep++;
-    if (currentStep >= steps.length) {
-      finishOnboarding(answers);
-    } else {
-      renderStep();
-    }
-  }
-
-  renderStep();
-  document.body.appendChild(overlay);
-}
-
-function finishOnboarding(answers) {
-  var data = loadOnboard();
-  data.complete = true;
-  data.answers = answers;
-  data.date = new Date().toISOString();
-  saveOnboard(data);
-
-  var progress = loadProgress();
-  if (!progress.startDate) { progress.startDate = new Date().toISOString(); saveProgress(progress); }
-
-  // Remove overlay
-  var overlay = document.getElementById('onboarding-overlay');
-  if (overlay) overlay.remove();
-
-  // Auto-select intensity based on answer
-  if (answers.workout && answers.workout.indexOf('Low') > -1) {
-    state.intensity = 'low';
-    document.querySelectorAll('[data-group="intensity"]').forEach(function(p){
-      p.classList.remove('active');
-      if (p.dataset.value === 'low') p.classList.add('active');
-    });
-  }
-
-  // Show welcome message
-  showProgressDashboard();
-}
-
-/* ── Progress Dashboard ── */
-function buildProgressDashboard() {
-  var el = document.getElementById('progress-dashboard');
-  if (!el) return;
-
-  var progress = loadProgress();
-  var streak = getStreak();
-  var onboard = loadOnboard();
-  var phase = typeof getTodayPhase === 'function' ? getTodayPhase() : null;
-
-  el.innerHTML = '';
-
-  // Week goal from onboarding
-  var goalText = (onboard.answers && onboard.answers.goal1) ? onboard.answers.goal1 : 'Show up every day';
-
-  var html = '<div class="dash-grid">' +
-    '<div class="dash-stat"><div class="dash-num">' + streak + '</div><div class="dash-lbl">Day streak</div></div>' +
-    '<div class="dash-stat"><div class="dash-num">' + progress.workouts + '</div><div class="dash-lbl">Workouts done</div></div>' +
-    '<div class="dash-stat"><div class="dash-num">' + (phase ? phase.charAt(0).toUpperCase() + phase.slice(1) : '–') + '</div><div class="dash-lbl">Cycle phase</div></div>' +
-    '</div>' +
-    '<div class="dash-goal"><span class="dash-goal-label">Week 1 goal</span><span class="dash-goal-text">' + goalText + '</span></div>';
-
-  // Checklist
-  var checks = [
-    { label: 'Complete your profile', done: !!(onboard.complete), key: 'profile' },
-    { label: 'Log your first workout', done: progress.workouts > 0, key: 'workout' },
-    { label: 'Track your cycle', done: (typeof CAL !== 'undefined' && CAL.marked && CAL.marked.length > 0), key: 'cycle' },
-    { label: 'Try the 7-Day Kickstart', done: !!(onboard.answers && onboard.answers.kickstart), key: 'kickstart' }
-  ];
-  var done = checks.filter(function(c){ return c.done; }).length;
-
-  html += '<div class="dash-checklist">';
-  html += '<div class="dash-check-header"><span>Getting started</span><span class="dash-check-count">' + done + ' / ' + checks.length + '</span></div>';
-  checks.forEach(function(c) {
-    html += '<div class="dash-check-item ' + (c.done ? 'done' : '') + '">' +
-      '<div class="dash-check-icon">' + (c.done ? '✓' : '○') + '</div>' +
-      '<span>' + c.label + '</span></div>';
-  });
-  html += '</div>';
-
-  el.innerHTML = html;
-}
-
-function showProgressDashboard() {
-  buildProgressDashboard();
-}
-
-// Track workouts completed
-var origEndWorkout = typeof endWorkout === 'function' ? endWorkout : null;
-function trackWorkoutComplete() {
-  var progress = loadProgress();
-  progress.workouts = (progress.workouts || 0) + 1;
-  saveProgress(progress);
-  buildProgressDashboard();
-}
-
-const PROTOCOL_DATA = {
-  // [mood][phase] → protocol
-  low: {
-    menstrual:  { workout:{ name:'Recovery Flow', desc:'Gentle bodyweight movement — honour your body today', moves: DEFAULT_MOVES.slice(0,3) }, meal:{ name:'Iron-Rich Warm Bowl', desc:'Lentil soup · dark leafy greens · beetroot · warm ginger tea · dark chocolate square' }, recovery:{ name:'Box Breathing', desc:'4s inhale · 4s hold · 4s exhale · 4s hold — repeat 5×' }, header:'Gentle day. Full credit.', icon:'🌸' },
-    follicular: { workout:{ name:'Light Strength Flow', desc:'Low-intensity · 2 rounds · no jumping', moves: DEFAULT_MOVES.slice(0,3) }, meal:{ name:'Fresh Protein Plate', desc:'Eggs · avocado · mixed greens · lemon · pumpkin seeds' }, recovery:{ name:'Hip Mobility Flow', desc:'5 min · deep hip circles · cat-cow · child\'s pose' }, header:'Easy does it. Still showing up.', icon:'🌱' },
-    ovulation:  { workout:{ name:'Balanced HIIT', desc:'Moderate intensity · your body can handle more today', moves: DEFAULT_MOVES }, meal:{ name:'High-Energy Bowl', desc:'Chicken · quinoa · roasted veg · olive oil · lemon' }, recovery:{ name:'Shoulder Roll & Stretch', desc:'3 min · roll tension away before rest' }, header:'Even on low days, you move.', icon:'⚡' },
-    luteal:     { workout:{ name:'Slow Strength', desc:'Low-impact · focus on form not speed', moves: MOVES_LOWER }, meal:{ name:'Fibre-Rich Comfort', desc:'Sweet potato · black beans · spinach · tahini · warming spices' }, recovery:{ name:'Legs Up the Wall', desc:'5 min · elevate legs · deep breathing · reduce bloating' }, header:'Stable. Steady. Strong.', icon:'🌙' },
-    none:       { workout:{ name:'Recovery Flow', desc:'Gentle movement · honour where you are', moves: DEFAULT_MOVES.slice(0,3) }, meal:{ name:'Protein & Greens', desc:'Greek yogurt · spinach · walnuts · lemon · honey' }, recovery:{ name:'Box Breathing', desc:'2–5 min · calm the nervous system' }, header:'Rest is productive.', icon:'🧘' }
-  },
-  neutral: {
-    menstrual:  { workout:{ name:'Low-Impact HIIT', desc:'Apartment-friendly · no jumping · 20 min', moves: DEFAULT_MOVES }, meal:{ name:'Iron & Warmth', desc:'Lentils · spinach · roasted sweet potato · ginger · turmeric' }, recovery:{ name:'Seated Mobility', desc:'5 min · seated twists · neck rolls · wrist circles' }, header:'Balanced day. Balanced effort.', icon:'⚖️' },
-    follicular: { workout:{ name:'Full Body HIIT', desc:'Energy is building — use it · 20 min', moves: DEFAULT_MOVES }, meal:{ name:'Fresh & Protein-Forward', desc:'Grilled chicken · mixed greens · cucumber · olive oil · lemon' }, recovery:null, header:'Rising energy. Rise with it.', icon:'🌱' },
-    ovulation:  { workout:{ name:'Classic HIIT', desc:'Peak energy phase · go for it · 25 min', moves: [...DEFAULT_MOVES, ...MOVES_UPPER.slice(0,2)] }, meal:{ name:'Performance Plate', desc:'Salmon · brown rice · broccoli · avocado · sesame' }, recovery:null, header:'Peak phase. Peak effort.', icon:'🔥' },
-    luteal:     { workout:{ name:'Strength & Core', desc:'Focus on control · no rushing · 20 min', moves: [...MOVES_LOWER, ...MOVES_CORE.slice(0,2)] }, meal:{ name:'Craving-Stable Meal', desc:'Turkey wrap · hummus · spinach · roasted peppers · complex carbs' }, recovery:{ name:'Foam Roll + Stretch', desc:'5 min · quads · hamstrings · lower back' }, header:'Steady wins. Every time.', icon:'🌙' },
-    none:       { workout:{ name:'Balanced HIIT', desc:'Solid session · 20 min · you\'ve got this', moves: DEFAULT_MOVES }, meal:{ name:'Balanced Plate', desc:'Eggs · veg · olive oil · whole grain toast' }, recovery:null, header:'Show up. Do the work.', icon:'💪' }
-  },
-  high: {
-    menstrual:  { workout:{ name:'Low-Impact Power', desc:'Channel that energy gently · protect your body', moves: DEFAULT_MOVES }, meal:{ name:'Iron Power Bowl', desc:'Spinach · lentils · pumpkin seeds · beetroot · tahini dressing' }, recovery:null, header:'Energy up. Intensity smart.', icon:'⚡' },
-    follicular: { workout:{ name:'Strength Builder', desc:'Follicular + fired up = ideal combo · 25 min', moves: [...DEFAULT_MOVES, ...MOVES_UPPER.slice(0,3)] }, meal:{ name:'Build & Recover', desc:'Chicken breast · quinoa · roasted veg · almonds · lemon' }, recovery:null, header:'Best time to push. Push.', icon:'🚀' },
-    ovulation:  { workout:{ name:'Performance HIIT', desc:'Peak phase + peak mood · full power · 25 min', moves: [...DEFAULT_MOVES, ...MOVES_CORE] }, meal:{ name:'Performance Fuel', desc:'Salmon · sweet potato · edamame · avocado · ginger-soy' }, recovery:null, header:'No ceiling today.', icon:'🔥' },
-    luteal:     { workout:{ name:'Endurance Flow', desc:'High mood, but body needs balance · 20 min', moves: [...MOVES_LOWER, ...DEFAULT_MOVES.slice(0,3)] }, meal:{ name:'Fibre + Protein Balance', desc:'Oats · protein powder · chia · banana · almond butter' }, recovery:{ name:'Cool Down Stretch', desc:'5 min · don\'t skip — luteal needs recovery too' }, header:'Fired up. Stay balanced.', icon:'⚡' },
-    none:       { workout:{ name:'Full Power HIIT', desc:'Energy is high — use every drop · 25 min', moves: [...DEFAULT_MOVES, ...MOVES_UPPER.slice(0,2)] }, meal:{ name:'High Performance Plate', desc:'Grilled protein · complex carbs · healthy fats · hydrate well' }, recovery:null, header:'All systems go.', icon:'🔥' }
-  }
+/* ─── MEALS ─── */
+var MEALS_STARTER = [
+  { icon:'🫙', name:'Greek Yogurt Power Bowl', desc:'Full-fat Greek yogurt · mixed berries · walnuts · raw honey · cinnamon', macros:['~25g protein','Healthy fats','Antioxidants'] },
+  { icon:'🥚', name:'Eggs, Veg & Olive Oil', desc:'2–3 eggs · sautéed spinach & peppers · extra-virgin olive oil · sea salt', macros:['~20g protein','Good fats','Iron-rich'] },
+  { icon:'🥗', name:'Chicken or Tofu Salad', desc:'Grilled chicken or tofu · mixed greens · cucumber · olive oil & lemon dressing', macros:['~30g protein','Omega-3s','High fibre'] },
+  { icon:'🐟', name:'Salmon + Roasted Veg', desc:'Baked salmon · roasted broccoli & sweet potato · avocado · lemon', macros:['~35g protein','Omega-3 rich','Anti-inflammatory'] }
+];
+var MEALS_PRO = [
+  { day:'Monday',    icon:'🍳', name:'Protein Scramble & Rye Toast', desc:'3 eggs + egg white · spinach · feta · rye toast', macros:['~32g protein'], calories:'420 kcal' },
+  { day:'Tuesday',   icon:'🥣', name:'Overnight Oats + Protein',     desc:'Oats · protein powder · banana · chia · almond butter', macros:['~28g protein'], calories:'480 kcal' },
+  { day:'Wednesday', icon:'🍗', name:'Herb Chicken & Quinoa Bowl',    desc:'Grilled chicken · quinoa · courgette · tahini', macros:['~40g protein'], calories:'510 kcal' },
+  { day:'Thursday',  icon:'🥑', name:'Smashed Avo & Cottage Cheese', desc:'Omelette · avocado on sourdough · cottage cheese', macros:['~26g protein'], calories:'440 kcal' },
+  { day:'Friday',    icon:'🐟', name:'Teriyaki Salmon Rice Bowl',     desc:'Salmon · brown rice · edamame · ginger-soy', macros:['~38g protein'], calories:'530 kcal' },
+  { day:'Saturday',  icon:'🥙', name:'Turkey & Hummus Wrap',          desc:'Turkey · wholegrain wrap · hummus · spinach', macros:['~34g protein'], calories:'460 kcal' },
+  { day:'Sunday',    icon:'🍲', name:'Lentil & Vegetable Stew',       desc:'Red lentils · sweet potato · spinach · turmeric', macros:['~22g protein'], calories:'490 kcal' }
+];
+var GROCERY_STARTER = {
+  'Protein':['Greek yogurt','Eggs x12','Chicken breast','Salmon fillet','Firm tofu'],
+  'Produce':['Baby spinach','Broccoli','Sweet potato','Bell peppers','Mixed berries','Avocado','Lemon'],
+  'Pantry': ['Extra-virgin olive oil','Walnuts','Raw honey','Sea salt','Cinnamon']
+};
+var GROCERY_PRO = {
+  'Proteins':['Eggs x18','Chicken breast x4','Salmon x2','Turkey slices','Red lentils','Cottage cheese','Protein powder'],
+  'Produce': ['Spinach','Courgette','Red pepper','Broccoli','Sweet potato x2','Cherry tomatoes','Cucumber','Banana x4','Avocado x2'],
+  'Grains':  ['Brown rice','Rolled oats','Quinoa','Rye bread','Sourdough','Wholegrain wraps'],
+  'Pantry':  ['Olive oil','Tahini','Almond butter','Chia seeds','Almond milk','Soy sauce','Hummus','Sesame seeds']
 };
 
-const IDENTITY_MESSAGES = [
-  '"You showed up today."',
-  '"Consistency is becoming your default."',
-  '"No negotiation. Just action."',
-  '"You did the thing."',
-  '"Another day. Another rep."',
-  '"Your future self remembers this."',
-  '"One session closer."',
-  '"This is who you are now."'
+function buildMealsGrid(containerId, meals, isPro) {
+  var el = document.getElementById(containerId); if (!el) return;
+  el.innerHTML = '';
+  meals.forEach(function(meal) {
+    var card = document.createElement('div'); card.className = 'meal-card';
+    var icon = document.createElement('div'); icon.className = 'meal-icon'; safeText(icon, meal.icon);
+    var body = document.createElement('div');
+    if (isPro && meal.day) { var dl = document.createElement('div'); dl.className = 'meal-day-label'; safeText(dl, meal.day); body.appendChild(dl); }
+    var name = document.createElement('div'); name.className = 'meal-name'; safeText(name, meal.name);
+    var desc = document.createElement('div'); desc.className = 'meal-desc'; safeText(desc, meal.desc);
+    var macros = document.createElement('div'); macros.className = 'meal-macro';
+    (meal.macros || []).forEach(function(m) { var p = document.createElement('span'); p.className = 'macro-pill'; safeText(p, m); macros.appendChild(p); });
+    if (meal.calories) { var c = document.createElement('span'); c.className = 'macro-pill'; c.style.background = 'var(--gold-bg)'; c.style.color = 'var(--gold)'; safeText(c, meal.calories); macros.appendChild(c); }
+    body.appendChild(name); body.appendChild(desc); body.appendChild(macros);
+    card.appendChild(icon); card.appendChild(body); el.appendChild(card);
+  });
+}
+
+function buildGroceryList(containerId, data) {
+  var el = document.getElementById(containerId); if (!el) return;
+  el.innerHTML = '';
+  Object.entries(data).forEach(function(entry) {
+    var sec = document.createElement('span'); sec.className = 'grocery-section'; safeText(sec, entry[0]); el.appendChild(sec);
+    var grid = document.createElement('div'); grid.className = 'grocery-grid';
+    entry[1].forEach(function(item) { var d = document.createElement('div'); d.className = 'grocery-item'; safeText(d, item); grid.appendChild(d); });
+    el.appendChild(grid);
+  });
+}
+
+document.querySelectorAll('.plan-tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.plan-tab').forEach(function(t) { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+    tab.classList.add('active'); tab.setAttribute('aria-selected','true');
+    var plan = tab.dataset.plan;
+    document.querySelectorAll('.meals-panel').forEach(function(p) { p.classList.add('hidden'); });
+    document.getElementById('meals-' + plan).classList.remove('hidden');
+    if (plan === 'pro' && isPro()) {
+      document.getElementById('pro-meal-gate').classList.add('hidden');
+      document.getElementById('meals-pro-content').classList.remove('hidden');
+    }
+  });
+});
+
+var groceryStarterBtn = document.getElementById('btn-grocery-starter');
+if (groceryStarterBtn) groceryStarterBtn.addEventListener('click', function() {
+  var el = document.getElementById('grocery-list-starter');
+  buildGroceryList('grocery-list-starter', GROCERY_STARTER); el.hidden = false;
+  el.scrollIntoView({ behavior:'smooth', block:'start' });
+});
+var groceryProBtn = document.getElementById('btn-grocery-pro');
+if (groceryProBtn) groceryProBtn.addEventListener('click', function() {
+  var el = document.getElementById('grocery-list-pro');
+  buildGroceryList('grocery-list-pro', GROCERY_PRO); el.hidden = false;
+  el.scrollIntoView({ behavior:'smooth', block:'start' });
+});
+var upgradeBtn = document.getElementById('btn-upgrade-meals');
+if (upgradeBtn) upgradeBtn.addEventListener('click', function() { switchTab('pricing'); });
+
+/* ─── FAQ ─── */
+var FAQ = [
+  { q:'Can I cancel anytime?', a:'Yes. Cancel through your PayPal account before your next renewal date. No penalties.' },
+  { q:'What is the 28-day system?', a:'A structured daily programme — one workout, one meal guide, one checkmark. No browsing, no decisions. Just follow the system.' },
+  { q:'Do I need equipment?', a:'No equipment required. Every exercise has a bodyweight version. Just a small clear floor space.' },
+  { q:'I\'m a beginner — is this for me?', a:'Yes. Choose Low-Impact intensity. Every move has a modification. Start with Day 1.' },
+  { q:'How does the 7-day trial work?', a:'Start the Starter plan — no payment for 7 days. Cancel before the trial ends and you\'re never charged. After 7 days it renews at $14/month.' },
+  { q:'What\'s the difference between Starter and Pro?', a:'Starter gives you Week 1 access and daily structure. Pro unlocks all 28 days, rotating meal plans, and full progress tracking.' }
 ];
-
-const STREAK_KEY = 'vs_streak';
-const STREAK_DATE_KEY = 'vs_streak_date';
-
-function getStreak() {
-  const streak = parseInt(localStorage.getItem(STREAK_KEY) || '0', 10);
-  const lastDate = localStorage.getItem(STREAK_DATE_KEY);
-  const today = new Date().toDateString();
-  if (lastDate === today) return streak; // already done today
-  const yesterday = new Date(Date.now() - 86400000).toDateString();
-  return lastDate === yesterday ? streak : 0; // reset if missed day
-}
-function incrementStreak() {
-  const lastDate = localStorage.getItem(STREAK_DATE_KEY);
-  const today = new Date().toDateString();
-  if (lastDate === today) return getStreak(); // don't double count
-  const streak = getStreak() + 1;
-  localStorage.setItem(STREAK_KEY, streak.toString());
-  localStorage.setItem(STREAK_DATE_KEY, today);
-  return streak;
-}
-
-let protocolState = { mood: null, phase: 'none', protocol: null };
-let protocolWorkout = { moves:[], moveIndex:0, round:1, totalRounds:2, phase:'work', timeLeft:40, paused:false, interval:null };
-
-function buildProtocol() {
-  const { mood, phase } = protocolState;
-  if (!mood) return;
-  const phaseKey = phase || 'none';
-  const p = PROTOCOL_DATA[mood][phaseKey] || PROTOCOL_DATA[mood]['none'];
-  protocolState.protocol = p;
-
-  // Update output card
-  safeText(document.getElementById('proto-header-icon'), p.icon);
-  safeText(document.getElementById('proto-header-title'), p.header);
-  safeText(document.getElementById('proto-header-sub'), `${mood === 'low' ? '😩 Low' : mood === 'high' ? '🔥 Fired' : '😐 OK'} energy${phase !== 'none' ? ' · ' + phase : ''}`);
-  safeText(document.getElementById('proto-workout-name'), p.workout.name);
-  safeText(document.getElementById('proto-workout-desc'), p.workout.desc);
-  safeText(document.getElementById('proto-meal-name'), p.meal.name);
-  safeText(document.getElementById('proto-meal-desc'), p.meal.desc);
-
-  const recoveryBlock = document.getElementById('proto-recovery-block');
-  if (p.recovery) {
-    recoveryBlock.hidden = false;
-    safeText(document.getElementById('proto-recovery-name'), p.recovery.name);
-    safeText(document.getElementById('proto-recovery-desc'), p.recovery.desc);
-  } else {
-    recoveryBlock.hidden = true;
-  }
-
-  document.getElementById('protocol-output').classList.remove('hidden');
-  document.getElementById('btn-start-protocol').classList.remove('hidden');
-}
-
-// Mood buttons
-document.querySelectorAll('.mood-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    protocolState.mood = btn.dataset.mood;
-    buildProtocol();
+function buildFAQ() {
+  var el = document.getElementById('faq-list'); if (!el) return;
+  FAQ.forEach(function(item, i) {
+    var wrap = document.createElement('div'); wrap.className = 'faq-item';
+    var btn  = document.createElement('button'); btn.className = 'faq-trigger'; btn.setAttribute('aria-expanded','false'); btn.setAttribute('type','button');
+    var qText = document.createElement('span'); safeText(qText, item.q);
+    var arrow = document.createElement('svg'); arrow.setAttribute('class','faq-arrow'); arrow.setAttribute('width','18'); arrow.setAttribute('height','18'); arrow.setAttribute('viewBox','0 0 24 24'); arrow.setAttribute('fill','none'); arrow.setAttribute('stroke','currentColor'); arrow.setAttribute('stroke-width','2'); arrow.setAttribute('aria-hidden','true');
+    arrow.innerHTML = '<polyline points="6,9 12,15 18,9"/>';
+    btn.appendChild(qText); btn.appendChild(arrow);
+    var body = document.createElement('div'); body.className = 'faq-body'; body.id = 'faq-body-'+i; body.hidden = true; safeText(body, item.a);
+    btn.addEventListener('click', function() { var exp = btn.getAttribute('aria-expanded') === 'true'; btn.setAttribute('aria-expanded',!exp); body.hidden = exp; });
+    wrap.appendChild(btn); wrap.appendChild(body); el.appendChild(wrap);
   });
-});
-
-// Phase buttons
-document.querySelectorAll('.phase-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    protocolState.phase = btn.dataset.phase;
-    buildProtocol();
-  });
-});
-
-// START button — launches full-screen player
-document.getElementById('btn-start-protocol').addEventListener('click', () => {
-  const p = protocolState.protocol;
-  if (!p) return;
-  const rounds = 2;
-  const moves = p.workout.moves || DEFAULT_MOVES;
-  Object.assign(protocolWorkout, {
-    moves, moveIndex:0, round:1, totalRounds:rounds,
-    phase:'work', timeLeft:40, paused:false
-  });
-  clearInterval(protocolWorkout.interval);
-  updateProtocolPlayerUI();
-  document.getElementById('protocol-player').classList.remove('hidden');
-  document.body.style.overflow = 'hidden';
-  protocolWorkout.interval = setInterval(tickProtocol, 1000);
-});
-
-function updateProtocolPlayerUI() {
-  const w = protocolWorkout;
-  const move = w.moves[w.moveIndex];
-  const CIRC = 2 * Math.PI * 72; // r=72 → 452.4
-
-  safeText(document.getElementById('pp-phase'), w.phase === 'work' ? 'WORK' : 'REST');
-  safeText(document.getElementById('pp-move'), move ? move.name : '–');
-  const modEl = document.getElementById('pp-mod');
-  if (move) safeText(modEl, protocolState.mood === 'low' ? '🟢 ' + move.low : '🔴 ' + move.classic);
-  else modEl.textContent = '';
-  safeText(document.getElementById('pp-time'), w.timeLeft);
-  safeText(document.getElementById('pp-round'), 'Round ' + w.round + ' / ' + w.totalRounds);
-  const total = w.phase === 'work' ? 40 : 20;
-  const ring = document.getElementById('pp-ring-fg');
-  ring.style.strokeDashoffset = CIRC * (1 - w.timeLeft / total);
-  const nextMove = w.moves[w.moveIndex + 1];
-  safeText(document.getElementById('pp-next-move'), nextMove ? nextMove.name : 'Last move!');
-  safeText(document.getElementById('pp-btn-pause'), w.paused ? 'Resume' : 'Pause');
 }
 
-function tickProtocol() {
-  const w = protocolWorkout;
-  if (w.paused) return;
-  w.timeLeft--;
-  if (w.timeLeft <= 0) {
-    if (w.phase === 'work') {
-      w.phase = 'rest'; w.timeLeft = 20; beep(330,.15,.08);
-    } else {
-      w.moveIndex++;
-      if (w.moveIndex >= w.moves.length) {
-        if (w.round < w.totalRounds) {
-          w.round++; w.moveIndex = 0; w.phase = 'work'; w.timeLeft = 40; beep(660,.2,.15);
-        } else { finishProtocol(); return; }
-      } else { w.phase = 'work'; w.timeLeft = 40; }
-    }
-  } else if (w.timeLeft <= 3 && w.phase === 'work') { beep(880,.08,.05); }
-  updateProtocolPlayerUI();
-}
-
-function finishProtocol() {
-  clearInterval(protocolWorkout.interval);
-  document.getElementById('protocol-player').classList.add('hidden');
-  const streak = incrementStreak();
-  const msg = IDENTITY_MESSAGES[Math.floor(Math.random() * IDENTITY_MESSAGES.length)];
-  safeText(document.getElementById('post-streak'), 'Day ' + streak + ' streak 🔥');
-  safeText(document.getElementById('post-message'), msg);
-  document.getElementById('post-action').classList.remove('hidden');
-}
-
-document.getElementById('pp-btn-pause').addEventListener('click', () => {
-  protocolWorkout.paused = !protocolWorkout.paused;
-  safeText(document.getElementById('pp-btn-pause'), protocolWorkout.paused ? 'Resume' : 'Pause');
-});
-document.getElementById('pp-btn-end').addEventListener('click', () => {
-  clearInterval(protocolWorkout.interval);
-  document.getElementById('protocol-player').classList.add('hidden');
-  document.body.style.overflow = '';
-});
-document.getElementById('post-done-btn').addEventListener('click', () => {
-  document.getElementById('post-action').classList.add('hidden');
-  document.body.style.overflow = '';
-  switchTab('today');
-});
-/* ─────────────── PWA INSTALL PROMPT ─────────────── */
+/* ─── PWA INSTALL ─── */
 var deferredPrompt = null;
-var PWA_DISMISSED_KEY = 'vs_pwa_dismissed';
-
-function isIOS() {
-  return /iphone|ipad|ipod/i.test(navigator.userAgent);
-}
-function isAndroid() {
-  return /android/i.test(navigator.userAgent);
-}
-function isInStandaloneMode() {
-  return window.matchMedia('(display-mode: standalone)').matches ||
-    window.navigator.standalone === true;
-}
-
-// Android — capture install prompt
+function isIOS() { return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+function isInStandaloneMode() { return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
 window.addEventListener('beforeinstallprompt', function(e) {
-  e.preventDefault();
-  deferredPrompt = e;
-  if (!localStorage.getItem(PWA_DISMISSED_KEY) && !isInStandaloneMode()) {
-    setTimeout(showPWABanner, 3000);
-  }
+  e.preventDefault(); deferredPrompt = e;
+  if (!localStorage.getItem(PWA_KEY) && !isInStandaloneMode()) setTimeout(showPWABanner, 3000);
 });
-
+if (isIOS() && !isInStandaloneMode() && !localStorage.getItem(PWA_KEY)) setTimeout(showPWABanner, 3000);
 function showPWABanner() {
-  var banner = document.getElementById('pwa-banner');
+  var banner = document.getElementById('pwa-banner'); if (!banner) return;
   var installBtn = document.getElementById('pwa-install-btn');
-  var iosInstructions = document.getElementById('pwa-ios-instructions');
-  if (!banner) return;
-
-  if (isIOS() && !isInStandaloneMode()) {
-    // iPhone — show manual instructions
-    if (installBtn) installBtn.style.display = 'none';
-    if (iosInstructions) iosInstructions.style.display = 'block';
-    banner.classList.remove('hidden');
-  } else if (deferredPrompt) {
-    // Android — show install button
-    if (installBtn) installBtn.style.display = 'flex';
-    if (iosInstructions) iosInstructions.style.display = 'none';
-    banner.classList.remove('hidden');
-  }
+  var iosInst = document.getElementById('pwa-ios-instructions');
+  if (isIOS()) { if (installBtn) installBtn.style.display = 'none'; if (iosInst) iosInst.style.display = 'block'; banner.classList.remove('hidden'); }
+  else if (deferredPrompt) { if (installBtn) installBtn.style.display = 'flex'; if (iosInst) iosInst.style.display = 'none'; banner.classList.remove('hidden'); }
 }
-
-// Show iOS banner after 3 seconds
-if (isIOS() && !isInStandaloneMode() && !localStorage.getItem(PWA_DISMISSED_KEY)) {
-  setTimeout(showPWABanner, 3000);
-}
-
-var installBtn = document.getElementById('pwa-install-btn');
-if (installBtn) {
-  installBtn.addEventListener('click', function() {
-    var banner = document.getElementById('pwa-banner');
-    if (banner) banner.classList.add('hidden');
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(function(result) {
-        if (result.outcome === 'accepted' && typeof gtag !== 'undefined') {
-          gtag('event', 'pwa_installed');
-        }
-        deferredPrompt = null;
-      });
-    }
-  });
-}
-
-var dismissBtn = document.getElementById('pwa-dismiss');
-if (dismissBtn) {
-  dismissBtn.addEventListener('click', function() {
-    var banner = document.getElementById('pwa-banner');
-    if (banner) banner.classList.add('hidden');
-    localStorage.setItem(PWA_DISMISSED_KEY, '1');
-  });
-}
-
-window.addEventListener('appinstalled', function() {
-  var banner = document.getElementById('pwa-banner');
-  if (banner) banner.classList.add('hidden');
-  if (typeof gtag !== 'undefined') gtag('event', 'pwa_installed');
+var pwaInstallBtn = document.getElementById('pwa-install-btn');
+if (pwaInstallBtn) pwaInstallBtn.addEventListener('click', function() {
+  document.getElementById('pwa-banner').classList.add('hidden');
+  if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then(function(r) { if (r.outcome === 'accepted' && typeof gtag !== 'undefined') gtag('event','pwa_installed'); deferredPrompt = null; }); }
 });
+var pwaDismiss = document.getElementById('pwa-dismiss');
+if (pwaDismiss) pwaDismiss.addEventListener('click', function() { document.getElementById('pwa-banner').classList.add('hidden'); localStorage.setItem(PWA_KEY,'1'); });
 
-/* ─────────────── COPYRIGHT YEAR ─────────────── */
+/* ─── TRIAL BANNER (for PayPal redirect back) ─── */
+function updateTrialBanner() { /* handled by PayPal externally */ }
+function checkPaywall() { /* PayPal handles subscription state */ }
+
+/* ─── COPYRIGHT ─── */
 var yearEl = document.getElementById('copy-year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-/* ─────────────── INIT ─────────────── */
+/* ─── INIT ─── */
 function init() {
-  updateTrialBanner();
+  buildMealsGrid('meals-grid-starter', MEALS_STARTER, false);
+  buildMealsGrid('meals-grid-pro', MEALS_PRO, true);
+  buildFAQ();
+  renderTodayView();
   updatePlanBadge();
-  checkPaywall();
-  buildProgressDashboard();
-  // Show onboarding for new users (slight delay so page renders first)
-  setTimeout(function() { checkOnboarding(); }, 800);
-  setInterval(function() { updateTrialBanner(); checkPaywall(); }, 60000);
+  if (typeof gtag !== 'undefined') gtag('event','app_open');
 }
 init();

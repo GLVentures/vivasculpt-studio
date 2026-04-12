@@ -3,45 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="description" content="VivaSculpt Studio – Premium 15–25 minute home HIIT + protein-forward meals for women." />
+  <meta name="description" content="VivaSculpt Studio — 28-day guided body reset system for busy women." />
   <meta name="theme-color" content="#0F766E" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="VivaSculpt" />
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6F484WZT92"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-6F484WZT92');
-  </script>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <!-- Favicon — your logo in browser tab and URL bar -->
-  <!-- For best results: also save your logo as favicon.ico in the root folder -->
-  <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <link rel="icon" type="image/png" href="icons/icon-192.png" />
   <link rel="shortcut icon" href="favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <title>VivaSculpt Studio – Premium Home Fitness</title>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6F484WZT92"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-6F484WZT92');</script>
+  <title>VivaSculpt Studio — 28-Day Body Reset System</title>
 </head>
 <body>
 
-  <!-- PWA Install Banner -->
-  <div id="pwa-banner" class="pwa-banner hidden" role="banner">
+  <div id="pwa-banner" class="pwa-banner hidden">
     <div class="pwa-banner-inner">
       <img src="icons/icon-192.png" alt="" class="pwa-icon" aria-hidden="true" />
       <div class="pwa-text">
         <strong>Add to Home Screen</strong>
-        <span id="pwa-ios-instructions" style="display:none">
-          Tap <strong>Share</strong>
-          <svg style="display:inline;vertical-align:middle" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16,6 12,2 8,6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-          then <strong>"Add to Home Screen"</strong>
-        </span>
+        <span id="pwa-ios-instructions" style="display:none">Tap <b>Share</b> ↑ then <b>"Add to Home Screen"</b></span>
         <span class="pwa-sub">Install for the best experience</span>
       </div>
       <button class="pwa-install-btn" id="pwa-install-btn">Install</button>
@@ -51,16 +37,13 @@
 
   <div id="trial-banner" class="trial-banner hidden" role="alert" aria-live="polite"></div>
 
-  <!-- HEADER -->
   <header class="app-header">
     <div class="header-inner">
       <div class="logo">
-        <img src="icons/icon-192.png" alt="VivaSculpt logo"
-          style="width:44px;height:44px;object-fit:contain;display:block;border-radius:6px;flex-shrink:0;"
-          onerror="this.style.display='none'" aria-hidden="true" />
+        <img src="icons/icon-192.png" alt="VivaSculpt logo" style="width:44px;height:44px;object-fit:contain;display:block;border-radius:6px;flex-shrink:0;" onerror="this.style.display='none'" aria-hidden="true" />
         <div class="logo-text">
           <span class="logo-name">VivaSculpt</span>
-          <span class="logo-tag">Studio</span>
+          <span class="logo-tag">28-Day System</span>
         </div>
       </div>
       <div class="header-right">
@@ -74,488 +57,260 @@
 
   <main class="app-main">
 
-    <!-- ══════════ TODAY ══════════ -->
+    <!-- TODAY -->
     <section id="tab-today" class="tab-section active" aria-label="Today">
-      <div class="section-hero">
-        <div class="hero-eyebrow">Your daily session</div>
-        <h1 class="section-title">Today's<br><em>Workout</em></h1>
-        <p class="section-sub">15–25 minutes. Home-friendly. Real results.</p>
-      </div>
 
-      <div class="card session-card">
-        <div class="session-config">
-          <div class="config-group">
-            <span class="config-label">Duration</span>
-            <div class="pill-group" role="group" aria-label="Duration">
-              <button class="pill active" data-group="duration" data-value="15">15 min</button>
-              <button class="pill" data-group="duration" data-value="20">20 min</button>
-              <button class="pill" data-group="duration" data-value="25">25 min</button>
-            </div>
+      <!-- FREE VIEW -->
+      <div id="free-today">
+        <div class="hero-section">
+          <div class="hero-eyebrow-tag">28-Day System</div>
+          <h1 class="hero-title">Build discipline.<br>Sculpt your body.<br><em>In 28 days.</em></h1>
+          <p class="hero-sub">A structured transformation system for busy women who want results without thinking, planning, or guessing.</p>
+          <button class="btn-hero" id="btn-free-start">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            Try Day 1 — Free
+          </button>
+          <p class="hero-note">No account needed · Day 1 preview only</p>
+        </div>
+
+        <div class="system-preview card">
+          <div class="system-preview-header">
+            <h2>Your 28-Day System</h2>
+            <span class="lock-badge">🔒 Pro unlock</span>
           </div>
-          <div class="config-group">
-            <span class="config-label">Intensity</span>
-            <div class="pill-group" role="group" aria-label="Intensity">
-              <button class="pill active" data-group="intensity" data-value="low">Low‑Impact</button>
-              <button class="pill" data-group="intensity" data-value="classic">Classic</button>
-            </div>
+          <div id="week-previews"></div>
+        </div>
+
+        <div class="reviews-section">
+          <div class="reviews-header">
+            <h2 class="reviews-title">Member stories</h2>
+            <div class="reviews-rating">★★★★★ <span>4.9</span></div>
           </div>
-          <div class="config-group">
-            <span class="config-label">Level</span>
-            <div class="pill-group" role="group" aria-label="Level">
-              <button class="pill active" data-group="level" data-value="beginner">Beginner <span class="pill-hint">2 rounds</span></button>
-              <button class="pill" data-group="level" data-value="intermediate">Intermediate <span class="pill-hint">3 rounds</span></button>
-            </div>
+          <div class="reviews-track" id="reviews-track-free"></div>
+        </div>
+
+        <div class="cta-block">
+          <h3>Stop guessing. Start following a system.</h3>
+          <p>Workouts, meals, and daily structure — all decided for you. Every day. For 28 days.</p>
+          <button class="btn-primary" onclick="switchTab('pricing')" style="width:100%;margin-top:1rem;padding:1rem;font-size:1rem;">
+            Unlock Your Full 28-Day Reset →
+          </button>
+        </div>
+      </div>
+
+      <!-- PAID VIEW -->
+      <div id="paid-today" class="hidden">
+        <!-- Progress -->
+        <div class="progress-header">
+          <div class="progress-meta">
+            <span id="progress-day-label" class="progress-day">Day 1 of 28</span>
+            <span id="progress-pct" class="progress-pct">0%</span>
+          </div>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-bar-fill" style="width:0%"></div></div>
+          <div class="week-label" id="week-label">Week 1 — Reset Discipline</div>
+        </div>
+
+        <!-- Streak -->
+        <div class="streak-bar" id="streak-bar">
+          <span class="streak-fire">🔥</span>
+          <span id="streak-count">0</span>
+          <span class="streak-text">days disciplined</span>
+          <span id="missed-warning" class="missed-warning hidden">⚠️ Don't break your streak today</span>
+        </div>
+
+        <!-- Mission card -->
+        <div class="mission-card" id="mission-card">
+          <div class="mission-header">
+            <div class="mission-day-num" id="mission-day-num">Day 1</div>
+            <div class="mission-week-tag" id="mission-week-tag">Week 1 · Reset</div>
+          </div>
+          <div class="mission-title" id="mission-title">Full Body Reset</div>
+          <div class="mission-meta">
+            <span id="mission-duration">20 min</span>
+            <span class="mission-dot">·</span>
+            <span id="mission-tag">Full Body</span>
+            <span class="mission-dot">·</span>
+            <span id="mission-rounds">3 rounds</span>
+          </div>
+          <div class="mission-moves" id="mission-moves"></div>
+          <div class="mission-meal" id="mission-meal"></div>
+          <div class="mission-actions">
+            <button class="btn-mission-start" id="btn-mission-start">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+              Start Today's Session
+            </button>
+            <button class="btn-done-day" id="btn-done-day">✓ Mark as Done</button>
           </div>
         </div>
-        <button class="btn-primary btn-start" id="btn-start-today">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
-          Start Workout
-        </button>
-      </div>
 
-      <!-- Progress dashboard -->
-      <div id="progress-dashboard" class="card progress-dashboard" style="margin-bottom:1rem"></div>
+        <!-- Recovery day -->
+        <div class="recovery-card hidden" id="recovery-card">
+          <div class="recovery-icon">🧘</div>
+          <div class="recovery-title" id="recovery-title">Active Recovery</div>
+          <div class="recovery-desc" id="recovery-desc"></div>
+          <div class="mission-meal" id="recovery-meal"></div>
+          <button class="btn-done-day" id="btn-done-recovery" style="margin-top:1rem;width:100%">✓ Recovery Complete</button>
+        </div>
 
-      <div class="stats-row">
-        <div class="stat-item"><div class="stat-num">40s</div><div class="stat-lbl">Work</div></div>
-        <div class="stat-divider"></div>
-        <div class="stat-item"><div class="stat-num">20s</div><div class="stat-lbl">Rest</div></div>
-        <div class="stat-divider"></div>
-        <div class="stat-item"><div class="stat-num">5</div><div class="stat-lbl">Moves</div></div>
-        <div class="stat-divider"></div>
-        <div class="stat-item"><div class="stat-num">Zero</div><div class="stat-lbl">Equipment</div></div>
-      </div>
+        <!-- Completed state -->
+        <div class="completed-card hidden" id="completed-card">
+          <div style="font-size:3rem;margin-bottom:.5rem">✅</div>
+          <div class="completed-title">Done for today.</div>
+          <div class="completed-sub" id="completed-sub">Come back tomorrow.</div>
+          <div class="streak-reward" id="streak-reward"></div>
+        </div>
 
-      <!-- REVIEWS -->
-      <div class="reviews-section">
-        <div class="reviews-header">
-          <h2 class="reviews-title">Member stories</h2>
-          <div class="reviews-rating">★★★★★ <span>4.9</span></div>
-        </div>
-        <div class="reviews-track" id="reviews-track"></div>
-      </div>
-
-      <div class="trust-row">
-        <div class="trust-item">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="2.2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          No equipment
-        </div>
-        <div class="trust-item">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
-          15–25 min
-        </div>
-        <div class="trust-item">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="2.2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-          Women-first
-        </div>
+        <!-- Locked future days -->
+        <div class="locked-preview" id="locked-preview"></div>
       </div>
     </section>
 
-    <!-- ══════════ WORKOUTS ══════════ -->
-    <section id="tab-workouts" class="tab-section" aria-label="Workouts" hidden>
+    <!-- PROGRAM -->
+    <section id="tab-program" class="tab-section" aria-label="28-Day Program" hidden>
       <div class="section-hero">
-        <div class="hero-eyebrow">The library</div>
-        <h1 class="section-title">Workouts</h1>
-        <p class="section-sub">Every session designed for real life.</p>
+        <div class="hero-eyebrow">The full system</div>
+        <h1 class="section-title">28-Day<br><em>Program</em></h1>
+        <p class="section-sub">One day. One mission. One path.</p>
       </div>
-
-      <div class="info-block emerald-border">
-        <strong>Warm up first — 5 minutes</strong>
-        <p>March in place · arm circles · hip circles · slow squats · torso twists. Never skip — prevents injury and improves output.</p>
-      </div>
-
-      <div class="card accordion-card">
-        <button class="accordion-trigger" aria-expanded="false" aria-controls="acc-low">
-          <div class="acc-header">
-            <span class="acc-badge low">Low‑Impact</span>
-            <div><strong>Quiet / Apartment‑friendly HIIT</strong><p class="acc-sub">No jumping. Joint-friendly. Equally effective.</p></div>
-          </div>
-          <svg class="acc-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6,9 12,15 18,9"/></svg>
-        </button>
-        <div class="accordion-body" id="acc-low" hidden>
-          <div class="workout-list" id="workout-list-low"></div>
-        </div>
-      </div>
-
-      <div class="card accordion-card">
-        <button class="accordion-trigger" aria-expanded="false" aria-controls="acc-classic">
-          <div class="acc-header">
-            <span class="acc-badge classic">Classic</span>
-            <div><strong>Classic HIIT – Higher Intensity</strong><p class="acc-sub">Full-power moves. Maximum cardio & strength.</p></div>
-          </div>
-          <svg class="acc-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6,9 12,15 18,9"/></svg>
-        </button>
-        <div class="accordion-body" id="acc-classic" hidden>
-          <div class="workout-list" id="workout-list-classic"></div>
-        </div>
-      </div>
-
-      <div class="info-block">
-        <strong>Cool down — 5 minutes</strong>
-        <p>Quad stretch · hamstring · cat-cow · child's pose · deep breathing. Drink at least 500ml of water afterward.</p>
-      </div>
+      <div id="program-view"></div>
     </section>
 
-    <!-- ══════════ MEALS ══════════ -->
+    <!-- MEALS -->
     <section id="tab-meals" class="tab-section" aria-label="Meals" hidden>
       <div class="section-hero">
-        <div class="hero-eyebrow">Fuel your body</div>
+        <div class="hero-eyebrow">Today's fuel</div>
         <h1 class="section-title">Meals</h1>
-        <p class="section-sub">Protein-forward. Real food. No obsessing.</p>
+        <p class="section-sub">Protein-forward. Decided for you.</p>
       </div>
-
-      <div class="safety-note" role="note">
-        <strong>⚕️ Not medical advice.</strong> These are general wellness templates. Consult a healthcare professional for personalised nutrition guidance.
-      </div>
-
+      <div class="safety-note" role="note"><strong>⚕️ Not medical advice.</strong> General wellness templates. Consult a healthcare professional for personalised nutrition guidance.</div>
+      <div id="today-meal-highlight" class="card" style="margin-bottom:1rem;display:none"></div>
       <div class="plan-tabs" role="tablist">
-        <button class="plan-tab active" data-plan="starter" role="tab" aria-selected="true">Starter Meals</button>
-        <button class="plan-tab" data-plan="pro" role="tab" aria-selected="false">
-          Pro Meals <span class="pro-only-tag">Pro</span>
-        </button>
+        <button class="plan-tab active" data-plan="starter" role="tab">Starter Meals</button>
+        <button class="plan-tab" data-plan="pro" role="tab">Pro Meals <span class="pro-only-tag">Pro</span></button>
       </div>
-
       <div id="meals-starter" class="meals-panel">
         <div class="meals-grid" id="meals-grid-starter"></div>
-        <button class="btn-primary" id="btn-grocery-starter" style="width:100%;margin-top:.75rem">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
-          Generate Grocery List
-        </button>
+        <button class="btn-primary" id="btn-grocery-starter" style="width:100%;margin-top:.75rem">Generate Grocery List</button>
         <div class="card" id="grocery-list-starter" hidden></div>
       </div>
-
       <div id="meals-pro" class="meals-panel hidden">
         <div class="pro-gate" id="pro-meal-gate">
           <div class="pro-gate-icon">🌿</div>
           <h3>Pro 7-Day Meal Plans</h3>
-          <p>Rotating weekly menus with full macros, shopping lists, and Sunday prep guides. Upgrade to Pro to unlock.</p>
+          <p>28-day rotating menus with full macros and prep guides.</p>
           <button class="btn-primary" id="btn-upgrade-meals" style="margin-top:1rem">Upgrade to Pro — $29/mo</button>
         </div>
         <div id="meals-pro-content" class="hidden">
           <div class="meals-grid" id="meals-grid-pro"></div>
-          <button class="btn-primary" id="btn-grocery-pro" style="width:100%;margin-top:.75rem">Generate Full Weekly Grocery List</button>
+          <button class="btn-primary" id="btn-grocery-pro" style="width:100%;margin-top:.75rem">Generate Weekly Grocery List</button>
           <div class="card" id="grocery-list-pro" hidden></div>
         </div>
       </div>
-
       <div class="card fasting-card">
         <h3>🌙 Optional Gentle Fasting</h3>
-        <p class="fasting-intro">Completely optional. Never force it. Always listen to your body first.</p>
+        <p class="fasting-intro">Completely optional. Never force it.</p>
         <div class="fasting-table">
-          <div class="fasting-row"><span class="fasting-week">Week 1</span><span class="fasting-window">12:12</span><span class="fasting-desc">Gentle entry — 12h fast</span></div>
-          <div class="fasting-row"><span class="fasting-week">Week 2</span><span class="fasting-window">14:10</span><span class="fasting-desc">Slightly extended window</span></div>
+          <div class="fasting-row"><span class="fasting-week">Week 1</span><span class="fasting-window">12:12</span><span class="fasting-desc">Gentle entry</span></div>
+          <div class="fasting-row"><span class="fasting-week">Week 2</span><span class="fasting-window">14:10</span><span class="fasting-desc">Extended window</span></div>
           <div class="fasting-row"><span class="fasting-week">Week 3+</span><span class="fasting-window">16:8</span><span class="fasting-desc">Only if earlier weeks felt easy</span></div>
         </div>
-        <p style="font-size:.78rem;color:var(--text-muted);margin-top:.75rem">Not suitable if pregnant, nursing, or have a history of eating disorders.</p>
       </div>
     </section>
 
-    <!-- ══════════ KICKSTART ══════════ -->
-    <section id="tab-kickstart" class="tab-section" aria-label="7-Day Kickstart" hidden>
-      <div class="section-hero">
-        <div class="hero-eyebrow">Week one</div>
-        <h1 class="section-title">7‑Day<br><em>Kickstart</em></h1>
-        <p class="section-sub">One week to build the habit that changes everything.</p>
-      </div>
-
-      <div class="card kickstart-intro-card">
-        <p>Three focused HIIT sessions, strategic recovery days, and a final check-in. Follow it exactly for the best results in your first week.</p>
-      </div>
-
-      <div class="day-plan" id="day-plan"></div>
-
-      <div class="card how-to-card">
-        <h3>📋 How to follow this plan</h3>
-        <ol class="how-to-list">
-          <li>On HIIT days, go to <strong>Today</strong> and press Start Workout — choose the session type shown.</li>
-          <li>On Recovery days, walk 20–30 min and do light stretching. No intensity needed.</li>
-          <li>Follow the meal templates in <strong>Meals</strong> every day for best results.</li>
-          <li>On Day 7, weigh yourself, take progress photos, and note how you feel in 3 words.</li>
-          <li>After Week 1, repeat or progress to the full 4-week program.</li>
-        </ol>
-      </div>
-
-      <!-- TODO: Replace '#' with real PDF URL: href="assets/vivasculpt-kickstart.pdf" -->
-      <a href="#" class="btn-primary btn-download" id="btn-pdf">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Download 7‑Day Kickstart PDF
-      </a>
-      <p class="helper-text" style="text-align:center;margin-top:.5rem">PDF guide coming soon!</p>
-    </section>
-
-    <!-- ══════════ PRICING ══════════ -->
-    <section id="tab-pricing" class="tab-section" aria-label="Pricing" hidden>
-      <div class="section-hero">
-        <div class="hero-eyebrow">Simple, honest pricing</div>
-        <h1 class="section-title">Choose<br><em>Your Plan</em></h1>
-        <p class="section-sub">Cancel anytime. No hidden fees. Powered by PayPal.</p>
-      </div>
-
-      <div id="active-plan-card" class="card active-plan-card hidden"></div>
-
-      <div class="pricing-grid">
-        <!-- STARTER -->
-        <div class="plan-card" id="plan-starter">
-          <div class="plan-badge trial-badge">7‑day free trial</div>
-          <div class="plan-name">Starter</div>
-          <div class="plan-price">$14<span>/mo</span></div>
-          <ul class="plan-features">
-            <li><span class="fc">✓</span> All HIIT programs</li>
-            <li><span class="fc">✓</span> Low‑impact + Classic</li>
-            <li><span class="fc">✓</span> Today's workout builder</li>
-            <li><span class="fc">✓</span> 4 meal templates</li>
-            <li><span class="fc">✓</span> Grocery list generator</li>
-            <li><span class="fc">✓</span> 7‑Day Kickstart plan</li>
-          </ul>
-          <!-- ─────────────────────────────────────────────
-               PAYPAL STARTER BUTTON
-               Replace YOUR_STARTER_PLAN_ID with your real
-               PayPal subscription plan ID (P-XXXXXXXXXX)
-               Then uncomment the PayPal SDK script at bottom
-               ───────────────────────────────────────────── -->
-          <div class="subscribe-btns">
-            <a href="https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-1DD23981LB678535ENHKLPHI" class="btn-primary btn-subscribe" onclick="if(typeof gtag!=='undefined')gtag('event','subscribe_click',{plan:'starter'})">
-              Subscribe — $14/mo
-            </a>
-            <p class="pay-note">Powered by PayPal · Secure checkout · Cancel anytime</p>
-          </div>
-          <p class="plan-note">Secure payment via PayPal. Cancel anytime.</p>
-        </div>
-
-        <!-- PRO -->
-        <div class="plan-card plan-card--pro" id="plan-pro">
-          <div class="plan-badge pro-badge">Most complete</div>
-          <div class="plan-name">Pro</div>
-          <div class="plan-price">$29<span>/mo</span></div>
-          <ul class="plan-features">
-            <li><span class="fc">✓</span> Everything in Starter</li>
-            <li><span class="fc pro-fc">✓</span> 7-day rotating meal plans</li>
-            <li><span class="fc pro-fc">✓</span> Full macro breakdown</li>
-            <li><span class="fc pro-fc">✓</span> Weekly prep guides</li>
-            <li><span class="fc pro-fc">✓</span> Advanced tracking</li>
-            <li><span class="fc pro-fc">✓</span> Priority support</li>
-          </ul>
-          <!-- ─────────────────────────────────────────────
-               PAYPAL PRO BUTTON
-               Replace YOUR_PRO_PLAN_ID with your real
-               PayPal subscription plan ID (P-XXXXXXXXXX)
-               ───────────────────────────────────────────── -->
-          <div class="subscribe-btns">
-          <div class="subscribe-btns">
-            <a href="https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-4UP82455HM149604SNHKLU3Y" class="btn-primary btn-subscribe" onclick="if(typeof gtag!=='undefined')gtag('event','subscribe_click',{plan:'pro'})">
-              Subscribe — $29/mo
-            </a>
-            <p class="pay-note">Powered by PayPal · Secure checkout · Cancel anytime</p>
-          </div>
-          <p class="plan-note">No trial. Full access immediately. Cancel anytime.</p>
-        </div>
-      </div>
-
-      <div class="pricing-legal">
-        Subscriptions renew automatically. Cancel before renewal to avoid charges. Starter trial renews at $14/mo. Pro begins at $29/mo immediately. Payments processed securely by PayPal — we never see your card details.
-      </div>
-
-      <!-- FAQ -->
-      <div class="faq-section">
-        <h3 class="faq-title">Common questions</h3>
-        <div id="faq-list"></div>
-      </div>
-
-      <div class="footer-links">
-        <button class="link-btn" data-modal="terms">Terms of Service</button>
-        <span>·</span>
-        <button class="link-btn" data-modal="privacy">Privacy Policy</button>
-        <span>·</span>
-        <button class="link-btn" data-modal="regional">Regional Terms</button>
-        <span>·</span>
-        <a href="manage-subscription.html" class="link-btn">Manage Subscription</a>
-        <span>·</span>
-        <button class="link-btn" onclick="window.location.href='mailto:hello@vivasculptstudioapp.com'">Contact Us</button>
-      </div>
-      <div class="copyright-bar">
-        © <span id="copy-year"></span> VivaSculpt Studio. All rights reserved.<br>
-        <span>vivasculptstudioapp.com · hello@vivasculptstudioapp.com</span>
-      </div>
-    </section>
-
-    <!-- ══════════ CYCLE CALENDAR TAB ══════════ -->
-    <section id="tab-cycle" class="tab-section" aria-label="Cycle Calendar" hidden>
+    <!-- CYCLE -->
+    <section id="tab-cycle" class="tab-section" aria-label="Cycle" hidden>
       <div class="section-hero">
         <div class="hero-eyebrow">Know your body</div>
         <h1 class="section-title">Cycle<br><em>Calendar</em></h1>
         <p class="section-sub">Track your period. Predict your phases.</p>
       </div>
-
-      <!-- Current phase banner -->
       <div id="current-phase-banner" class="current-phase-banner cpb-unknown">
         <div class="cpb-icon">📅</div>
-        <div class="cpb-body">
-          <div class="cpb-phase-name">No cycle data yet</div>
-          <div class="cpb-phase-desc">Tap days below to mark when your period started.</div>
-        </div>
+        <div class="cpb-body"><div class="cpb-phase-name">No cycle data yet</div><div class="cpb-phase-desc">Tap days below to mark your period start.</div></div>
       </div>
-
-      <!-- Cycle stats -->
       <div class="cycle-stats">
-        <div class="cycle-stat">
-          <div class="cycle-stat-num" id="stat-cycles">–</div>
-          <div class="cycle-stat-lbl">Cycles tracked</div>
-        </div>
-        <div class="cycle-stat">
-          <div class="cycle-stat-num" id="stat-cycle-len">–</div>
-          <div class="cycle-stat-lbl">Avg length</div>
-        </div>
-        <div class="cycle-stat">
-          <div class="cycle-stat-num" id="stat-marked">0</div>
-          <div class="cycle-stat-lbl">Days marked</div>
-        </div>
+        <div class="cycle-stat"><div class="cycle-stat-num" id="stat-cycles">–</div><div class="cycle-stat-lbl">Cycles tracked</div></div>
+        <div class="cycle-stat"><div class="cycle-stat-num" id="stat-cycle-len">–</div><div class="cycle-stat-lbl">Avg length</div></div>
+        <div class="cycle-stat"><div class="cycle-stat-num" id="stat-marked">0</div><div class="cycle-stat-lbl">Days marked</div></div>
       </div>
-
-      <!-- Calendar -->
       <div class="card" style="padding:1.25rem">
         <p class="cal-instructions">Tap any day to mark it as a period day 🩸 — tap again to unmark</p>
-
-        <!-- Month nav -->
         <div class="cal-nav">
-          <button class="cal-nav-btn" id="cal-prev" aria-label="Previous month">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15,18 9,12 15,6"/></svg>
-          </button>
+          <button class="cal-nav-btn" id="cal-prev" aria-label="Previous month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15,18 9,12 15,6"/></svg></button>
           <div class="cal-month-label" id="cal-month-label">Month</div>
-          <button class="cal-nav-btn" id="cal-next" aria-label="Next month">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9,18 15,12 9,6"/></svg>
-          </button>
+          <button class="cal-nav-btn" id="cal-next" aria-label="Next month"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9,18 15,12 9,6"/></svg></button>
         </div>
-
-        <!-- Day of week headers -->
-        <div class="cal-dow">
-          <div class="cal-dow-item">Mo</div>
-          <div class="cal-dow-item">Tu</div>
-          <div class="cal-dow-item">We</div>
-          <div class="cal-dow-item">Th</div>
-          <div class="cal-dow-item">Fr</div>
-          <div class="cal-dow-item">Sa</div>
-          <div class="cal-dow-item">Su</div>
-        </div>
-
-        <!-- Calendar grid -->
-        <div class="cal-grid" id="cal-grid" role="grid" aria-label="Cycle calendar"></div>
-
-        <!-- Legend -->
+        <div class="cal-dow"><div class="cal-dow-item">Mo</div><div class="cal-dow-item">Tu</div><div class="cal-dow-item">We</div><div class="cal-dow-item">Th</div><div class="cal-dow-item">Fr</div><div class="cal-dow-item">Sa</div><div class="cal-dow-item">Su</div></div>
+        <div class="cal-grid" id="cal-grid" role="grid"></div>
         <div class="phase-legend">
-          <div class="legend-item"><div class="legend-dot marked"></div> Period day (you marked)</div>
-          <div class="legend-item"><div class="legend-dot menstrual"></div> Menstrual (predicted)</div>
+          <div class="legend-item"><div class="legend-dot marked"></div> Period (marked)</div>
+          <div class="legend-item"><div class="legend-dot menstrual"></div> Menstrual</div>
           <div class="legend-item"><div class="legend-dot follicular"></div> Follicular</div>
           <div class="legend-item"><div class="legend-dot ovulation"></div> Ovulation</div>
           <div class="legend-item"><div class="legend-dot luteal"></div> Luteal</div>
         </div>
-
-        <!-- Reset button -->
-        <button id="cal-reset" style="margin-top:.85rem;width:100%;padding:.55rem;font-size:.75rem;color:var(--text-muted);background:none;border:1px solid var(--border);border-radius:var(--radius-xs);cursor:pointer;font-family:inherit;">
-          🗑 Clear all cycle data &amp; start fresh
-        </button>
+        <button id="cal-reset" style="margin-top:.85rem;width:100%;padding:.55rem;font-size:.75rem;color:var(--text-muted);background:none;border:1px solid var(--border);border-radius:var(--radius-xs);cursor:pointer;font-family:inherit;">🗑 Clear all cycle data</button>
       </div>
-
-      <!-- Next period prediction -->
       <div class="next-period-card" id="next-period-card" style="display:none">
         <div class="npc-icon">🩸</div>
-        <div>
-          <div class="npc-label">Next period predicted</div>
-          <div class="npc-date" id="npc-date">–</div>
-          <div class="npc-days" id="npc-days">–</div>
-        </div>
+        <div><div class="npc-label">Next period predicted</div><div class="npc-date" id="npc-date">–</div><div class="npc-days" id="npc-days">–</div></div>
       </div>
-
-      <div class="safety-note" style="margin-top:1rem" role="note">
-        <strong>Not medical advice.</strong> Cycle tracking is for personal energy planning only. Predictions are estimates based on your logged data. Always consult a healthcare professional for medical concerns.
-      </div>
+      <div class="safety-note" style="margin-top:1rem"><strong>Not medical advice.</strong> For personal energy planning only.</div>
     </section>
 
-    <!-- ══════════ PROTOCOL TAB ══════════ -->
-    <section id="tab-protocol" class="tab-section" aria-label="Daily Protocol" hidden>
+    <!-- PRICING -->
+    <section id="tab-pricing" class="tab-section" aria-label="Pricing" hidden>
       <div class="section-hero">
-        <div class="hero-eyebrow">One decision. One action.</div>
-        <h1 class="section-title">Today's<br><em>Protocol</em></h1>
-        <p class="section-sub">Tell us how you feel. We handle the rest.</p>
+        <div class="hero-eyebrow">Simple, honest pricing</div>
+        <h1 class="section-title">Choose<br><em>Your Plan</em></h1>
+        <p class="section-sub">Cancel anytime. No hidden fees.</p>
       </div>
-
-      <!-- Mood -->
-      <div class="card" style="margin-bottom:1rem">
-        <span class="config-label">How's your energy right now?</span>
-        <div class="mood-row" id="mood-row">
-          <button class="mood-btn" data-mood="low" aria-label="Low energy">
-            <span>😩</span><span class="mood-lbl">Low</span>
-          </button>
-          <button class="mood-btn" data-mood="neutral" aria-label="Neutral energy">
-            <span>😐</span><span class="mood-lbl">OK</span>
-          </button>
-          <button class="mood-btn" data-mood="high" aria-label="High energy">
-            <span>🔥</span><span class="mood-lbl">Fired</span>
-          </button>
-        </div>
-
-        <!-- Cycle phase -->
-        <span class="config-label" style="margin-top:.5rem">Cycle phase <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-muted)">(optional — for meal & energy guidance only)</span></span>
-        <div class="phase-row" id="phase-row">
-          <button class="phase-btn" data-phase="menstrual" aria-label="Menstrual phase">
-            <span class="phase-icon">🩸</span><span>Menstrual</span>
-          </button>
-          <button class="phase-btn" data-phase="follicular" aria-label="Follicular phase">
-            <span class="phase-icon">🌱</span><span>Follicular</span>
-          </button>
-          <button class="phase-btn" data-phase="ovulation" aria-label="Ovulation phase">
-            <span class="phase-icon">🔥</span><span>Ovulation</span>
-          </button>
-          <button class="phase-btn" data-phase="luteal" aria-label="Luteal phase">
-            <span class="phase-icon">🌙</span><span>Luteal</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Daily protocol output -->
-      <div id="protocol-output" class="today-protocol hidden">
-        <div class="protocol-header">
-          <div class="protocol-header-icon" id="proto-header-icon">🏋️‍♀️</div>
-          <div class="protocol-header-text">
-            <div class="protocol-header-title" id="proto-header-title">Your protocol is ready</div>
-            <div class="protocol-header-sub" id="proto-header-sub">Based on your energy + phase</div>
+      <div id="active-plan-card" class="card active-plan-card hidden"></div>
+      <div class="pricing-grid">
+        <div class="plan-card" id="plan-starter">
+          <div class="plan-badge trial-badge">7‑day free trial</div>
+          <div class="plan-name">Starter</div>
+          <div class="plan-price">$14<span>/mo</span></div>
+          <ul class="plan-features">
+            <li><span class="fc">✓</span> Week 1 access</li>
+            <li><span class="fc">✓</span> Daily structure</li>
+            <li><span class="fc">✓</span> 4 meal templates</li>
+            <li><span class="fc">✓</span> Grocery list</li>
+            <li><span class="fc">✓</span> Cycle calendar</li>
+          </ul>
+          <div class="subscribe-btns">
+            <a href="https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-1DD23981LB678535ENHKLPHI" class="btn-primary btn-subscribe" onclick="if(typeof gtag!=='undefined')gtag('event','subscribe_click',{plan:'starter'})">Subscribe — $14/mo</a>
+            <p class="pay-note">Powered by PayPal · Cancel anytime</p>
           </div>
         </div>
-        <div class="protocol-body">
-          <div class="protocol-block">
-            <div class="protocol-block-icon">🏋️‍♀️</div>
-            <div class="protocol-block-content">
-              <div class="protocol-block-label">Exercise</div>
-              <div class="protocol-block-title" id="proto-workout-name">Recovery Flow</div>
-              <div class="protocol-block-desc" id="proto-workout-desc">Gentle movement to restore energy</div>
-            </div>
-          </div>
-          <div class="protocol-block">
-            <div class="protocol-block-icon">🥗</div>
-            <div class="protocol-block-content">
-              <div class="protocol-block-label">Meal Suggestion</div>
-              <div class="protocol-block-title" id="proto-meal-name">Nourishing Bowl</div>
-              <div class="protocol-block-desc" id="proto-meal-desc">Phase-aligned nutrition</div>
-            </div>
-          </div>
-          <div class="protocol-block" id="proto-recovery-block">
-            <div class="protocol-block-icon">🧘</div>
-            <div class="protocol-block-content">
-              <div class="protocol-block-label">Optional Recovery</div>
-              <div class="protocol-block-title" id="proto-recovery-name">Box Breathing</div>
-              <div class="protocol-block-desc" id="proto-recovery-desc">2–5 min · inhale 4s · hold 4s · exhale 4s</div>
-            </div>
+        <div class="plan-card plan-card--pro plan-card--featured" id="plan-pro">
+          <div class="plan-badge pro-badge">⭐ Best value</div>
+          <div class="plan-name">Pro</div>
+          <div class="plan-price">$29<span>/mo</span></div>
+          <div class="pro-highlight">Full 28-Day System</div>
+          <ul class="plan-features">
+            <li><span class="fc pro-fc">✓</span> Full 28-day unlock</li>
+            <li><span class="fc pro-fc">✓</span> Daily discipline system</li>
+            <li><span class="fc pro-fc">✓</span> Streak + progress tools</li>
+            <li><span class="fc pro-fc">✓</span> 7-day rotating meals</li>
+            <li><span class="fc pro-fc">✓</span> Next cycle access</li>
+          </ul>
+          <div class="subscribe-btns">
+            <a href="https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-4UP82455HM149604SNHKLU3Y" class="btn-primary btn-subscribe" onclick="if(typeof gtag!=='undefined')gtag('event','subscribe_click',{plan:'pro'})">Subscribe — $29/mo</a>
+            <p class="pay-note">Powered by PayPal · Cancel anytime</p>
           </div>
         </div>
       </div>
-
-      <button class="btn-start-protocol hidden" id="btn-start-protocol">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
-        START
-      </button>
-
-      <p class="helper-text" style="text-align:center;margin-top:.75rem;font-size:.75rem">
-        Not medical advice. Cycle tracking is for energy alignment only.
-      </p>
+      <div class="pricing-legal">Subscriptions renew automatically. Cancel before renewal to avoid charges. Starter trial renews at $14/mo. Pro at $29/mo immediately. Payments via PayPal.</div>
+      <div class="faq-section"><h3 class="faq-title">Common questions</h3><div id="faq-list"></div></div>
+      <div class="footer-links">
+        <button class="link-btn" data-modal="terms">Terms</button><span>·</span>
+        <button class="link-btn" data-modal="privacy">Privacy</button><span>·</span>
+        <button class="link-btn" data-modal="regional">Regional</button><span>·</span>
+        <a href="manage-subscription.html" class="link-btn">Manage Subscription</a><span>·</span>
+        <button class="link-btn" onclick="window.location.href='mailto:hello@vivasculptstudioapp.com'">Contact</button>
+      </div>
+      <div class="copyright-bar">© <span id="copy-year"></span> VivaSculpt Studio. All rights reserved.<br><span>vivasculptstudioapp.com</span></div>
     </section>
 
   </main>
@@ -566,37 +321,29 @@
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
       <span>Today</span>
     </button>
-    <button class="tab-btn" data-tab="workouts">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-      <span>Workouts</span>
+    <button class="tab-btn" data-tab="program">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Program</span>
     </button>
     <button class="tab-btn" data-tab="meals">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
       <span>Meals</span>
     </button>
-    <button class="tab-btn" data-tab="kickstart">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/></svg>
-      <span>Kickstart</span>
+    <button class="tab-btn" data-tab="cycle">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+      <span>Cycle</span>
     </button>
     <button class="tab-btn" data-tab="pricing">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
       <span>Pricing</span>
     </button>
-    <button class="tab-btn" data-tab="cycle">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-      <span>Cycle</span>
-    </button>
-    <button class="tab-btn" data-tab="protocol">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/></svg>
-      <span>Protocol</span>
-    </button>
   </nav>
 
   <!-- WORKOUT PLAYER -->
-  <div id="modal-workout" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Workout player" hidden>
+  <div id="modal-workout" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Workout" hidden>
     <div class="workout-player">
       <div class="player-header">
-        <div id="player-round" class="player-round">Round 1 / 2</div>
+        <div id="player-round" class="player-round">Round 1 / 3</div>
         <div class="player-controls-top">
           <button class="btn-icon" id="btn-audio" aria-label="Toggle audio" aria-pressed="true">
             <svg id="icon-audio-on" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="11,5 6,9 2,9 2,15 6,15 11,19 11,5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
@@ -615,12 +362,9 @@
         </svg>
         <div id="player-time" class="player-time">40</div>
       </div>
-      <div id="player-move" class="player-move">Squat</div>
+      <div id="player-move" class="player-move">Loading...</div>
       <div id="player-mod" class="player-mod"></div>
-      <div class="player-next">
-        <span class="next-label">Next:</span>
-        <span id="player-next-move" class="next-move">Incline push-up</span>
-      </div>
+      <div class="player-next"><span class="next-label">Next:</span><span id="player-next-move" class="next-move">–</span></div>
       <div class="player-actions">
         <button class="btn-outline" id="btn-next-move">Skip →</button>
         <button class="btn-primary" id="btn-pause">Pause</button>
@@ -632,22 +376,34 @@
   <div id="modal-complete" class="modal-overlay" role="dialog" aria-modal="true" hidden>
     <div class="modal-box" style="text-align:center">
       <div class="modal-emerald-bar"></div>
-      <div style="font-size:3rem;margin:1rem 0">🎉</div>
-      <h2>Workout Complete!</h2>
-      <p>Amazing work. Take 5 minutes to cool down and drink plenty of water.</p>
-      <button class="btn-primary" data-close="modal-complete" style="width:100%;margin-top:1.5rem">Done</button>
+      <div style="font-size:3rem;margin:1rem 0">💪</div>
+      <h2>Session Complete!</h2>
+      <p>Rest 5 minutes. Drink water. You showed up today.</p>
+      <button class="btn-primary" id="btn-complete-done" style="width:100%;margin-top:1.5rem">✓ Mark Day as Done</button>
+    </div>
+  </div>
+
+  <!-- DAY DONE CELEBRATION -->
+  <div id="modal-day-done" class="modal-overlay modal-center" role="dialog" aria-modal="true" hidden>
+    <div class="modal-box" style="text-align:center">
+      <div class="modal-emerald-bar" style="margin:0 auto 1rem"></div>
+      <div style="font-size:3rem;margin:.5rem 0">✅</div>
+      <h2 id="day-done-title">Done for today.</h2>
+      <p id="day-done-message" style="margin:.5rem 0 1rem;color:var(--text-muted)"></p>
+      <div id="day-done-streak" style="font-size:1.2rem;font-weight:800;color:var(--emerald);margin-bottom:1.5rem"></div>
+      <button class="btn-primary" data-close="modal-day-done" style="width:100%">Continue →</button>
     </div>
   </div>
 
   <!-- PAYWALL -->
   <div id="modal-paywall" class="modal-overlay modal-center" role="dialog" aria-modal="true" hidden>
-    <div class="modal-box">
-      <div class="modal-emerald-bar"></div>
-      <h2>Your Trial Has Ended</h2>
-      <p>Subscribe to continue your VivaSculpt journey.</p>
-      <div style="margin-top:1.25rem;display:flex;flex-direction:column;gap:.75rem">
-        <button class="btn-primary" onclick="switchTab('pricing')">View Plans →</button>
-      </div>
+    <div class="modal-box" style="text-align:center">
+      <div class="modal-emerald-bar" style="margin:0 auto 1rem"></div>
+      <div style="font-size:2rem;margin-bottom:.5rem">🔒</div>
+      <h2>Continue your transformation</h2>
+      <p style="margin:.5rem 0 1.5rem;color:var(--text-muted)">Unlock the full 28-day system — workouts, meals, and structure decided for you.</p>
+      <button class="btn-primary" onclick="closeModal('modal-paywall');switchTab('pricing')" style="width:100%;margin-bottom:.75rem">Unlock Full 28-Day System →</button>
+      <button class="btn-outline" data-close="modal-paywall" style="width:100%">Maybe later</button>
     </div>
   </div>
 
@@ -659,10 +415,9 @@
       <h2>Security &amp; Data</h2>
       <ul class="policy-list">
         <li><strong>No passwords stored.</strong> We never ask for or store passwords.</li>
-        <li><strong>No card data.</strong> Payments handled exclusively by PayPal — we never see your card details.</li>
-        <li><strong>Minimal local storage.</strong> Only subscription status stored in your browser. Never transmitted.</li>
-        <li><strong>No XSS.</strong> All dynamic content uses textContent — never innerHTML with user data.</li>
-        <li><strong>No trackers.</strong> No Google Analytics, Facebook Pixel, or ad networks.</li>
+        <li><strong>No card data.</strong> Payments handled exclusively by PayPal.</li>
+        <li><strong>Minimal storage.</strong> Only progress and cycle data stored locally in your browser.</li>
+        <li><strong>No ad trackers.</strong> Google Analytics only — no Facebook Pixel or ad networks.</li>
         <li><strong>HTTPS enforced.</strong> All traffic encrypted via TLS.</li>
       </ul>
     </div>
@@ -677,16 +432,13 @@
       <div class="policy-disclaimer">Review with qualified legal counsel before publishing commercially.</div>
       <div class="policy-body">
         <p><strong>Effective:</strong> 1 January 2025 · <strong>Contact:</strong> hello@vivasculptstudioapp.com</p>
-        <h3>1. Acceptance</h3><p>By using VivaSculpt Studio ("Service") you agree to these Terms. If you disagree, do not use the Service.</p>
-        <h3>2. Eligibility</h3><p>You must be 18+ or have verifiable parental consent. By using the Service you confirm eligibility.</p>
-        <h3>3. Health & Fitness Disclaimer</h3><p>All workouts, meal templates, and content are for general wellness only — <strong>not medical advice</strong>. Consult a qualified healthcare professional before starting any new exercise or diet programme, especially if you have pre-existing conditions, are pregnant or nursing, or recovering from injury. You participate at your own risk.</p>
-        <h3>4. Subscriptions & Billing</h3><p>Starter plan: 7-day free trial, then $14/month until cancelled. Pro plan: $29/month, no trial. All payments via PayPal. Cancel anytime through your PayPal account before renewal. No refunds for partial periods unless required by applicable law.</p>
-        <h3>5. Acceptable Use</h3><p>You agree not to: reproduce or resell content; circumvent access controls or payment systems; reverse-engineer the Service; upload malicious code; harass or harm others.</p>
-        <h3>6. Intellectual Property</h3><p>All content and branding are proprietary to VivaSculpt Studio. You receive a limited, non-exclusive, non-transferable, revocable personal licence.</p>
-        <h3>7. Disclaimer of Warranties</h3><p>Service provided "as is" without warranties of any kind, express or implied.</p>
-        <h3>8. Limitation of Liability</h3><p>To the fullest extent permitted by law, VivaSculpt Studio shall not be liable for indirect, incidental, or consequential damages. Total liability capped at amounts paid in the preceding 3 months.</p>
-        <h3>9. Governing Law</h3><p>Governed by applicable law of the operator's jurisdiction. See Regional Terms for specifics.</p>
-        <h3>10. Contact</h3><p>hello@vivasculptstudioapp.com</p>
+        <h3>1. Acceptance</h3><p>By using VivaSculpt Studio you agree to these Terms.</p>
+        <h3>2. Eligibility</h3><p>You must be 18+ or have verifiable parental consent.</p>
+        <h3>3. Health &amp; Fitness Disclaimer</h3><p>All content is for general wellness only — <strong>not medical advice</strong>. Consult a healthcare professional before starting any new exercise or diet programme. You participate at your own risk.</p>
+        <h3>4. Subscriptions &amp; Billing</h3><p>Starter: 7-day free trial, then $14/month. Pro: $29/month, no trial. All payments via PayPal. Cancel anytime before renewal. No refunds for partial periods unless required by applicable law.</p>
+        <h3>5. Acceptable Use</h3><p>Do not reproduce, resell, or circumvent access controls.</p>
+        <h3>6. Limitation of Liability</h3><p>To the fullest extent permitted by law, VivaSculpt Studio shall not be liable for indirect or consequential damages. Total liability capped at 3 months of payments.</p>
+        <h3>7. Contact</h3><p>hello@vivasculptstudioapp.com</p>
       </div>
     </div>
   </div>
@@ -700,13 +452,9 @@
       <div class="policy-disclaimer">Review with qualified legal counsel before publishing commercially.</div>
       <div class="policy-body">
         <p><strong>Effective:</strong> 1 January 2025 · <strong>Contact:</strong> hello@vivasculptstudioapp.com</p>
-        <h3>Data We Collect</h3><p>Via PayPal: your name, email, and subscription status — only what is necessary to verify your subscription. Locally: subscription status stored in your browser's localStorage. We do not use cookies for tracking or advertising.</p>
-        <h3>How We Use It</h3><p>To verify your subscription, deliver the Service, and respond to support requests. We do not sell, share, or rent your personal data.</p>
-        <h3>PayPal</h3><p>All payment processing is by PayPal, Inc. Your card details are never transmitted to or stored by VivaSculpt Studio. PayPal's own privacy policy governs their data practices.</p>
-        <h3>Data Retention</h3><p>Subscription status remains in your browser until you clear site data. Support emails are deleted once resolved.</p>
-        <h3>Your Rights</h3><p>Access, correct, or request deletion of your data: hello@vivasculptstudioapp.com. We respond within 30 days.</p>
-        <h3>Children</h3><p>Not directed at children under 13. We do not knowingly collect children's data.</p>
-        <h3>Security</h3><p>HTTPS, Content Security Policy, and minimal data collection by design. No system is perfectly secure.</p>
+        <h3>Data We Collect</h3><p>Via PayPal: name, email, subscription status. Locally: progress, streak, cycle data in your browser only. Google Analytics: anonymised usage data (no personal identifiers).</p>
+        <h3>How We Use It</h3><p>To deliver the Service and improve the product. We do not sell your data.</p>
+        <h3>Your Rights</h3><p>Access, correct, or delete your data: hello@vivasculptstudioapp.com. Response within 30 days.</p>
       </div>
     </div>
   </div>
@@ -719,83 +467,23 @@
       <h2>Regional Terms</h2>
       <div class="policy-disclaimer">Review with qualified legal counsel for your jurisdiction.</div>
       <div class="policy-body">
-        <h3>🇪🇺 EU / EEA — GDPR</h3>
-        <p><strong>Controller:</strong> VivaSculpt Studio · hello@vivasculptstudioapp.com</p>
-        <p><strong>Lawful basis:</strong> Contract performance (Art. 6(1)(b)) for delivering your subscription; legitimate interests (Art. 6(1)(f)) for security and service improvement; consent (Art. 6(1)(a)) where required.</p>
-        <p><strong>Your GDPR rights:</strong> Access · Rectification · Erasure · Restriction · Portability · Objection · Automated decision-making rights. Email us to exercise any right — we respond within 30 days.</p>
-        <p><strong>Data transfers:</strong> PayPal may transfer data outside the EEA using Standard Contractual Clauses. We do not independently transfer personal data outside the EEA.</p>
-        <p><strong>Supervisory authority:</strong> You may lodge a complaint at edpb.europa.eu.</p>
-        <p><strong>Cancellation (EU):</strong> The 14-day withdrawal right may not apply to digital services once begun with express consent. We honour all future-cycle cancellations.</p>
-        <h3>🇬🇧 United Kingdom — UK GDPR & DPA 2018</h3>
-        <p>Your rights mirror EU GDPR above. Complaints: ICO, Wycliffe House, Water Lane, Wilmslow, Cheshire SK9 5AF · ico.org.uk.</p>
-        <p><strong>Cancellation (UK):</strong> Under the Consumer Contracts Regulations 2013, starting the digital service with express consent may remove the right of withdrawal. We honour all future-cycle cancellations.</p>
-        <h3>🇺🇸 United States — California CCPA / CPRA</h3>
-        <p>California residents have these rights: Know · Delete · Opt-out of sale (we do not sell data) · Correct · Limit sensitive data use · Non-discrimination.</p>
-        <p>Submit requests: hello@vivasculptstudioapp.com. We respond within 45 days (extendable 45 more with notice).</p>
-        <p><strong>Categories collected:</strong> Identifiers (name, email via PayPal); commercial info (plan, payment history held by PayPal). No biometrics, precise geolocation, or sensitive data collected.</p>
-        <p><strong>Shine the Light (Cal. Civ. Code §1798.83):</strong> We do not share data with third parties for their direct marketing.</p>
-        <h3>🌍 Auto-Renewal Notice (All Regions)</h3>
-        <p>Subscriptions renew automatically. Cancel anytime via PayPal before the next billing date. Billing disputes: hello@vivasculptstudioapp.com within 30 days of the charge. No partial refunds unless required by local consumer law.</p>
+        <h3>🇪🇺 EU / EEA — GDPR</h3><p>Lawful basis: contract performance (Art. 6(1)(b)) and legitimate interests (Art. 6(1)(f)). Rights: Access · Rectification · Erasure · Portability · Objection. Complaints: edpb.europa.eu.</p>
+        <h3>🇬🇧 UK — UK GDPR</h3><p>Rights mirror EU GDPR. Complaints: ICO at ico.org.uk.</p>
+        <h3>🇺🇸 US — California CCPA/CPRA</h3><p>Rights: Know · Delete · Opt-out of sale (we do not sell data) · Correct · Non-discrimination. Requests responded within 45 days.</p>
+        <h3>🌍 Auto-Renewal</h3><p>Cancel before next billing date via PayPal. Billing disputes: hello@vivasculptstudioapp.com within 30 days.</p>
       </div>
     </div>
   </div>
 
-  <!-- PROTOCOL FULL-SCREEN PLAYER -->
-  <div id="protocol-player" class="protocol-player hidden" role="dialog" aria-modal="true" aria-label="Protocol workout">
-    <div class="pp-phase" id="pp-phase">WORK</div>
-    <div class="pp-move" id="pp-move">Starting...</div>
-    <div class="pp-mod" id="pp-mod"></div>
-    <div class="pp-timer-wrap">
-      <svg class="pp-ring" viewBox="0 0 160 160" aria-hidden="true">
-        <circle class="pp-ring-bg" cx="80" cy="80" r="72"/>
-        <circle class="pp-ring-fg" id="pp-ring-fg" cx="80" cy="80" r="72"/>
-      </svg>
-      <div id="pp-time" class="pp-time">40</div>
-    </div>
-    <div class="pp-next" id="pp-next">Next: <strong id="pp-next-move">–</strong></div>
-    <div class="pp-actions">
-      <button class="pp-btn-pause" id="pp-btn-pause">Pause</button>
-      <button class="pp-btn-end" id="pp-btn-end">End</button>
-    </div>
-    <div class="pp-round" id="pp-round">Round 1 / 2</div>
-  </div>
-
-  <!-- POST-ACTION SCREEN -->
-  <div id="post-action" class="post-action hidden" role="dialog" aria-modal="true">
-    <div class="post-done">✔</div>
-    <div class="post-title">Done.</div>
-    <div class="post-streak" id="post-streak">Day 1 streak 🔥</div>
-    <div class="post-message" id="post-message">"You showed up today."</div>
-    <button class="post-done-btn" id="post-done-btn">Back to home</button>
-  </div>
-
-  <!-- PAYPAL COMING SOON MODAL -->
-  <div id="modal-paypal-soon" class="modal-overlay modal-center" role="dialog" aria-modal="true" hidden>
-    <div class="modal-box" style="text-align:center">
-      <button class="modal-close" aria-label="Close" data-close="modal-paypal-soon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-      <div class="modal-emerald-bar" style="margin:0 auto 1rem"></div>
-      <div style="font-size:2rem;margin-bottom:.75rem">🔒</div>
-      <h2 style="margin-bottom:.5rem">Payments Coming Soon</h2>
-      <p id="paypal-soon-plan" style="font-weight:700;color:var(--emerald);margin-bottom:.75rem"></p>
-      <p>We're setting up secure PayPal billing. To get early access or join the waitlist, email us directly:</p>
-      <a href="mailto:hello@vivasculptstudioapp.com" class="btn-primary" style="display:block;margin:1.25rem 0 .75rem;text-decoration:none">
-        hello@vivasculptstudioapp.com
-      </a>
-      <p style="font-size:.78rem;color:var(--text-muted)">We'll notify you the moment billing goes live.</p>
-    </div>
-  </div>
-
-  <!-- PayPal SDK -->
+  <script src="program-data.js"></script>
   <script src="app.js"></script>
   <script src="calendar.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
+      window.addEventListener('load', function() {
         navigator.serviceWorker.register('service-worker.js')
-          .then(r => console.log('SW:', r.scope))
-          .catch(e => console.warn('SW failed:', e));
+          .then(function(r){ console.log('SW:', r.scope); })
+          .catch(function(e){ console.warn('SW failed:', e); });
       });
     }
   </script>
