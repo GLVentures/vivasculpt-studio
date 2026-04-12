@@ -1020,39 +1020,76 @@ document.getElementById('post-done-btn').addEventListener('click', () => {
 var deferredPrompt = null;
 var PWA_DISMISSED_KEY = 'vs_pwa_dismissed';
 
+function isIOS() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+function isAndroid() {
+  return /android/i.test(navigator.userAgent);
+}
+function isInStandaloneMode() {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+}
+
+// Android — capture install prompt
 window.addEventListener('beforeinstallprompt', function(e) {
   e.preventDefault();
   deferredPrompt = e;
-  // Only show if not previously dismissed
-  if (!localStorage.getItem(PWA_DISMISSED_KEY)) {
-    setTimeout(function() {
-      var banner = document.getElementById('pwa-banner');
-      if (banner) banner.classList.remove('hidden');
-    }, 3000); // Show after 3 seconds
+  if (!localStorage.getItem(PWA_DISMISSED_KEY) && !isInStandaloneMode()) {
+    setTimeout(showPWABanner, 3000);
   }
 });
 
-document.getElementById('pwa-install-btn') && document.getElementById('pwa-install-btn').addEventListener('click', function() {
+function showPWABanner() {
   var banner = document.getElementById('pwa-banner');
-  if (banner) banner.classList.add('hidden');
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(function(result) {
-      if (result.outcome === 'accepted' && typeof gtag !== 'undefined') {
-        gtag('event', 'pwa_installed');
-      }
-      deferredPrompt = null;
-    });
+  var installBtn = document.getElementById('pwa-install-btn');
+  var iosInstructions = document.getElementById('pwa-ios-instructions');
+  if (!banner) return;
+
+  if (isIOS() && !isInStandaloneMode()) {
+    // iPhone — show manual instructions
+    if (installBtn) installBtn.style.display = 'none';
+    if (iosInstructions) iosInstructions.style.display = 'block';
+    banner.classList.remove('hidden');
+  } else if (deferredPrompt) {
+    // Android — show install button
+    if (installBtn) installBtn.style.display = 'flex';
+    if (iosInstructions) iosInstructions.style.display = 'none';
+    banner.classList.remove('hidden');
   }
-});
+}
 
-document.getElementById('pwa-dismiss') && document.getElementById('pwa-dismiss').addEventListener('click', function() {
-  var banner = document.getElementById('pwa-banner');
-  if (banner) banner.classList.add('hidden');
-  localStorage.setItem(PWA_DISMISSED_KEY, '1');
-});
+// Show iOS banner after 3 seconds
+if (isIOS() && !isInStandaloneMode() && !localStorage.getItem(PWA_DISMISSED_KEY)) {
+  setTimeout(showPWABanner, 3000);
+}
 
-// Detect if already installed
+var installBtn = document.getElementById('pwa-install-btn');
+if (installBtn) {
+  installBtn.addEventListener('click', function() {
+    var banner = document.getElementById('pwa-banner');
+    if (banner) banner.classList.add('hidden');
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(result) {
+        if (result.outcome === 'accepted' && typeof gtag !== 'undefined') {
+          gtag('event', 'pwa_installed');
+        }
+        deferredPrompt = null;
+      });
+    }
+  });
+}
+
+var dismissBtn = document.getElementById('pwa-dismiss');
+if (dismissBtn) {
+  dismissBtn.addEventListener('click', function() {
+    var banner = document.getElementById('pwa-banner');
+    if (banner) banner.classList.add('hidden');
+    localStorage.setItem(PWA_DISMISSED_KEY, '1');
+  });
+}
+
 window.addEventListener('appinstalled', function() {
   var banner = document.getElementById('pwa-banner');
   if (banner) banner.classList.add('hidden');
