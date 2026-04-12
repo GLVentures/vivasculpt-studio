@@ -137,7 +137,16 @@ var PROGRAM = {
 };
 
 // Flatten all days for easy access
-var ALL_DAYS = [];
+var ALL_DAYS = [
+  {
+    moves: [
+      "Squats",
+      "Push-ups",
+      "Plank"
+    ],
+    rounds: 3
+  }
+];
 PROGRAM.weeks.forEach(function(week) {
   week.days.forEach(function(day) {
     day.week = week.num;
