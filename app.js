@@ -467,12 +467,21 @@ function buildWeekPreviews() {
   });
 }
 
-/* ─── FREE DAY 1 START ─── */
+/* ─── FREE DAY 1 START — with commitment modal ─── */
 var freeStartBtn = document.getElementById('btn-free-start');
 if (freeStartBtn) freeStartBtn.addEventListener('click', function() {
-  // Temporarily grant access to day 1 for preview
+  openModal('modal-commitment');
+  if (typeof gtag !== 'undefined') gtag('event', 'day1_intent');
+});
+
+var commitBtn = document.getElementById('btn-commit-start');
+if (commitBtn) commitBtn.addEventListener('click', function() {
+  closeModal('modal-commitment');
   var dayData = ALL_DAYS[0];
-  if (dayData) startWorkoutSession(dayData.moves, dayData.rounds, 1);
+  if (dayData) {
+    if (typeof gtag !== 'undefined') gtag('event', 'day1_start');
+    startWorkoutSession(dayData.moves, dayData.rounds, 1);
+  }
 });
 
 /* ─── REVIEWS ─── */

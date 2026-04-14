@@ -63,20 +63,43 @@
       <!-- FREE VIEW -->
       <div id="free-today">
         <div class="hero-section">
-          <div class="hero-eyebrow-tag">28-Day System</div>
-          <h1 class="hero-title">Build discipline.<br>Sculpt your body.<br><em>In 28 days.</em></h1>
-          <p class="hero-sub">A structured transformation system for busy women who want results without thinking, planning, or guessing.</p>
+          <div class="hero-eyebrow-tag">28-Day Structured System</div>
+          <h1 class="hero-title">Stop guessing.<br>Start following<br><em>a system.</em></h1>
+          <p class="hero-sub">VivaSculpt is a 28-day guided transformation for busy women who want results without planning workouts or meals.</p>
+
+          <!-- Commitment hook -->
+          <div class="commitment-hook">
+            <span class="hook-dot">·</span> 15 minutes
+            <span class="hook-dot">·</span> No planning
+            <span class="hook-dot">·</span> No decisions
+          </div>
+
+          <!-- PRIMARY CTA -->
           <button class="btn-hero" id="btn-free-start">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
-            Try Day 1 — Free
+            Start Day 1 Free
           </button>
-          <p class="hero-note">No account needed · Day 1 preview only</p>
+
+          <!-- Identity framing -->
+          <p class="hero-identity">"Day 1 is where most people quit — and where you don't."</p>
+
+          <!-- Secondary CTA -->
+          <button class="btn-secondary-cta" onclick="switchTab('program')">View Program Structure →</button>
+        </div>
+
+        <!-- Day 1 identity block -->
+        <div class="day1-identity-block">
+          <div class="d1-icon">🎯</div>
+          <div class="d1-text">
+            <strong>This is Day 1.</strong>
+            <p>Not a preview. Not a sample. The real thing — the first step of your 28-day transformation. Most people never take it.</p>
+          </div>
         </div>
 
         <div class="system-preview card">
           <div class="system-preview-header">
             <h2>Your 28-Day System</h2>
-            <span class="lock-badge">🔒 Pro unlock</span>
+            <span class="lock-badge">🔒 Unlock full access</span>
           </div>
           <div id="week-previews"></div>
         </div>
@@ -90,11 +113,12 @@
         </div>
 
         <div class="cta-block">
-          <h3>Stop guessing. Start following a system.</h3>
-          <p>Workouts, meals, and daily structure — all decided for you. Every day. For 28 days.</p>
+          <h3>One button. One system. 28 days.</h3>
+          <p>Workouts, meals, and daily structure — all decided for you.</p>
           <button class="btn-primary" onclick="switchTab('pricing')" style="width:100%;margin-top:1rem;padding:1rem;font-size:1rem;">
             Unlock Your Full 28-Day Reset →
           </button>
+          <button class="btn-secondary-cta" onclick="switchTab('program')" style="margin-top:.6rem;width:100%">View Program Structure</button>
         </div>
       </div>
 
@@ -368,6 +392,26 @@
     </button>
   </nav>
 
+  <!-- PRE-WORKOUT COMMITMENT MODAL -->
+  <div id="modal-commitment" class="modal-overlay modal-center" role="dialog" aria-modal="true" hidden>
+    <div class="modal-box commitment-box" style="text-align:center">
+      <div class="modal-emerald-bar" style="margin:0 auto 1rem"></div>
+      <div style="font-size:2.5rem;margin-bottom:.5rem">🎯</div>
+      <h2 style="margin-bottom:.5rem">You're about to start.</h2>
+      <p style="color:var(--text-muted);margin-bottom:1.25rem">Day 1 is where most people quit. You're not most people.</p>
+      <div class="commitment-facts">
+        <div class="cf-item"><span class="cf-icon">⏱</span><span>15 minutes</span></div>
+        <div class="cf-item"><span class="cf-icon">🧠</span><span>No planning needed</span></div>
+        <div class="cf-item"><span class="cf-icon">🏠</span><span>No equipment</span></div>
+        <div class="cf-item"><span class="cf-icon">✅</span><span>One decision only</span></div>
+      </div>
+      <button class="btn-primary" id="btn-commit-start" style="width:100%;padding:1rem;font-size:1rem;margin-top:1.25rem">
+        I'm ready. Start Day 1.
+      </button>
+      <button class="btn-outline" data-close="modal-commitment" style="width:100%;margin-top:.6rem">Not now</button>
+    </div>
+  </div>
+
   <!-- WORKOUT PLAYER -->
   <div id="modal-workout" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Workout" hidden>
     <div class="workout-player">
@@ -465,9 +509,23 @@
         <h3>2. Eligibility</h3><p>You must be 18+ or have verifiable parental consent.</p>
         <h3>3. Health &amp; Fitness Disclaimer</h3><p>All content is for general wellness only — <strong>not medical advice</strong>. Consult a healthcare professional before starting any new exercise or diet programme. You participate at your own risk.</p>
         <h3>4. Subscriptions &amp; Billing</h3><p>Starter: 7-day free trial, then $14/month. Pro: $29/month, no trial. All payments via PayPal. Cancel anytime before renewal. No refunds for partial periods unless required by applicable law.</p>
-        <h3>5. Acceptable Use</h3><p>Do not reproduce, resell, or circumvent access controls.</p>
-        <h3>6. Limitation of Liability</h3><p>To the fullest extent permitted by law, VivaSculpt Studio shall not be liable for indirect or consequential damages. Total liability capped at 3 months of payments.</p>
-        <h3>7. Contact</h3><p>hello@vivasculptstudioapp.com</p>
+        <h3>5. Intellectual Property</h3>
+        <p>All content on VivaSculpt Studio — including but not limited to the 28-day programme structure, workout sequences, meal templates, cycle system, brand name, logo, copy, design, and underlying software — is the exclusive intellectual property of VivaSculpt Studio and is protected by applicable copyright, trademark, and intellectual property laws.</p>
+        <p>You are granted a limited, non-exclusive, non-transferable, revocable personal licence to use the Service for your own personal, non-commercial purposes only. You may not:</p>
+        <ul class="policy-list">
+          <li>Copy, reproduce, or distribute any content without prior written permission</li>
+          <li>Resell, sublicense, or commercialise any part of the Service</li>
+          <li>Screenshot, record, or share programme content for commercial purposes</li>
+          <li>Create derivative works based on our content or system structure</li>
+          <li>Reverse-engineer or attempt to replicate the VivaSculpt system</li>
+          <li>Use our content to train AI models or automated systems</li>
+        </ul>
+        <p>Violations may result in immediate account termination and legal action. To request commercial licensing, contact hello@vivasculptstudioapp.com.</p>
+        <h3>6. DMCA &amp; Copyright Infringement</h3><p>If you believe any content on this platform infringes your copyright, contact hello@vivasculptstudioapp.com with: (a) identification of the copyrighted work; (b) identification of the infringing material; (c) your contact information; (d) a statement of good faith belief; (e) a statement of accuracy under penalty of perjury.</p>
+        <h3>7. Acceptable Use</h3><p>Do not reproduce, resell, or circumvent access controls.</p>
+        <h3>8. Limitation of Liability</h3><p>To the fullest extent permitted by law, VivaSculpt Studio shall not be liable for indirect or consequential damages. Total liability capped at 3 months of payments.</p>
+        <h3>9. Governing Law &amp; Disputes</h3><p>These Terms are governed by applicable law. Any dispute shall first be attempted to be resolved by good-faith negotiation via hello@vivasculptstudioapp.com before any formal proceedings.</p>
+        <h3>10. Contact</h3><p>hello@vivasculptstudioapp.com</p>
       </div>
     </div>
   </div>
