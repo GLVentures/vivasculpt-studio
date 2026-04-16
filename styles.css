@@ -552,214 +552,182 @@ ul { list-style:none; }
   .modal-box{ border-radius:var(--radius-xl); padding:2rem; }
   .workout-player{ border-radius:var(--radius-xl); }
 }
-/* ═══════════════════════════════════════════════════
-   VivaSculpt – Cycle Calendar Styles
-   calendar-styles.css
-   ═══════════════════════════════════════════════════ */
+/* ════════════════════════════════════════
+   VivaSculpt – Premium Cycle Phase Banner
+   (For new cycle-phase.js architecture)
+════════════════════════════════════════ */
 
-/* ── Calendar header ── */
-.cal-nav {
-  display:flex; align-items:center; justify-content:space-between;
-  margin-bottom:1rem;
-}
-.cal-nav-btn {
-  width:36px; height:36px; border-radius:var(--radius-xs);
-  display:flex; align-items:center; justify-content:center;
-  color:var(--text-muted); border:1px solid var(--border);
-  background:var(--bg-card); cursor:pointer;
-  transition:all .18s var(--ease);
-}
-.cal-nav-btn:hover { border-color:var(--emerald); color:var(--emerald); }
-.cal-month-label { font-family:var(--font-display); font-size:1.15rem; color:var(--text); }
-
-/* ── Day-of-week headers ── */
-.cal-dow {
-  display:grid; grid-template-columns:repeat(7,1fr);
-  margin-bottom:.35rem;
-}
-.cal-dow-item {
-  text-align:center; font-size:.68rem; font-weight:700;
-  letter-spacing:.06em; text-transform:uppercase; color:var(--text-muted);
-  padding:.3rem 0;
+/* Root container */
+#cycle-phase-root {
+  margin-bottom: 1.25rem;
 }
 
-/* ── Calendar grid ── */
-.cal-grid {
-  display:grid; grid-template-columns:repeat(7,1fr);
-  gap:3px;
-}
-.cal-day {
-  aspect-ratio:1; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  font-size:.82rem; font-weight:500; cursor:pointer;
-  position:relative; transition:all .15s var(--ease);
-  color:var(--text);
-  -webkit-tap-highlight-color:transparent;
-}
-.cal-day:hover { background:var(--emerald-pale); }
-.cal-day.empty { cursor:default; pointer-events:none; }
-.cal-day.today {
-  font-weight:800; color:var(--emerald);
-}
-.cal-day.today::after {
-  content:''; position:absolute; bottom:3px; left:50%;
-  transform:translateX(-50%); width:4px; height:4px;
-  border-radius:50%; background:var(--emerald);
+/* Main banner */
+.vs-phase-banner {
+  background: var(--phase-bg);
+  border: 1.5px solid var(--phase-border);
+  border-radius: 20px;
+  padding: 1.4rem 1.4rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  transition: all .25s var(--ease);
 }
 
-/* Phase colours */
-.cal-day.phase-menstrual { background:#FEE2E2; color:#991B1B; }
-.cal-day.phase-menstrual:hover { background:#FECACA; }
-.cal-day.phase-follicular { background:#DCFCE7; color:#166534; }
-.cal-day.phase-follicular:hover { background:#BBF7D0; }
-.cal-day.phase-ovulation { background:#FEF9C3; color:#713F12; }
-.cal-day.phase-ovulation:hover { background:#FEF08A; }
-.cal-day.phase-luteal { background:#EDE9FE; color:#5B21B6; }
-.cal-day.phase-luteal:hover { background:#DDD6FE; }
-
-/* Marked menstrual day (user-set) */
-.cal-day.marked-menstrual {
-  background:#FCA5A5; color:#7F1D1D; font-weight:800;
-  box-shadow:0 0 0 2px #EF4444;
-}
-.cal-day.marked-menstrual:hover { background:#F87171; }
-
-/* Today with phase */
-.cal-day.today.phase-menstrual,
-.cal-day.today.phase-follicular,
-.cal-day.today.phase-ovulation,
-.cal-day.today.phase-luteal { font-weight:800; }
-
-/* ── Phase legend ── */
-.phase-legend {
-  display:grid; grid-template-columns:1fr 1fr;
-  gap:.5rem; margin-top:.85rem;
-}
-.legend-item {
-  display:flex; align-items:center; gap:.45rem;
-  font-size:.78rem; color:var(--text-muted);
-}
-.legend-dot {
-  width:10px; height:10px; border-radius:50%; flex-shrink:0;
-}
-.legend-dot.menstrual { background:#FCA5A5; }
-.legend-dot.follicular { background:#86EFAC; }
-.legend-dot.ovulation { background:#FDE047; }
-.legend-dot.luteal { background:#C4B5FD; }
-.legend-dot.marked { background:#EF4444; box-shadow:0 0 0 2px #EF4444; }
-
-/* ── Current phase banner ── */
-.current-phase-banner {
-  border-radius:var(--radius-md); padding:1rem 1.25rem;
-  display:flex; align-items:center; gap:.85rem;
-  margin-bottom:1rem; border:1px solid var(--border);
-  background:var(--bg-card); box-shadow:var(--shadow-sm);
-}
-.cpb-icon { font-size:2rem; flex-shrink:0; }
-.cpb-body 
-.cpb-phase-name {
-  font-weight:800; font-size:.95rem; margin-bottom:.15rem;
-}
-.cpb-phase-desc { font-size:.8rem; color:var(--text-muted); line-height:1.5; }
-.cpb-day-count {
-  font-size:.72rem; font-weight:700; padding:.2rem .55rem;
-  border-radius:999px; margin-top:.35rem; display:inline-block;
+/* ── Header ── */
+.vs-phase-header {
+  text-align: center;
 }
 
-/* Phase banner colours */
-.cpb-menstrual { background:#FFF1F2; border-color:#FECACA; }
-.cpb-menstrual .cpb-phase-name { color:#991B1B; }
-.cpb-menstrual .cpb-day-count { background:#FEE2E2; color:#991B1B; }
-.cpb-follicular { background:#F0FDF4; border-color:#BBF7D0; }
-.cpb-follicular .cpb-phase-name { color:#166534; }
-.cpb-follicular .cpb-day-count { background:#DCFCE7; color:#166534; }
-.cpb-ovulation { background:#FEFCE8; border-color:#FEF08A; }
-.cpb-ovulation .cpb-phase-name { color:#713F12; }
-.cpb-ovulation .cpb-day-count { background:#FEF9C3; color:#713F12; }
-.cpb-luteal { background:#F5F3FF; border-color:#DDD6FE; }
-.cpb-luteal .cpb-phase-name { color:#5B21B6; }
-.cpb-luteal .cpb-day-count { background:#EDE9FE; color:#5B21B6; }
-.cpb-unknown { background:var(--bg-subtle); border-color:var(--border); }
-.cpb-unknown .cpb-phase-name { color:var(--text); }
-
-/* ── Cycle stats row ── */
-.cycle-stats {
-  display:grid; grid-template-columns:repeat(3,1fr);
-  gap:.6rem; margin-bottom:1rem;
-}
-.cycle-stat {
-  background:var(--bg-card); border:1px solid var(--border);
-  border-radius:var(--radius-sm); padding:.7rem .5rem;
-  text-align:center; box-shadow:var(--shadow-xs);
-}
-.cycle-stat-num { font-family:var(--font-display); font-size:1.4rem; color:var(--emerald); line-height:1; }
-.cycle-stat-lbl { font-size:.65rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--text-muted); margin-top:.2rem; }
-
-/* ── Instructions ── */
-.cal-instructions {
-  font-size:.78rem; color:var(--text-muted); text-align:center;
-  padding:.65rem; background:var(--emerald-pale);
-  border:1px solid var(--emerald-light); border-radius:var(--radius-xs);
-  margin-bottom:.85rem;
+.vs-phase-title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--phase-accent);
+  margin-bottom: .25rem;
 }
 
-/* ── Next period prediction ── */
-.next-period-card {
-  background:linear-gradient(135deg, #FFF1F2 0%, #fff 100%);
-  border:1px solid #FECACA; border-radius:var(--radius-md);
-  padding:1rem 1.25rem; margin-top:.85rem;
-  display:flex; align-items:center; gap:.85rem;
+.vs-cycle-day {
+  display: inline-block;
+  font-size: .7rem;
+  font-weight: 700;
+  padding: .3rem .7rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.6);
+  border: 1px solid var(--phase-border);
+  margin-bottom: .4rem;
 }
-.npc-icon { font-size:1.6rem; flex-shrink:0; }
-.npc-label { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#991B1B; margin-bottom:.2rem; }
-.npc-date { font-family:var(--font-display); font-size:1.1rem; color:var(--text); }
-.npc-days { font-size:.78rem; color:var(--text-muted); margin-top:.1rem; }
 
-/* ── Tap feedback ── */
-@keyframes tapPulse {
-  0% { transform:scale(1); }
-  50% { transform:scale(1.25); }
-  100% { transform:scale(1); }
+.vs-phase-tagline {
+  font-size: .85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
 }
-.cal-day.tap-pulse { animation:tapPulse .2s ease; }
-/* ═══════════════════════════════════════════════════
-   VivaSculpt – Cycle & Mood Daily Protocol
-   Add to styles.css
-   ═══════════════════════════════════════════════════ */
 
-/* ── Protocol Tab ── */
-.protocol-wrap { display:flex; flex-direction:column; gap:0; }
+/* ── Cards ── */
+.vs-phase-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
+  box-shadow: var(--shadow-xs);
+  transition: all .2s var(--ease);
+}
 
-/* Mood selector */
-.mood-row {
-  display:flex; gap:.6rem; justify-content:center;
-  margin-bottom:1.25rem;
+.vs-card-label {
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
-.mood-btn {
-  width:64px; height:64px; border-radius:50%;
-  font-size:1.8rem; display:flex; align-items:center; justify-content:center;
-  border:2.5px solid var(--border); background:var(--bg-card);
-  transition:all .2s var(--ease); cursor:pointer; flex-direction:column; gap:2px;
-}
-.mood-btn span.mood-lbl { font-size:.58rem; font-weight:700; color:var(--text-muted); letter-spacing:.04em; text-transform:uppercase; }
-.mood-btn.active { border-color:var(--emerald); background:var(--emerald-pale); transform:scale(1.1); box-shadow:var(--shadow-emerald); }
-.mood-btn:hover { border-color:var(--emerald); }
 
-/* Phase selector */
-.phase-row {
-  display:grid; grid-template-columns:repeat(4,1fr); gap:.5rem; margin-bottom:1.5rem;
+.vs-card-text {
+  font-size: .85rem;
+  line-height: 1.6;
+  color: var(--text);
 }
-.phase-btn {
-  padding:.6rem .3rem; border-radius:var(--radius-sm);
-  border:1.5px solid var(--border); background:var(--bg-card);
-  font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
-  color:var(--text-muted); text-align:center; cursor:pointer;
-  transition:all .2s var(--ease); display:flex; flex-direction:column; align-items:center; gap:.25rem;
-}
-.phase-btn .phase-icon { font-size:1.3rem; }
-.phase-btn.active { border-color:var(--emerald); background:var(--emerald); color:#fff; }
-.phase-btn:hover:not(.active) { border-color:var(--emerald); color:var(--emerald); }
 
+/* Locked state */
+.vs-locked {
+  border: 1.5px dashed var(--border);
+  background: var(--bg-subtle);
+}
+
+.vs-upgrade-btn {
+  margin-top: .6rem;
+  padding: .6rem 1rem;
+  border-radius: 999px;
+  border: none;
+  background: var(--phase-accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: .8rem;
+  cursor: pointer;
+  transition: all .2s var(--ease);
+}
+
+.vs-upgrade-btn:hover {
+  opacity: .9;
+  transform: translateY(-1px);
+}
+
+/* ── Hormone Map ── */
+.vs-hormone-map {
+  padding-top: .8rem;
+  border-top: 1px solid var(--phase-border);
+}
+
+.vs-hormone-title {
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: .6rem;
+  text-align: center;
+}
+
+.vs-hormone-grid {
+  display: flex;
+  gap: .6rem;
+  overflow-x: auto;
+  padding-bottom: .3rem;
+  scrollbar-width: none;
+}
+
+.vs-hormone-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.vs-hormone-pill {
+  min-width: 90px;
+  padding: .6rem .6rem;
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  text-align: center;
+  flex-shrink: 0;
+  transition: all .2s var(--ease);
+}
+
+.vs-hormone-pill.active {
+  border-color: var(--phase-accent);
+  background: rgba(255,255,255,0.75);
+  box-shadow: 0 0 0 2px var(--phase-border);
+}
+
+.vs-hormone-name {
+  font-size: .75rem;
+  font-weight: 700;
+  margin-bottom: .15rem;
+  color: var(--text);
+}
+
+.vs-hormone-range {
+  font-size: .65rem;
+  color: var(--text-muted);
+}
+
+/* Responsive tightening */
+@media (max-width: 420px) {
+  .vs-phase-banner {
+    padding: 1.1rem;
+    gap: 1rem;
+  }
+
+  .vs-phase-title {
+    font-size: 1.2rem;
+  }
+
+  .vs-card-text {
+    font-size: .8rem;
+  }
+}
 /* Today card */
 .today-protocol {
   background:var(--bg-card); border:1px solid var(--border);
