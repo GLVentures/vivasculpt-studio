@@ -1,51 +1,127 @@
 // ============================================================
-// VivaSculpt — Cycle-Phase Workout Engine  v3
-// Perfectly aligned with app.js storage keys.
+// VivaSculpt — Cycle-Phase Workout Engine  v4
+// Storage key and phase logic mirror calendar.js exactly.
 //
-// Add to index.html AFTER app.js and calendar.js:
+// Add to index.html AFTER calendar.js and app.js:
 //   <script src="cycle-phase.js"></script>
 //
-// Plan detection mirrors app.js exactly:
+// Plan logic (mirrors app.js):
 //   localStorage 'vs_plan' === 'pro'     → Pro
 //   localStorage 'vs_plan' === 'starter' → Starter
-//   localStorage 'vs_plan' === null      → Free (not subscribed)
+//   localStorage 'vs_plan' === null      → Free
 //
 // Workout access:
-//   free    → phase info + tip only; workout card is locked with paywall
-//   starter → workouts[0] per phase only (foundational workout)
-//   pro     → all 3 workouts per phase, rotating by week number
+//   free    → phase info + tip only; workout locked with paywall
+//   starter → workouts[0] per phase (foundational)
+//   pro     → all 3 workouts, rotating by week in phase
 // ============================================================
 
 (function () {
   'use strict';
 
-  // ── Plan helpers — mirrors app.js exactly ───────────────────
-  var PLAN_KEY = 'vs_plan';
-  function getPlan()  { return localStorage.getItem(PLAN_KEY); }   // 'starter' | 'pro' | null
-  function isPaid()   { var p = getPlan(); return p === 'starter' || p === 'pro'; }
-  function isPro()    { return getPlan() === 'pro'; }
+  // ── Storage keys — must match calendar.js and app.js exactly ─
+  var CAL_KEY  = 'vs_cycle_days';   // ← calendar.js uses this
+  var PLAN_KEY = 'vs_plan';         // ← app.js uses this
 
-  // ── Workout picker ───────────────────────────────────────────
-  // starter → always workouts[0]
-  // pro     → rotate through all 3 by week number within the phase
-  // free    → null (no workout access)
-  function pickWorkout(phase, cycleDay) {
-    if (!isPaid()) return null;
-    if (!isPro())  return phase.workouts[0];
-    var weekNum = Math.floor((cycleDay - 1) / 7);
-    return phase.workouts[weekNum % phase.workouts.length];
+  // ── Phase lengths — must match calendar.js PHASE_LENS exactly ─
+  var PHASE_LENS = { menstrual: 5, follicular: 9, ovulation: 2, luteal: 12 };
+  var DEF_CYCLE  = 28;
+
+  // ── Plan helpers — mirror app.js exactly ────────────────────
+  function getPlan() { return localStorage.getItem(PLAN_KEY); } // 'starter'|'pro'|null
+  function isPaid()  { var p = getPlan(); return p === 'starter' || p === 'pro'; }
+  function isPro()   { return getPlan() === 'pro'; }
+
+  // ── Cycle helpers — copied from calendar.js ──────────────────
+  function todayMs() {
+    var d = new Date();
+    return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+  function keyMs(key) {
+    var p = key.split('-');
+    return Date.UTC(+p[0], +p[1] - 1, +p[2]);
+  }
+  function diffDays(msA, msB) { return Math.round((msB - msA) / 86400000); }
+  function addDays(ms, n)     { return ms + n * 86400000; }
+
+  function loadDays() {
+    try {
+      var r = localStorage.getItem(CAL_KEY);
+      return r ? JSON.parse(r) : [];
+    } catch (e) { return []; }
   }
 
-  // ── Phase data ───────────────────────────────────────────────
+  // Mirrors calendar.js detectStarts exactly
+  function detectStarts(arr) {
+    if (!arr.length) return [];
+    var sorted = arr.slice().sort();
+    var starts = [], lastMs = null;
+    for (var i = 0; i < sorted.length; i++) {
+      var ms = keyMs(sorted[i]);
+      if (lastMs === null || diffDays(lastMs, ms) >= 3) starts.push(ms);
+      lastMs = ms;
+    }
+    return starts;
+  }
+
+  // Mirrors calendar.js avgLen exactly
+  function avgLen(starts) {
+    if (starts.length < 2) return DEF_CYCLE;
+    var lens = [];
+    for (var i = 1; i < starts.length; i++) {
+      var l = diffDays(starts[i - 1], starts[i]);
+      if (l >= 18 && l <= 45) lens.push(l);
+    }
+    if (!lens.length) return DEF_CYCLE;
+    return Math.round(lens.reduce(function (a, b) { return a + b; }, 0) / lens.length);
+  }
+
+  // Mirrors calendar.js phaseFor exactly
+  function phaseFor(targetMs, starts, cycleLen) {
+    if (!starts.length) return null;
+    var last = null;
+    for (var i = 0; i < starts.length; i++) {
+      if (starts[i] <= targetMs) last = starts[i];
+    }
+    if (last === null) return null;
+    while (addDays(last, cycleLen) <= targetMs) last = addDays(last, cycleLen);
+    var day = diffDays(last, targetMs) + 1;
+    if (day < 1) return null;
+    var m  = PHASE_LENS.menstrual;
+    var f  = m + PHASE_LENS.follicular;
+    var o  = f + PHASE_LENS.ovulation;
+    var ll = o + PHASE_LENS.luteal;
+    if (day <= m)  return { name: 'menstrual',  cycleDay: day, dayInPhase: day };
+    if (day <= f)  return { name: 'follicular', cycleDay: day, dayInPhase: day - m };
+    if (day <= o)  return { name: 'ovulation',  cycleDay: day, dayInPhase: day - f };
+    if (day <= ll) return { name: 'luteal',     cycleDay: day, dayInPhase: day - o };
+    return { name: 'menstrual', cycleDay: day, dayInPhase: 1 };
+  }
+
+  // Get current phase result {name, cycleDay, dayInPhase} or null
+  function getCurrentPhaseResult() {
+    var marked = loadDays();
+    if (!marked.length) return null;
+    var starts   = detectStarts(marked);
+    var cycleLen = avgLen(starts);
+    return phaseFor(todayMs(), starts, cycleLen);
+  }
+
+  // ── Workout picker ───────────────────────────────────────────
+  function pickWorkout(phaseData, cycleDay) {
+    if (!isPaid()) return null;
+    if (!isPro())  return phaseData.workouts[0];
+    var weekNum = Math.floor((cycleDay - 1) / 7);
+    return phaseData.workouts[weekNum % phaseData.workouts.length];
+  }
+
+  // ── Phase workout data ───────────────────────────────────────
   // workouts[0] = Starter (all paid users)
-  // workouts[1] = Pro only
-  // workouts[2] = Pro only
+  // workouts[1,2] = Pro only
 
-  var PHASES = {
-
+  var PHASE_DATA = {
     menstrual: {
-      name: 'Menstrual', emoji: '🩸', days: [1, 5],
-      color: '#e11d48', bg: '#fff1f2', border: '#fda4af',
+      emoji: '🩸', color: '#e11d48', bg: '#fff1f2', border: '#fda4af',
       energy: 'Low energy · be gentle',
       tagline: 'Rest is productive. Your body is working hard.',
       tip: 'Honour the bleed. Light movement reduces cramps and boosts mood — but never push through pain.',
@@ -98,8 +174,7 @@
     },
 
     follicular: {
-      name: 'Follicular', emoji: '🌸', days: [6, 13],
-      color: '#7c3aed', bg: '#f5f3ff', border: '#c4b5fd',
+      emoji: '🌸', color: '#7c3aed', bg: '#f5f3ff', border: '#c4b5fd',
       energy: 'Rising energy · build strength',
       tagline: "Estrogen is rising. You're getting stronger every day.",
       tip: 'This is your best window for learning new movements and adding weight. Your body recovers faster now.',
@@ -149,8 +224,7 @@
     },
 
     ovulation: {
-      name: 'Ovulation', emoji: '⚡', days: [14, 17],
-      color: '#d97706', bg: '#fffbeb', border: '#fcd34d',
+      emoji: '⚡', color: '#d97706', bg: '#fffbeb', border: '#fcd34d',
       energy: 'Peak energy · maximum power',
       tagline: "You are at your strongest. Don't hold back.",
       tip: 'Testosterone peaks at ovulation alongside estrogen. Your strength, speed, and pain tolerance are at their highest.',
@@ -171,12 +245,12 @@
           tier: 'pro',
           title: 'Heavy Lift + Sprint Intervals', duration: '30 min', intensity: 'Very High', tag: 'Strength · HIIT', rounds: '3 rounds',
           moves: [
-            { name: 'Squat Jump (explosive)',   work: 45, rest: 15, mod: 'Explode up, full extension' },
-            { name: 'Push-Up to Clap',          work: 30, rest: 20, mod: 'Explosive push, catch soft' },
-            { name: 'Sprint in Place',          work: 30, rest: 15, mod: 'Max effort, 100%' },
-            { name: 'Box Jump (or step-up)',    work: 35, rest: 20, mod: 'Land with both feet together' },
-            { name: 'Tuck Jump',                work: 30, rest: 20, mod: 'Pull knees to chest at peak' },
-            { name: 'Plank to Downdog Sprint',  work: 35, rest: 20, mod: 'Alternate fast' },
+            { name: 'Squat Jump (explosive)',  work: 45, rest: 15, mod: 'Explode up, full extension' },
+            { name: 'Push-Up to Clap',         work: 30, rest: 20, mod: 'Explosive push, catch soft' },
+            { name: 'Sprint in Place',         work: 30, rest: 15, mod: 'Max effort, 100%' },
+            { name: 'Box Jump (or step-up)',   work: 35, rest: 20, mod: 'Land with both feet together' },
+            { name: 'Tuck Jump',               work: 30, rest: 20, mod: 'Pull knees to chest at peak' },
+            { name: 'Plank to Downdog Sprint', work: 35, rest: 20, mod: 'Alternate fast' },
           ],
           why: 'Compound explosive movements at peak hormones = maximum strength and calorie burn.',
         },
@@ -202,8 +276,7 @@
     },
 
     luteal: {
-      name: 'Luteal', emoji: '🍂', days: [18, 28],
-      color: '#0f766e', bg: '#f0fdfa', border: '#99f6e4',
+      emoji: '🍂', color: '#0f766e', bg: '#f0fdfa', border: '#99f6e4',
       energy: 'Winding down · steady & strong',
       tagline: 'Progesterone rises. Steady beats explosive now.',
       tip: 'Cravings are real and valid this phase. Honour them with nourishing whole foods. Your body genuinely needs more calories in the luteal phase.',
@@ -256,242 +329,230 @@
     },
   };
 
-  // ── Cycle data (reads from calendar.js storage) ──────────────
-  function getCycleData() {
-    try {
-      var raw = localStorage.getItem('vs_cycle_marked');
-      if (!raw) return null;
-      var marked = JSON.parse(raw);
-      return (Array.isArray(marked) && marked.length > 0) ? marked : null;
-    } catch (e) { return null; }
-  }
+  // ── UI builders ──────────────────────────────────────────────
 
-  function getCurrentPhase(marked) {
-    if (!marked || !marked.length) return null;
-    var sorted = marked.slice().sort();
-    var last = sorted[sorted.length - 1];
-    var start = new Date(last); start.setHours(0, 0, 0, 0);
-    var today = new Date();     today.setHours(0, 0, 0, 0);
-    var cycleDay = (Math.floor((today - start) / 86400000) % 28) + 1;
-    if (cycleDay <= 5)  return { phase: PHASES.menstrual,  cycleDay: cycleDay };
-    if (cycleDay <= 13) return { phase: PHASES.follicular, cycleDay: cycleDay };
-    if (cycleDay <= 17) return { phase: PHASES.ovulation,  cycleDay: cycleDay };
-    return                     { phase: PHASES.luteal,     cycleDay: cycleDay };
-  }
+  function workoutSectionHTML(phaseData, phaseName, cycleDay) {
+    var workout  = pickWorkout(phaseData, cycleDay);
+    var proOnly  = phaseData.workouts.filter(function(w) { return w.tier === 'pro'; });
+    var color    = phaseData.color;
+    var border   = phaseData.border;
+    var bg       = phaseData.bg;
 
-  // ── Workout section — three distinct UI states ───────────────
-  function workoutSectionHTML(phase, cycleDay) {
-    var plan    = getPlan();   // 'starter' | 'pro' | null
-    var workout = pickWorkout(phase, cycleDay);
-    var proOnly = phase.workouts.filter(function(w) { return w.tier === 'pro'; });
-
-    // ── FREE ──────────────────────────────────────────────────
+    // FREE
     if (!isPaid()) {
-      return '<div style="border-top:1px solid ' + phase.border + ';padding:.85rem 0">' +
-        '<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + phase.color + ';margin-bottom:.55rem">🏋️ Phase Workout</div>' +
-        '<div style="background:rgba(0,0,0,.03);border:1.5px dashed ' + phase.border + ';border-radius:12px;padding:1.1rem;text-align:center">' +
+      return '<div style="border-top:1px solid ' + border + ';padding:.85rem 0">' +
+        '<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + color + ';margin-bottom:.55rem">🏋️ Phase Workout</div>' +
+        '<div style="background:rgba(0,0,0,.03);border:1.5px dashed ' + border + ';border-radius:12px;padding:1.1rem;text-align:center">' +
           '<div style="font-size:1.5rem;margin-bottom:.4rem">🔒</div>' +
           '<div style="font-weight:700;font-size:.9rem;color:#1e293b;margin-bottom:.3rem">Cycle-synced workouts</div>' +
           '<div style="font-size:.75rem;color:#64748b;margin-bottom:.85rem;line-height:1.45">Get workouts matched to your exact phase — gentle yoga during your period, strength in follicular, HIIT at ovulation, pilates in luteal.</div>' +
-          '<button onclick="if(typeof switchTab===\'function\')switchTab(\'pricing\')" style="background:' + phase.color + ';color:#fff;border:none;border-radius:10px;padding:.6rem 1.2rem;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;width:100%">Unlock Phase Workouts →</button>' +
+          '<button onclick="if(typeof switchTab===\'function\')switchTab(\'pricing\')" style="background:' + color + ';color:#fff;border:none;border-radius:10px;padding:.6rem 1.2rem;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;width:100%">Unlock Phase Workouts →</button>' +
           '<div style="font-size:.65rem;color:#94a3b8;margin-top:.5rem">Starter $14/mo · Pro $29/mo · 7-day free trial</div>' +
         '</div></div>';
     }
 
-    // ── STARTER ───────────────────────────────────────────────
+    // STARTER
     if (!isPro()) {
-      var proTeaser = '';
-      if (proOnly.length > 0) {
-        var rows = proOnly.map(function(w) {
-          return '<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid #f1f5f9">' +
-            '<span style="font-size:.78rem;font-weight:500;color:#94a3b8">' + w.title + '</span>' +
-            '<span style="font-size:.68rem;color:#94a3b8">' + w.duration + ' · ' + w.intensity + ' 🔒</span>' +
-          '</div>';
-        }).join('');
-        proTeaser = '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:.7rem .85rem;margin-top:.5rem">' +
-          '<div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;margin-bottom:.4rem">🔒 ' + proOnly.length + ' more Pro workouts this phase</div>' +
-          rows +
-          '<button onclick="if(typeof switchTab===\'function\')switchTab(\'pricing\')" style="margin-top:.55rem;width:100%;background:none;border:1px solid #e2e8f0;border-radius:8px;padding:.45rem;font-size:.72rem;color:#64748b;cursor:pointer;font-family:inherit;font-weight:600">Upgrade to Pro — $29/mo →</button>' +
-        '</div>';
-      }
-      return '<div style="border-top:1px solid ' + phase.border + ';padding:.85rem 0">' +
+      var proRows = proOnly.map(function(w) {
+        return '<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid #f1f5f9">' +
+          '<span style="font-size:.78rem;font-weight:500;color:#94a3b8">' + w.title + '</span>' +
+          '<span style="font-size:.68rem;color:#94a3b8">' + w.duration + ' 🔒</span></div>';
+      }).join('');
+
+      return '<div style="border-top:1px solid ' + border + ';padding:.85rem 0">' +
         '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.55rem">' +
-          '<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + phase.color + '">🏋️ Recommended Workout</div>' +
+          '<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + color + '">🏋️ Recommended Workout</div>' +
           '<span style="font-size:.6rem;background:#f1f5f9;color:#64748b;padding:.2rem .5rem;border-radius:99px;font-weight:600">STARTER</span>' +
         '</div>' +
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;margin-bottom:.5rem">' +
           '<div><div style="font-weight:800;font-size:.95rem;color:#1e293b;margin-bottom:.2rem">' + workout.title + '</div>' +
           '<div style="font-size:.75rem;color:#64748b">' + workout.duration + ' · ' + workout.tag + ' · ' + workout.rounds + '</div></div>' +
-          '<button id="btn-phase-workout" style="background:' + phase.color + ';color:#fff;border:none;border-radius:10px;padding:.5rem .9rem;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0">Start →</button>' +
+          '<button id="btn-phase-workout" style="background:' + color + ';color:#fff;border:none;border-radius:10px;padding:.5rem .9rem;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0">Start →</button>' +
         '</div>' +
         '<div style="font-size:.72rem;color:#64748b;font-style:italic;background:rgba(255,255,255,.6);padding:.5rem .7rem;border-radius:8px;line-height:1.45;margin-bottom:.6rem">' +
-          '<strong style="color:' + phase.color + ';font-style:normal">Why this?</strong> ' + workout.why +
-        '</div>' +
-        proTeaser +
+          '<strong style="color:' + color + ';font-style:normal">Why this?</strong> ' + workout.why + '</div>' +
+        (proOnly.length ? '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:.7rem .85rem">' +
+          '<div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;margin-bottom:.4rem">🔒 ' + proOnly.length + ' more Pro workouts this phase</div>' +
+          proRows +
+          '<button onclick="if(typeof switchTab===\'function\')switchTab(\'pricing\')" style="margin-top:.55rem;width:100%;background:none;border:1px solid #e2e8f0;border-radius:8px;padding:.45rem;font-size:.72rem;color:#64748b;cursor:pointer;font-family:inherit;font-weight:600">Upgrade to Pro — $29/mo →</button>' +
+        '</div>' : '') +
       '</div>';
     }
 
-    // ── PRO ───────────────────────────────────────────────────
-    var workoutRows = phase.workouts.map(function(w, i) {
+    // PRO
+    var allRows = phaseData.workouts.map(function(w, i) {
       var active = (w.title === workout.title);
-      return '<div class="pro-workout-row" data-workout-idx="' + i + '" style="display:flex;align-items:center;gap:.6rem;padding:.4rem .6rem;border-radius:8px;background:' + (active ? phase.bg : 'transparent') + ';border:1px solid ' + (active ? phase.border : 'transparent') + ';margin-bottom:.2rem;cursor:pointer">' +
-        '<div style="width:6px;height:6px;border-radius:50%;flex-shrink:0;background:' + (active ? phase.color : '#cbd5e1') + '"></div>' +
+      return '<div class="pro-workout-row" data-workout-idx="' + i + '" style="display:flex;align-items:center;gap:.6rem;padding:.4rem .6rem;border-radius:8px;background:' + (active ? bg : 'transparent') + ';border:1px solid ' + (active ? border : 'transparent') + ';margin-bottom:.2rem;cursor:pointer">' +
+        '<div style="width:6px;height:6px;border-radius:50%;flex-shrink:0;background:' + (active ? color : '#cbd5e1') + '"></div>' +
         '<div style="flex:1;min-width:0"><span style="font-size:.78rem;font-weight:' + (active ? '700' : '500') + ';color:' + (active ? '#1e293b' : '#64748b') + '">' + w.title + '</span>' +
         '<span style="font-size:.65rem;color:#94a3b8;margin-left:.35rem">' + w.duration + ' · ' + w.intensity + '</span></div>' +
-        (active ? '<span style="font-size:.6rem;background:' + phase.color + ';color:#fff;padding:.15rem .45rem;border-radius:99px;font-weight:700;flex-shrink:0">This week</span>' : '<span style="font-size:.65rem;color:#94a3b8;flex-shrink:0">' + (w.tier === 'starter' ? 'Starter' : 'Pro') + '</span>') +
+        (active ? '<span style="font-size:.6rem;background:' + color + ';color:#fff;padding:.15rem .45rem;border-radius:99px;font-weight:700;flex-shrink:0">This week</span>' :
+          '<span style="font-size:.65rem;color:#94a3b8;flex-shrink:0">' + (w.tier === 'starter' ? 'Starter' : 'Pro') + '</span>') +
       '</div>';
     }).join('');
 
-    return '<div style="border-top:1px solid ' + phase.border + ';padding:.85rem 0">' +
+    return '<div style="border-top:1px solid ' + border + ';padding:.85rem 0">' +
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.55rem">' +
-        '<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + phase.color + '">🏋️ Phase Workouts</div>' +
-        '<span style="font-size:.6rem;background:' + phase.color + ';color:#fff;padding:.2rem .5rem;border-radius:99px;font-weight:700">PRO · ' + phase.workouts.length + ' workouts</span>' +
+        '<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + color + '">🏋️ Phase Workouts</div>' +
+        '<span style="font-size:.6rem;background:' + color + ';color:#fff;padding:.2rem .5rem;border-radius:99px;font-weight:700">PRO · ' + phaseData.workouts.length + ' workouts</span>' +
       '</div>' +
       '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;margin-bottom:.5rem">' +
         '<div><div style="font-weight:800;font-size:.95rem;color:#1e293b;margin-bottom:.2rem">' + workout.title + '</div>' +
         '<div style="font-size:.75rem;color:#64748b">' + workout.duration + ' · ' + workout.tag + ' · ' + workout.rounds + '</div></div>' +
-        '<button id="btn-phase-workout" style="background:' + phase.color + ';color:#fff;border:none;border-radius:10px;padding:.5rem .9rem;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0">Start →</button>' +
+        '<button id="btn-phase-workout" style="background:' + color + ';color:#fff;border:none;border-radius:10px;padding:.5rem .9rem;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0">Start →</button>' +
       '</div>' +
       '<div style="font-size:.72rem;color:#64748b;font-style:italic;background:rgba(255,255,255,.6);padding:.5rem .7rem;border-radius:8px;line-height:1.45;margin-bottom:.65rem">' +
-        '<strong style="color:' + phase.color + ';font-style:normal">Why this?</strong> ' + workout.why +
-      '</div>' +
+        '<strong style="color:' + color + ';font-style:normal">Why this?</strong> ' + workout.why + '</div>' +
       '<div><div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;margin-bottom:.4rem">All phase workouts (tap any to start)</div>' +
-      workoutRows + '</div>' +
+      allRows + '</div>' +
     '</div>';
   }
 
-  // ── Phase banner ─────────────────────────────────────────────
+  // ── Main banner render ───────────────────────────────────────
   function renderCyclePhaseBanner() {
-    var marked = getCycleData();
     var banner = document.getElementById('current-phase-banner');
     if (!banner) return;
 
-    if (!marked) {
-      banner.innerHTML = '<div class="cpb-icon">📅</div><div class="cpb-body"><div class="cpb-phase-name">No cycle data yet</div><div class="cpb-phase-desc">Tap days below to mark your period start.</div></div>';
-      banner.className = 'current-phase-banner cpb-unknown';
+    var result = getCurrentPhaseResult();
+
+    if (!result) {
+      // Let calendar.js handle the no-data state — don't override it
       return;
     }
 
-    var result = getCurrentPhase(marked);
-    if (!result) return;
-    var phase = result.phase, cycleDay = result.cycleDay;
-    var plan = getPlan();
+    var phaseName = result.name;
+    var cycleDay  = result.cycleDay;
+    var dayInPhase = result.dayInPhase;
+    var phaseData = PHASE_DATA[phaseName];
+    if (!phaseData) return;
+
     var planLabel = isPro() ? '⭐ Pro' : (isPaid() ? 'Starter' : 'Free');
 
-    banner.style.cssText = 'background:' + phase.bg + ';border:1.5px solid ' + phase.border + ';border-radius:16px;padding:1.1rem 1.1rem 0;margin-bottom:1rem;';
-    banner.className = 'current-phase-banner';
-
-    var hormonemap = Object.values(PHASES).map(function(p) {
-      var active = (p.name === phase.name);
+    var hormonemap = Object.keys(PHASE_DATA).map(function(key) {
+      var p = PHASE_DATA[key];
+      var phaseDays = {
+        menstrual:  '1–5',
+        follicular: '6–13',
+        ovulation:  '14–15',
+        luteal:     '16–28'
+      };
+      var active = (key === phaseName);
       return '<div style="flex:1;background:' + p.bg + ';border:1px solid ' + p.border + ';border-radius:8px;padding:.4rem .35rem;text-align:center;' + (active ? 'outline:2px solid ' + p.color + ';' : '') + '">' +
         '<div style="font-size:1rem">' + p.emoji + '</div>' +
-        '<div style="font-size:.6rem;font-weight:700;color:' + p.color + ';margin-top:.15rem">' + p.name + '</div>' +
-        '<div style="font-size:.55rem;color:#94a3b8">Days ' + p.days[0] + '–' + p.days[1] + '</div>' +
+        '<div style="font-size:.6rem;font-weight:700;color:' + p.color + ';margin-top:.15rem">' + key.charAt(0).toUpperCase() + key.slice(1) + '</div>' +
+        '<div style="font-size:.55rem;color:#94a3b8">Days ' + phaseDays[key] + '</div>' +
       '</div>';
     }).join('');
 
-    var mealIdeas = phase.meals.ideas.map(function(i) {
-      return '<span style="background:rgba(255,255,255,.8);border:1px solid ' + phase.border + ';border-radius:6px;padding:.22rem .55rem;font-size:.68rem;color:#334155">' + i + '</span>';
+    var mealIdeas = phaseData.meals.ideas.map(function(idea) {
+      return '<span style="background:rgba(255,255,255,.8);border:1px solid ' + phaseData.border + ';border-radius:6px;padding:.22rem .55rem;font-size:.68rem;color:#334155">' + idea + '</span>';
     }).join('');
+
+    // Override the calendar.js banner entirely with the richer version
+    banner.className = 'current-phase-banner';
+    banner.style.cssText = 'background:' + phaseData.bg + ';border:1.5px solid ' + phaseData.border + ';border-radius:16px;padding:1.1rem 1.1rem 0;margin-bottom:1rem;';
 
     banner.innerHTML =
       '<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">' +
-        '<div style="font-size:2rem;line-height:1;flex-shrink:0">' + phase.emoji + '</div>' +
+        '<div style="font-size:2rem;line-height:1;flex-shrink:0">' + phaseData.emoji + '</div>' +
         '<div style="flex:1">' +
-          '<div style="font-weight:800;font-size:1.1rem;color:' + phase.color + '">' + phase.name + ' Phase</div>' +
-          '<div style="font-size:.78rem;color:#64748b;margin-top:.1rem">Cycle Day ' + cycleDay + ' · ' + phase.energy + '</div>' +
+          '<div style="font-weight:800;font-size:1.1rem;color:' + phaseData.color + '">' + phaseName.charAt(0).toUpperCase() + phaseName.slice(1) + ' Phase</div>' +
+          '<div style="font-size:.78rem;color:#64748b;margin-top:.1rem">Day ' + dayInPhase + ' of phase · ' + phaseData.energy + '</div>' +
         '</div>' +
         '<div style="text-align:right;flex-shrink:0">' +
-          '<div style="font-size:.7rem;font-weight:700;background:' + phase.color + ';color:#fff;padding:.3rem .6rem;border-radius:99px">Day ' + cycleDay + '</div>' +
+          '<div style="font-size:.7rem;font-weight:700;background:' + phaseData.color + ';color:#fff;padding:.3rem .6rem;border-radius:99px">Cycle Day ' + cycleDay + '</div>' +
           '<div style="font-size:.6rem;color:#94a3b8;margin-top:.25rem;text-transform:uppercase;font-weight:600">' + planLabel + '</div>' +
         '</div>' +
       '</div>' +
 
-      '<p style="font-size:.82rem;color:#475569;font-style:italic;margin-bottom:.75rem;line-height:1.5">"' + phase.tagline + '"</p>' +
+      '<p style="font-size:.82rem;color:#475569;font-style:italic;margin-bottom:.75rem;line-height:1.5">"' + phaseData.tagline + '"</p>' +
 
       '<div style="background:rgba(255,255,255,.7);border-radius:10px;padding:.85rem;margin-bottom:.85rem">' +
-        '<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + phase.color + ';margin-bottom:.4rem">💡 Phase Tip</div>' +
-        '<p style="font-size:.78rem;color:#334155;line-height:1.5;margin:0">' + phase.tip + '</p>' +
+        '<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + phaseData.color + ';margin-bottom:.4rem">💡 Phase Tip</div>' +
+        '<p style="font-size:.78rem;color:#334155;line-height:1.5;margin:0">' + phaseData.tip + '</p>' +
       '</div>' +
 
-      workoutSectionHTML(phase, cycleDay) +
+      workoutSectionHTML(phaseData, phaseName, cycleDay) +
 
-      '<div style="border-top:1px solid ' + phase.border + ';padding:.85rem 0 .1rem">' +
-        '<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + phase.color + ';margin-bottom:.45rem">🥗 Nutrition Focus</div>' +
-        '<div style="font-size:.75rem;font-weight:700;color:#334155;margin-bottom:.25rem">' + phase.meals.focus + '</div>' +
-        '<p style="font-size:.73rem;color:#64748b;margin:0 0 .45rem;line-height:1.45">' + phase.meals.note + '</p>' +
+      '<div style="border-top:1px solid ' + phaseData.border + ';padding:.85rem 0 .1rem">' +
+        '<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + phaseData.color + ';margin-bottom:.45rem">🥗 Nutrition Focus</div>' +
+        '<div style="font-size:.75rem;font-weight:700;color:#334155;margin-bottom:.25rem">' + phaseData.meals.focus + '</div>' +
+        '<p style="font-size:.73rem;color:#64748b;margin:0 0 .45rem;line-height:1.45">' + phaseData.meals.note + '</p>' +
         '<div style="display:flex;flex-wrap:wrap;gap:.35rem">' + mealIdeas + '</div>' +
       '</div>' +
 
-      '<div style="margin:0 -1.1rem;padding:.85rem 1.1rem;border-top:1px solid ' + phase.border + ';margin-top:.85rem">' +
+      '<div style="margin:0 -1.1rem;padding:.85rem 1.1rem;border-top:1px solid ' + phaseData.border + ';margin-top:.85rem">' +
         '<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:.5rem">Your 28-Day Hormone Map</div>' +
         '<div style="display:flex;gap:.35rem">' + hormonemap + '</div>' +
       '</div>';
 
-    // Wire up Start button and Pro row clicks
+    // Wire up buttons after render
     setTimeout(function() {
       var startBtn = document.getElementById('btn-phase-workout');
       if (startBtn) {
-        var workout = pickWorkout(phase, cycleDay);
+        var workout = pickWorkout(phaseData, cycleDay);
         if (workout) {
-          startBtn.addEventListener('click', function() { launchPhaseWorkout(workout, phase); });
+          startBtn.addEventListener('click', function() { launchPhaseWorkout(workout, phaseData); });
         }
       }
       if (isPro()) {
         banner.querySelectorAll('.pro-workout-row').forEach(function(row) {
           row.addEventListener('click', function() {
             var idx = parseInt(row.getAttribute('data-workout-idx'), 10);
-            launchPhaseWorkout(phase.workouts[idx], phase);
+            launchPhaseWorkout(phaseData.workouts[idx], phaseData);
           });
         });
       }
     }, 0);
   }
 
-  // ── Today tab tip ────────────────────────────────────────────
+  // ── Today tab phase tip ──────────────────────────────────────
   function injectTodayPhaseTip() {
-    var marked = getCycleData();
-    if (!marked) return;
-    var result = getCurrentPhase(marked);
+    var result = getCurrentPhaseResult();
     if (!result) return;
-    var phase = result.phase, cycleDay = result.cycleDay;
+
+    var phaseName  = result.name;
+    var dayInPhase = result.dayInPhase;
+    var phaseData  = PHASE_DATA[phaseName];
+    if (!phaseData) return;
 
     var existing = document.getElementById('today-phase-tip');
     if (existing) existing.remove();
 
     var tip = document.createElement('div');
     tip.id = 'today-phase-tip';
-    tip.style.cssText = 'background:' + phase.bg + ';border:1.5px solid ' + phase.border + ';border-radius:14px;padding:.85rem 1rem;margin-bottom:.85rem;display:flex;gap:.65rem;align-items:flex-start;';
+    tip.style.cssText = 'background:' + phaseData.bg + ';border:1.5px solid ' + phaseData.border + ';border-radius:14px;padding:.85rem 1rem;margin-bottom:.85rem;display:flex;gap:.65rem;align-items:flex-start;';
     tip.innerHTML =
-      '<div style="font-size:1.5rem;line-height:1;flex-shrink:0">' + phase.emoji + '</div>' +
+      '<div style="font-size:1.5rem;line-height:1;flex-shrink:0">' + phaseData.emoji + '</div>' +
       '<div style="flex:1">' +
         '<div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.2rem;flex-wrap:wrap">' +
-          '<span style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:' + phase.color + '">' + phase.name + ' Phase · Day ' + cycleDay + '</span>' +
-          (isPro() ? '<span style="font-size:.55rem;background:' + phase.color + ';color:#fff;padding:.1rem .4rem;border-radius:99px;font-weight:700">PRO</span>' : '') +
+          '<span style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:' + phaseData.color + '">' +
+            phaseName.charAt(0).toUpperCase() + phaseName.slice(1) + ' Phase · Day ' + dayInPhase + ' of phase' +
+          '</span>' +
+          (isPro() ? '<span style="font-size:.55rem;background:' + phaseData.color + ';color:#fff;padding:.1rem .4rem;border-radius:99px;font-weight:700">PRO</span>' : '') +
         '</div>' +
-        '<div style="font-size:.78rem;color:#334155;line-height:1.45">' + phase.tip + '</div>' +
-        '<button onclick="if(typeof switchTab===\'function\')switchTab(\'cycle\')" style="margin-top:.5rem;background:none;border:none;color:' + phase.color + ';font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;padding:0">' +
+        '<div style="font-size:.78rem;color:#334155;line-height:1.45">' + phaseData.tip + '</div>' +
+        '<button onclick="if(typeof switchTab===\'function\')switchTab(\'cycle\')" style="margin-top:.5rem;background:none;border:none;color:' + phaseData.color + ';font-size:.72rem;font-weight:700;cursor:pointer;font-family:inherit;padding:0">' +
           (isPaid() ? 'View phase workout →' : 'Learn about your phase →') +
         '</button>' +
       '</div>';
 
-    // Insert after streak bar (paid view) or before mission card
     var anchor = document.getElementById('streak-bar') || document.getElementById('mission-card');
     if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(tip, anchor.nextSibling);
   }
 
-  // ── Workout launcher — hooks into app.js player if available ─
-  function launchPhaseWorkout(workout, phase) {
-    // Try to use app.js's own startWorkoutSession
+  // ── Workout launcher ─────────────────────────────────────────
+  function launchPhaseWorkout(workout, phaseData) {
+    // Hook into app.js's existing workout player if available
     if (typeof startWorkoutSession === 'function') {
       startWorkoutSession(workout.moves, parseInt(workout.rounds) || 1, 0);
       return;
     }
-    showMinimalPlayer(workout, phase);
+    showMinimalPlayer(workout, phaseData);
   }
 
-  // ── Minimal fallback player ───────────────────────────────────
-  function showMinimalPlayer(workout, phase) {
+  // ── Minimal fallback player ──────────────────────────────────
+  function showMinimalPlayer(workout, phaseData) {
     var existing = document.getElementById('phase-player-overlay');
     if (existing) existing.remove();
 
@@ -513,12 +574,12 @@
       var circ = 2 * Math.PI * 54;
       overlay.innerHTML =
         '<button id="pp-close" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.1);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem;font-family:inherit">✕</button>' +
-        '<div style="position:absolute;top:1rem;left:1rem;font-size:.7rem;font-weight:700;background:' + phase.color + ';color:#fff;padding:.3rem .7rem;border-radius:99px">' + phase.emoji + ' ' + phase.name + '</div>' +
-        '<div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:' + (isRest ? '#94a3b8' : phase.color) + ';margin-bottom:1rem">' + (isRest ? 'REST' : 'WORK') + '</div>' +
+        '<div style="position:absolute;top:1rem;left:1rem;font-size:.7rem;font-weight:700;background:' + phaseData.color + ';color:#fff;padding:.3rem .7rem;border-radius:99px">' + phaseData.emoji + ' ' + workout.title + '</div>' +
+        '<div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:' + (isRest ? '#94a3b8' : phaseData.color) + ';margin-bottom:1rem">' + (isRest ? 'REST' : 'WORK') + '</div>' +
         '<div style="position:relative;width:160px;height:160px;margin-bottom:1.25rem">' +
           '<svg style="position:absolute;inset:0;transform:rotate(-90deg)" viewBox="0 0 120 120">' +
             '<circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8"/>' +
-            '<circle id="pp-ring" cx="60" cy="60" r="54" fill="none" stroke="' + (isRest ? '#475569' : phase.color) + '" stroke-width="8" stroke-dasharray="' + circ + '" stroke-dashoffset="' + (circ * (1 - pct)) + '" stroke-linecap="round" style="transition:stroke-dashoffset .9s linear"/>' +
+            '<circle id="pp-ring" cx="60" cy="60" r="54" fill="none" stroke="' + (isRest ? '#475569' : phaseData.color) + '" stroke-width="8" stroke-dasharray="' + circ + '" stroke-dashoffset="' + (circ * (1 - pct)) + '" stroke-linecap="round" style="transition:stroke-dashoffset .9s linear"/>' +
           '</svg>' +
           '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
             '<div id="pp-time" style="font-size:3rem;font-weight:800;line-height:1">' + timeLeft + '</div>' +
@@ -530,7 +591,7 @@
         (next ? '<div style="font-size:.72rem;color:#64748b;margin-bottom:1.5rem">Next: ' + (isRest ? mv.name : next.name) + '</div>' : '<div style="font-size:.72rem;color:#10b981;margin-bottom:1.5rem;font-weight:700">Last exercise!</div>') +
         '<div style="display:flex;gap:.75rem">' +
           '<button id="pp-skip" style="background:rgba(255,255,255,.08);border:none;color:#fff;padding:.7rem 1.4rem;border-radius:10px;cursor:pointer;font-size:.85rem;font-family:inherit">Skip →</button>' +
-          '<button id="pp-pause" style="background:' + phase.color + ';border:none;color:#fff;padding:.7rem 1.6rem;border-radius:10px;cursor:pointer;font-size:.85rem;font-weight:700;font-family:inherit">' + (paused ? '▶ Resume' : '⏸ Pause') + '</button>' +
+          '<button id="pp-pause" style="background:' + phaseData.color + ';border:none;color:#fff;padding:.7rem 1.6rem;border-radius:10px;cursor:pointer;font-size:.85rem;font-weight:700;font-family:inherit">' + (paused ? '▶ Resume' : '⏸ Pause') + '</button>' +
         '</div>';
 
       overlay.querySelector('#pp-close').onclick  = function() { clearInterval(timer); overlay.remove(); };
@@ -572,8 +633,8 @@
         '<div style="text-align:center">' +
           '<div style="font-size:4rem;margin-bottom:.75rem">💪</div>' +
           '<h2 style="font-size:1.6rem;font-weight:800;margin-bottom:.5rem">Workout Complete!</h2>' +
-          '<p style="color:#94a3b8;font-size:.85rem;margin-bottom:1.75rem">' + phase.emoji + ' ' + phase.name + ' Phase workout done.<br>Rest 5 minutes. Drink water. You showed up.</p>' +
-          '<button onclick="document.getElementById(\'phase-player-overlay\').remove()" style="background:' + phase.color + ';border:none;color:#fff;padding:1rem 2rem;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;width:100%;max-width:260px">✓ Done</button>' +
+          '<p style="color:#94a3b8;font-size:.85rem;margin-bottom:1.75rem">' + phaseData.emoji + ' ' + workout.title + ' done.<br>Rest 5 minutes. Drink water. You showed up.</p>' +
+          '<button onclick="document.getElementById(\'phase-player-overlay\').remove()" style="background:' + phaseData.color + ';border:none;color:#fff;padding:1rem 2rem;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;width:100%;max-width:260px">✓ Done</button>' +
         '</div>';
     }
 
@@ -592,25 +653,26 @@
     });
   }
 
-  // Patch localStorage.setItem to re-render when plan or cycle data changes
+  // Patch localStorage to re-render when calendar or plan changes
   var _origSet = localStorage.setItem.bind(localStorage);
   localStorage.setItem = function(key, value) {
     _origSet(key, value);
-    if (key === 'vs_cycle_marked' || key === PLAN_KEY) {
+    if (key === CAL_KEY || key === PLAN_KEY) {
       setTimeout(function() {
         renderCyclePhaseBanner();
         var old = document.getElementById('today-phase-tip');
         if (old) old.remove();
         var paidToday = document.getElementById('paid-today');
         if (paidToday && !paidToday.classList.contains('hidden')) injectTodayPhaseTip();
-      }, 100);
+      }, 150);  // slight delay so calendar.js renders first
     }
   };
 
   // ── Init ─────────────────────────────────────────────────────
   function init() {
     watchTabs();
-    renderCyclePhaseBanner();
+    // Delay so calendar.js renderBanner() runs first, then we upgrade it
+    setTimeout(renderCyclePhaseBanner, 200);
     var paidToday = document.getElementById('paid-today');
     if (paidToday && !paidToday.classList.contains('hidden')) {
       setTimeout(injectTodayPhaseTip, 400);
