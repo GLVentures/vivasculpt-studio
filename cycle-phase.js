@@ -57,21 +57,20 @@
   }
 
   // ========================= UPDATED PLAYER WITH IMAGES =========================
-  function showMinimalPlayer(workout, phaseData) {
+ function showMinimalPlayer(workout, phaseData) {
     var existing = document.getElementById('phase-player-overlay');
     if (existing) existing.remove();
 
     var mi = 0, round = 1;
     var totalRounds = parseInt(workout.rounds) || 1;
-    var currentMove = workout.moves[0];
-    var timeLeft = currentMove.work;
+    var timeLeft = workout.moves[0].work;
     var isRest = false, paused = false, timer = null;
 
     var overlay = document.createElement('div');
     overlay.id = 'phase-player-overlay';
     
-    // Apply full-screen styling
-    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#fff;color:#0f172a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:sans-serif;padding:20px;';
+    // Updated styling to match your screenshot exactly
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(15, 23, 42, 0.9);display:flex;align-items:center;justify-content:center;font-family:inherit;padding:20px;';
 
     function mv() { return workout.moves[mi]; }
     function dur() { return isRest ? (mv().rest || 15) : mv().work; }
@@ -83,39 +82,35 @@
       var nextM = workout.moves[mi + 1] ? workout.moves[mi + 1].name : (round < totalRounds ? workout.moves[0].name : "Finish");
 
       overlay.innerHTML = `
-        <div style="width:100%; max-width:500px; background:#fff; border-radius:24px; padding:30px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); text-align:center; position:relative;">
-          <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:bold; color:#94a3b8; margin-bottom:20px; text-transform:uppercase;">
-            <span>Round ${round} / ${totalRounds}</span>
-            <span id="close" style="cursor:pointer; font-size:18px;">✕</span>
-          </div>
-          
-          <div style="color:${phaseData.color || '#10b981'}; font-weight:800; font-size:12px; margin-bottom:10px; text-transform:uppercase;">
-            ${isRest ? 'Rest' : 'Work'}
+        <div style="background:#fff; width:100%; max-width:500px; border-radius:32px; padding:40px; text-align:center; position:relative; box-shadow:0 20px-25px rgba(0,0,0,0.2);">
+          <div style="display:flex; justify-content:space-between; color:#94a3b8; font-size:12px; font-weight:bold; margin-bottom:20px;">
+            <span>ROUND ${round} / ${totalRounds}</span>
+            <span id="close" style="cursor:pointer; font-size:20px;">✕</span>
           </div>
 
-          <div style="width:140px; height:140px; position:relative; margin: 0 auto 20px;">
+          <div style="color:#0d9488; font-size:12px; font-weight:bold; margin-bottom:10px; letter-spacing:1px;">${isRest ? 'REST' : 'WORK'}</div>
+
+          <div style="width:140px; height:140px; margin: 0 auto 20px; position:relative;">
             <svg viewBox="0 0 120 120" style="transform:rotate(-90deg); width:100%; height:100%;">
-              <circle cx="60" cy="60" r="54" stroke="#f1f5f9" stroke-width="8" fill="none"/>
-              <circle cx="60" cy="60" r="54" stroke="${phaseData.color || '#0d9488'}" stroke-width="8" fill="none" 
+              <circle cx="60" cy="60" r="54" stroke="#f1f5f9" stroke-width="6" fill="none"/>
+              <circle cx="60" cy="60" r="54" stroke="#0d9488" stroke-width="6" fill="none" 
                 stroke-dasharray="${circ}" stroke-dashoffset="${circ * (1 - pct)}" stroke-linecap="round" style="transition: stroke-dashoffset 1s linear;"/>
             </svg>
-            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:42px; font-weight:300; font-family:serif;">
-              ${timeLeft}
-            </div>
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:48px; font-family:serif;">${timeLeft}</div>
           </div>
 
-          <h2 style="font-family:serif; font-size:32px; margin:0 0 10px;">${m.name}</h2>
+          <h2 style="font-family:serif; font-size:36px; margin:0 0 15px;">${m.name}</h2>
           
-          <div style="width:100%; height:180px; margin-bottom:15px; border-radius:12px; overflow:hidden; background:#f8fafc; display:flex; align-items:center; justify-content:center;">
-             <img src="${m.image}" alt="${m.name}" style="max-width:100%; max-height:100%; object-fit:contain;" onerror="this.style.display='none';">
+          <div style="width:100%; height:200px; background:#f8fafc; border-radius:16px; margin-bottom:20px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+            <img src="${m.image}" style="max-width:100%; max-height:100%; object-fit:cover;" onerror="this.src='https://via.placeholder.com/400x300?text=Exercise+Image'">
           </div>
 
-          <p style="color:#0d9488; font-size:14px; margin-bottom:20px;">● ${m.desc || 'Keep going!'}</p>
-          <div style="font-size:13px; color:#64748b; margin-bottom:30px;">Next: ${nextM}</div>
+          <p style="color:#0d9488; font-size:15px; margin-bottom:10px;">● ${m.desc || 'Focus on your form'}</p>
+          <div style="color:#64748b; font-size:13px; margin-bottom:30px;">Next: ${nextM}</div>
 
           <div style="display:flex; gap:15px;">
-            <button id="skip" style="flex:1; padding:16px; border-radius:12px; border:2px solid #0d9488; background:transparent; color:#0d9488; font-weight:bold; cursor:pointer;">Skip →</button>
-            <button id="pause" style="flex:1; padding:16px; border-radius:12px; border:none; background:#0d9488; color:#fff; font-weight:bold; cursor:pointer;">${paused ? 'Resume' : 'Pause'}</button>
+            <button id="skip" style="flex:1; padding:18px; border:2px solid #0d9488; background:none; color:#0d9488; border-radius:12px; font-weight:bold; cursor:pointer;">Skip →</button>
+            <button id="pause" style="flex:1; padding:18px; border:none; background:#0d9488; color:#fff; border-radius:12px; font-weight:bold; cursor:pointer;">${paused ? 'Resume' : 'Pause'}</button>
           </div>
         </div>
       `;
@@ -124,6 +119,7 @@
       overlay.querySelector('#skip').onclick = advance;
       overlay.querySelector('#pause').onclick = () => { paused = !paused; render(); };
     }
+    // ... rest of start/advance functions ...
 
     // ... [Rest of the logic: advance(), start(), complete() remain the same] ...
 
