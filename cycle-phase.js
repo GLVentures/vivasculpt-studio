@@ -340,9 +340,9 @@
 
     // FREE
     if (!isPaid()) {
-      return '<div style="border-top:1px solid ' + border + ';padding:.85rem 0">' +
+      return '<div style="border-top:1px solid ' + border + ';padding:.85rem 0;width:100%;box-sizing:border-box">' +
         '<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + color + ';margin-bottom:.55rem">🏋️ Phase Workout</div>' +
-        '<div style="background:rgba(0,0,0,.03);border:1.5px dashed ' + border + ';border-radius:12px;padding:1.1rem;text-align:center">' +
+        '<div style="background:rgba(0,0,0,.03);border:1.5px dashed ' + border + ';border-radius:12px;padding:1rem;text-align:center;width:100%;box-sizing:border-box">' +
           '<div style="font-size:1.5rem;margin-bottom:.4rem">🔒</div>' +
           '<div style="font-weight:700;font-size:.9rem;color:#1e293b;margin-bottom:.3rem">Cycle-synced workouts</div>' +
           '<div style="font-size:.75rem;color:#64748b;margin-bottom:.85rem;line-height:1.45">Get workouts matched to your exact phase — gentle yoga during your period, strength in follicular, HIIT at ovulation, pilates in luteal.</div>' +
@@ -364,14 +364,14 @@
           '<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + color + '">🏋️ Recommended Workout</div>' +
           '<span style="font-size:.6rem;background:#f1f5f9;color:#64748b;padding:.2rem .5rem;border-radius:99px;font-weight:600">STARTER</span>' +
         '</div>' +
-        '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;margin-bottom:.5rem">' +
-          '<div><div style="font-weight:800;font-size:.95rem;color:#1e293b;margin-bottom:.2rem">' + workout.title + '</div>' +
-          '<div style="font-size:.75rem;color:#64748b">' + workout.duration + ' · ' + workout.tag + ' · ' + workout.rounds + '</div></div>' +
-          '<button id="btn-phase-workout" style="background:' + color + ';color:#fff;border:none;border-radius:10px;padding:.5rem .9rem;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0">Start →</button>' +
+        '<div style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.5rem;width:100%;box-sizing:border-box">' +
+          '<div style="flex:1;min-width:0"><div style="font-weight:800;font-size:.9rem;color:#1e293b;margin-bottom:.15rem;line-height:1.3">' + workout.title + '</div>' +
+          '<div style="font-size:.72rem;color:#64748b">' + workout.duration + ' · ' + workout.tag + '</div></div>' +
+          '<button id="btn-phase-workout" style="background:' + color + ';color:#fff;border:none;border-radius:10px;padding:.45rem .8rem;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0;margin-top:.1rem">Start →</button>' +
         '</div>' +
-        '<div style="font-size:.72rem;color:#64748b;font-style:italic;background:rgba(255,255,255,.6);padding:.5rem .7rem;border-radius:8px;line-height:1.45;margin-bottom:.6rem">' +
+        '<div style="font-size:.72rem;color:#64748b;font-style:italic;background:rgba(255,255,255,.6);padding:.5rem .7rem;border-radius:8px;line-height:1.45;margin-bottom:.6rem;width:100%;box-sizing:border-box">' +
           '<strong style="color:' + color + ';font-style:normal">Why this?</strong> ' + workout.why + '</div>' +
-        (proOnly.length ? '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:.7rem .85rem">' +
+        (proOnly.length ? '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:.7rem .85rem;width:100%;box-sizing:border-box">' +
           '<div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;margin-bottom:.4rem">🔒 ' + proOnly.length + ' more Pro workouts this phase</div>' +
           proRows +
           '<button onclick="if(typeof switchTab===\'function\')switchTab(\'pricing\')" style="margin-top:.55rem;width:100%;background:none;border:1px solid #e2e8f0;border-radius:8px;padding:.45rem;font-size:.72rem;color:#64748b;cursor:pointer;font-family:inherit;font-weight:600">Upgrade to Pro — $29/mo →</button>' +
@@ -396,12 +396,12 @@
         '<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + color + '">🏋️ Phase Workouts</div>' +
         '<span style="font-size:.6rem;background:' + color + ';color:#fff;padding:.2rem .5rem;border-radius:99px;font-weight:700">PRO · ' + phaseData.workouts.length + ' workouts</span>' +
       '</div>' +
-      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;margin-bottom:.5rem">' +
-        '<div><div style="font-weight:800;font-size:.95rem;color:#1e293b;margin-bottom:.2rem">' + workout.title + '</div>' +
-        '<div style="font-size:.75rem;color:#64748b">' + workout.duration + ' · ' + workout.tag + ' · ' + workout.rounds + '</div></div>' +
-        '<button id="btn-phase-workout" style="background:' + color + ';color:#fff;border:none;border-radius:10px;padding:.5rem .9rem;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0">Start →</button>' +
+      '<div style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.5rem;width:100%;box-sizing:border-box">' +
+        '<div style="flex:1;min-width:0"><div style="font-weight:800;font-size:.9rem;color:#1e293b;margin-bottom:.15rem;line-height:1.3">' + workout.title + '</div>' +
+        '<div style="font-size:.72rem;color:#64748b">' + workout.duration + ' · ' + workout.tag + '</div></div>' +
+        '<button id="btn-phase-workout" style="background:' + color + ';color:#fff;border:none;border-radius:10px;padding:.45rem .8rem;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0;margin-top:.1rem">Start →</button>' +
       '</div>' +
-      '<div style="font-size:.72rem;color:#64748b;font-style:italic;background:rgba(255,255,255,.6);padding:.5rem .7rem;border-radius:8px;line-height:1.45;margin-bottom:.65rem">' +
+      '<div style="font-size:.72rem;color:#64748b;font-style:italic;background:rgba(255,255,255,.6);padding:.5rem .7rem;border-radius:8px;line-height:1.45;margin-bottom:.65rem;width:100%;box-sizing:border-box">' +
         '<strong style="color:' + color + ';font-style:normal">Why this?</strong> ' + workout.why + '</div>' +
       '<div><div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;margin-bottom:.4rem">All phase workouts (tap any to start)</div>' +
       allRows + '</div>' +
@@ -450,22 +450,34 @@
 
     // Override the calendar.js banner entirely with the richer version
     banner.className = 'current-phase-banner';
-    banner.style.cssText = 'background:' + phaseData.bg + ';border:1.5px solid ' + phaseData.border + ';border-radius:16px;padding:1.1rem 1.1rem 0;margin-bottom:1rem;';
+    banner.style.cssText = [
+      'display:block',
+      'width:100%',
+      'box-sizing:border-box',
+      'overflow:hidden',
+      'background:' + phaseData.bg,
+      'border:1.5px solid ' + phaseData.border,
+      'border-radius:16px',
+      'padding:1rem 1rem 0',
+      'margin-bottom:1rem',
+      'float:none',
+      'position:relative',
+    ].join(';');
 
     banner.innerHTML =
-      '<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">' +
-        '<div style="font-size:2rem;line-height:1;flex-shrink:0">' + phaseData.emoji + '</div>' +
-        '<div style="flex:1">' +
-          '<div style="font-weight:800;font-size:1.1rem;color:' + phaseData.color + '">' + phaseName.charAt(0).toUpperCase() + phaseName.slice(1) + ' Phase</div>' +
-          '<div style="font-size:.78rem;color:#64748b;margin-top:.1rem">Day ' + dayInPhase + ' of phase · ' + phaseData.energy + '</div>' +
+      '<div style="display:flex;align-items:flex-start;gap:.6rem;margin-bottom:.75rem;width:100%;box-sizing:border-box">' +
+        '<div style="font-size:1.8rem;line-height:1;flex-shrink:0;margin-top:.1rem">' + phaseData.emoji + '</div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div style="font-weight:800;font-size:1rem;color:' + phaseData.color + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + phaseName.charAt(0).toUpperCase() + phaseName.slice(1) + ' Phase</div>' +
+          '<div style="font-size:.72rem;color:#64748b;margin-top:.15rem;line-height:1.4">Day ' + dayInPhase + ' of phase<br>' + phaseData.energy + '</div>' +
         '</div>' +
         '<div style="text-align:right;flex-shrink:0">' +
-          '<div style="font-size:.7rem;font-weight:700;background:' + phaseData.color + ';color:#fff;padding:.3rem .6rem;border-radius:99px">Cycle Day ' + cycleDay + '</div>' +
-          '<div style="font-size:.6rem;color:#94a3b8;margin-top:.25rem;text-transform:uppercase;font-weight:600">' + planLabel + '</div>' +
+          '<div style="font-size:.65rem;font-weight:700;background:' + phaseData.color + ';color:#fff;padding:.25rem .55rem;border-radius:99px;white-space:nowrap">Day ' + cycleDay + '</div>' +
+          '<div style="font-size:.58rem;color:#94a3b8;margin-top:.2rem;text-transform:uppercase;font-weight:600">' + planLabel + '</div>' +
         '</div>' +
       '</div>' +
 
-      '<p style="font-size:.82rem;color:#475569;font-style:italic;margin-bottom:.75rem;line-height:1.5">"' + phaseData.tagline + '"</p>' +
+      '<p style="font-size:.8rem;color:#475569;font-style:italic;margin-bottom:.7rem;line-height:1.5;width:100%;box-sizing:border-box">"' + phaseData.tagline + '"</p>' +
 
       '<div style="background:rgba(255,255,255,.7);border-radius:10px;padding:.85rem;margin-bottom:.85rem">' +
         '<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + phaseData.color + ';margin-bottom:.4rem">💡 Phase Tip</div>' +
@@ -481,9 +493,9 @@
         '<div style="display:flex;flex-wrap:wrap;gap:.35rem">' + mealIdeas + '</div>' +
       '</div>' +
 
-      '<div style="margin:0 -1.1rem;padding:.85rem 1.1rem;border-top:1px solid ' + phaseData.border + ';margin-top:.85rem">' +
+      '<div style="padding:.85rem 0;border-top:1px solid ' + phaseData.border + ';margin-top:.85rem;width:100%;box-sizing:border-box">' +
         '<div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8;margin-bottom:.5rem">Your 28-Day Hormone Map</div>' +
-        '<div style="display:flex;gap:.35rem">' + hormonemap + '</div>' +
+        '<div style="display:flex;gap:.3rem;width:100%">' + hormonemap + '</div>' +
       '</div>';
 
     // Wire up buttons after render
