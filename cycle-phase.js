@@ -158,10 +158,12 @@
 
           <h2 style="font-family:serif; font-size:32px; margin:0 0 10px; color:#0f172a;">${m.name}</h2>
           
-          <div style="width:100%; height:200px; background:#f8fafc; border-radius:16px; margin-bottom:15px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
-             <img src="${m.image}" style="max-width:100%; max-height:100%; object-fit:contain;" 
-                  onerror="this.src='https://placehold.co/400x300/e2e8f0/0d9488?text=Image+Missing'">
-          </div>
+          // Replace the emoji-only block with this:
+'<div style="width:100%; height:190px; background:#f8fafc; border-radius:20px; margin-bottom:20px; overflow:hidden; display:flex; align-items:center; justify-content:center; border: 1px solid #eee;">' +
+    (isRest 
+      ? '<div style="font-size:4.5rem;">😮‍💨</div>' 
+      : '<img src="' + (mv.image || 'assets/placeholder.jpg') + '" style="max-width:100%; max-height:100%; object-fit:contain;" onerror="this.src=\'https://placehold.co/400x300/e2e8f0/0d9488?text=File+Not+Found\'">') +
+'</div>'
 
           <p style="color:#0d9488; font-size:14px; margin-bottom:5px; font-weight:500;">● ${m.desc}</p>
           <div style="color:#94a3b8; font-size:12px; margin-bottom:25px;">Next: ${nextM}</div>
