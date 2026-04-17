@@ -691,21 +691,25 @@
       var info = isRest ? null : getExerciseInfo(mv.name);
       var nextInfo = next ? getExerciseInfo(next.name) : null;
 
-      overlay.innerHTML =
-        // Close + phase label
-        '<button id="pp-close" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.1);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem;font-family:inherit;z-index:1">✕</button>' +
-        '<div style="position:absolute;top:1rem;left:1rem;font-size:.62rem;font-weight:700;background:' + phaseData.color + ';color:#fff;padding:.25rem .6rem;border-radius:99px;max-width:52%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + phaseData.emoji + ' ' + workout.title + '</div>' +
+      overlay.html += `
+<button id="pp-close"
+  style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.1);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem;font-family:inherit">
+  ✕
+</button>
 
-        // WORK / REST label
-        '<div style="font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:' + (isRest ? '#64748b' : phaseData.color) + ';margin-top:3.5rem;margin-bottom:.4rem">' + (isRest ? '— REST —' : 'WORK') + '</div>' +
+<div
+  style="position:absolute;top:1rem;left:1rem;font-size:.7rem;font-weight:700;background:${phaseData.color};color:#fff;padding:.3rem .7rem;border-radius:99px">
+  ${phaseData.emoji} ${workout.title}
+</div>
 
-        // Big emoji illustration — always works, no broken images
-        '<div style="font-size:4.5rem;line-height:1;margin-bottom:.4rem;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))">' +
-          (isRest ? '😮‍💨' : (info ? info.emoji : '💪')) +
-        '</div>' +
+<div
+  style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:${isRest ? '#94a3b8' : phaseData.color};margin-bottom:1rem">
+  ${isRest ? 'REST' : 'WORK'}
+</div>
 
-        // Timer ring
-        '<div style="position:relative;width:120px;height:120px;margin-bottom:.5rem">' +
+<div
+  style="position:relative;width:160px;height:160px;margin-bottom:1.25rem">
+`;
           '<svg style="position:absolute;inset:0;transform:rotate(-90deg)" viewBox="0 0 120 120">' +
             '<circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="7"/>' +
             '<circle id="pp-ring" cx="60" cy="60" r="54" fill="none" stroke="' + (isRest ? '#475569' : phaseData.color) + '" stroke-width="7" stroke-dasharray="' + circ + '" stroke-dashoffset="' + (circ * (1 - pct)) + '" stroke-linecap="round" style="transition:stroke-dashoffset .9s linear"/>' +
