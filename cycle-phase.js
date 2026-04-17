@@ -1,6 +1,5 @@
 // ============================================================
-// VivaSculpt — Cycle-Phase Workout Engine  v4 (FIXED)
-// Only change: showMinimalPlayer fully repaired (stable DOM rendering)
+// VivaSculpt — Cycle-Phase Workout Engine  v4.1 (IMAGE ENABLED)
 // ============================================================
 
 (function () {
@@ -16,149 +15,123 @@
   function isPaid()  { var p = getPlan(); return p === 'starter' || p === 'pro'; }
   function isPro()   { return getPlan() === 'pro'; }
 
-  function todayMs() {
-    var d = new Date();
-    return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
-  }
-
-  function keyMs(key) {
-    var p = key.split('-');
-    return Date.UTC(+p[0], +p[1] - 1, +p[2]);
-  }
-
-  function diffDays(msA, msB) { return Math.round((msB - msA) / 86400000); }
-  function addDays(ms, n) { return ms + n * 86400000; }
-
-  function loadDays() {
-    try {
-      var r = localStorage.getItem(CAL_KEY);
-      return r ? JSON.parse(r) : [];
-    } catch (e) { return []; }
-  }
-
-  function detectStarts(arr) {
-    if (!arr.length) return [];
-    var sorted = arr.slice().sort();
-    var starts = [], lastMs = null;
-    for (var i = 0; i < sorted.length; i++) {
-      var ms = keyMs(sorted[i]);
-      if (lastMs === null || diffDays(lastMs, ms) >= 3) starts.push(ms);
-      lastMs = ms;
-    }
-    return starts;
-  }
-
-  function avgLen(starts) {
-    if (starts.length < 2) return DEF_CYCLE;
-    var lens = [];
-    for (var i = 1; i < starts.length; i++) {
-      var l = diffDays(starts[i - 1], starts[i]);
-      if (l >= 18 && l <= 45) lens.push(l);
-    }
-    if (!lens.length) return DEF_CYCLE;
-    return Math.round(lens.reduce(function (a, b) { return a + b; }, 0) / lens.length);
-  }
-
-  function phaseFor(targetMs, starts, cycleLen) {
-    if (!starts.length) return null;
-    var last = null;
-    for (var i = 0; i < starts.length; i++) {
-      if (starts[i] <= targetMs) last = starts[i];
-    }
-    if (last === null) return null;
-    while (addDays(last, cycleLen) <= targetMs) last = addDays(last, cycleLen);
-
-    var day = diffDays(last, targetMs) + 1;
-    var m = PHASE_LENS.menstrual;
-    var f = m + PHASE_LENS.follicular;
-    var o = f + PHASE_LENS.ovulation;
-    var l = o + PHASE_LENS.luteal;
-
-    if (day <= m) return { name:'menstrual', cycleDay:day, dayInPhase:day };
-    if (day <= f) return { name:'follicular', cycleDay:day, dayInPhase:day - m };
-    if (day <= o) return { name:'ovulation', cycleDay:day, dayInPhase:day - f };
-    if (day <= l) return { name:'luteal', cycleDay:day, dayInPhase:day - o };
-
-    return { name:'menstrual', cycleDay:day, dayInPhase:1 };
-  }
-
-  function getCurrentPhaseResult() {
-    var marked = loadDays();
-    if (!marked.length) return null;
-    var starts = detectStarts(marked);
-    var cycleLen = avgLen(starts);
-    return phaseFor(todayMs(), starts, cycleLen);
-  }
+  // ... [Keep your existing calendar logic functions: todayMs, keyMs, diffDays, loadDays, etc.] ...
 
   function pickWorkout(phaseData, cycleDay) {
-   if (!isPaid()) {
-  return {
-    title: "Starter Preview Session",
-    rounds: 1,
-    moves: [
-      { name: "Squat", work: 30, rest: 10, image: "assets/squat.jpg" },
-      { name: "Push-Up", work: 30, rest: 10, image: "assets/pushup.jpg" }
-    ],
-    locked: true
-  };
-}
+    // 1-DAY FREE STARTER PREVIEW
+    if (!isPaid()) {
+      return {
+        title: "1-Day Starter Preview",
+        rounds: 3,
+        moves: [
+          { 
+            name: "Squat", 
+            work: 40, 
+            rest: 15, 
+            image: "assets/squats.jpg", // Ensure these paths match your folder
+            desc: "Chair squat — touch and rise slowly" 
+          },
+          { 
+            name: "Incline Push-Up", 
+            work: 40, 
+            rest: 15, 
+            image: "assets/pushups.jpg",
+            desc: "Hands on elevated surface, core tight"
+          },
+          { 
+            name: "Plank", 
+            work: 30, 
+            rest: 15, 
+            image: "assets/plank.jpg",
+            desc: "Keep back flat and breathe"
+          }
+        ],
+        locked: false 
+      };
+    }
+    
+    // Normal Paid Logic
     if (!isPro()) return phaseData.workouts[0];
     var weekNum = Math.floor((cycleDay - 1) / 7);
     return phaseData.workouts[weekNum % phaseData.workouts.length];
   }
 
-  // ========================= FIXED PLAYER =========================
+  // ========================= UPDATED PLAYER WITH IMAGES =========================
   function showMinimalPlayer(workout, phaseData) {
     var existing = document.getElementById('phase-player-overlay');
     if (existing) existing.remove();
 
     var mi = 0, round = 1;
     var totalRounds = parseInt(workout.rounds) || 1;
-    var timeLeft = workout.moves[0].work;
+    var currentMove = workout.moves[0];
+    var timeLeft = currentMove.work;
     var isRest = false, paused = false, timer = null;
 
     var overlay = document.createElement('div');
     overlay.id = 'phase-player-overlay';
-    overlay.style.cssText =
-      'position:fixed;inset:0;z-index:9999;background:#0f172a;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:inherit;padding:1.5rem;';
+    
+    // Apply full-screen styling
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#fff;color:#0f172a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:sans-serif;padding:20px;';
 
-    function mv() { return workout.moves[Math.min(mi, workout.moves.length - 1)]; }
+    function mv() { return workout.moves[mi]; }
     function dur() { return isRest ? (mv().rest || 15) : mv().work; }
 
     function render() {
       var m = mv();
       var pct = timeLeft / dur();
       var circ = 2 * Math.PI * 54;
+      var nextM = workout.moves[mi + 1] ? workout.moves[mi + 1].name : (round < totalRounds ? workout.moves[0].name : "Finish");
 
-      overlay.innerHTML =
-        '<button id="close" style="position:absolute;top:1rem;right:1rem">✕</button>' +
-        '<div style="position:absolute;top:1rem;left:1rem;background:' + phaseData.color + ';padding:.3rem .7rem;border-radius:99px">' + phaseData.emoji + ' ' + workout.title + '</div>' +
-        '<div style="font-size:.75rem;margin-bottom:1rem">' + (isRest ? 'REST' : 'WORK') + '</div>' +
-        '<div style="width:160px;height:160px;position:relative;margin-bottom:1rem">' +
-          '<svg viewBox="0 0 120 120" style="transform:rotate(-90deg)">' +
-            '<circle cx="60" cy="60" r="54" stroke="#222" fill="none"/>' +
-            '<circle cx="60" cy="60" r="54" stroke="' + phaseData.color + '" fill="none" stroke-dasharray="' + circ + '" stroke-dashoffset="' + (circ * (1 - pct)) + '"/>' +
-          '</svg>' +
-          '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2rem">' + timeLeft + '</div>' +
-        '</div>' +
-        '<div style="font-weight:800">' + m.name + '</div>' +
-        '<div style="margin-top:1rem;display:flex;gap:.5rem">' +
-          '<button id="skip">Skip</button>' +
-          '<button id="pause">' + (paused ? 'Resume' : 'Pause') + '</button>' +
-        '</div>';
+      overlay.innerHTML = `
+        <div style="width:100%; max-width:500px; background:#fff; border-radius:24px; padding:30px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); text-align:center; position:relative;">
+          <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:bold; color:#94a3b8; margin-bottom:20px; text-transform:uppercase;">
+            <span>Round ${round} / ${totalRounds}</span>
+            <span id="close" style="cursor:pointer; font-size:18px;">✕</span>
+          </div>
+          
+          <div style="color:${phaseData.color || '#10b981'}; font-weight:800; font-size:12px; margin-bottom:10px; text-transform:uppercase;">
+            ${isRest ? 'Rest' : 'Work'}
+          </div>
+
+          <div style="width:140px; height:140px; position:relative; margin: 0 auto 20px;">
+            <svg viewBox="0 0 120 120" style="transform:rotate(-90deg); width:100%; height:100%;">
+              <circle cx="60" cy="60" r="54" stroke="#f1f5f9" stroke-width="8" fill="none"/>
+              <circle cx="60" cy="60" r="54" stroke="${phaseData.color || '#0d9488'}" stroke-width="8" fill="none" 
+                stroke-dasharray="${circ}" stroke-dashoffset="${circ * (1 - pct)}" stroke-linecap="round" style="transition: stroke-dashoffset 1s linear;"/>
+            </svg>
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:42px; font-weight:300; font-family:serif;">
+              ${timeLeft}
+            </div>
+          </div>
+
+          <h2 style="font-family:serif; font-size:32px; margin:0 0 10px;">${m.name}</h2>
+          
+          <div style="width:100%; height:180px; margin-bottom:15px; border-radius:12px; overflow:hidden; background:#f8fafc; display:flex; align-items:center; justify-content:center;">
+             <img src="${m.image}" alt="${m.name}" style="max-width:100%; max-height:100%; object-fit:contain;" onerror="this.style.display='none';">
+          </div>
+
+          <p style="color:#0d9488; font-size:14px; margin-bottom:20px;">● ${m.desc || 'Keep going!'}</p>
+          <div style="font-size:13px; color:#64748b; margin-bottom:30px;">Next: ${nextM}</div>
+
+          <div style="display:flex; gap:15px;">
+            <button id="skip" style="flex:1; padding:16px; border-radius:12px; border:2px solid #0d9488; background:transparent; color:#0d9488; font-weight:bold; cursor:pointer;">Skip →</button>
+            <button id="pause" style="flex:1; padding:16px; border-radius:12px; border:none; background:#0d9488; color:#fff; font-weight:bold; cursor:pointer;">${paused ? 'Resume' : 'Pause'}</button>
+          </div>
+        </div>
+      `;
 
       overlay.querySelector('#close').onclick = () => { clearInterval(timer); overlay.remove(); };
       overlay.querySelector('#skip').onclick = advance;
       overlay.querySelector('#pause').onclick = () => { paused = !paused; render(); };
     }
 
+    // ... [Rest of the logic: advance(), start(), complete() remain the same] ...
+
     function advance() {
       clearInterval(timer);
-      var m = mv();
-
-      if (!isRest && (m.rest || 0) > 0) {
+      if (!isRest && (mv().rest || 0) > 0) {
         isRest = true;
-        timeLeft = m.rest;
+        timeLeft = mv().rest;
       } else {
         isRest = false;
         mi++;
@@ -178,25 +151,23 @@
         if (paused) return;
         timeLeft--;
         if (timeLeft <= 0) return advance();
-        var t = overlay.querySelector('div');
-        if (t) t.textContent = timeLeft;
+        render(); // Full re-render to update SVG and Text
       }, 1000);
     }
 
     function complete() {
       clearInterval(timer);
-      overlay.innerHTML = '<div style="text-align:center"><h2>Done</h2></div>';
+      overlay.innerHTML = '<div style="text-align:center"><h2>Workout Complete!</h2><button onclick="location.reload()">Back to Dashboard</button></div>';
     }
 
     document.body.appendChild(overlay);
     start();
   }
 
-  // ========================= INIT =========================
+  // [Init function stays the same]
   function init() {
     var banner = document.getElementById('current-phase-banner');
     if (!banner) return;
-
     setTimeout(function () {
       var result = getCurrentPhaseResult();
       if (!result) return;
@@ -204,8 +175,7 @@
     }, 200);
   }
 
-  if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 
 })();
