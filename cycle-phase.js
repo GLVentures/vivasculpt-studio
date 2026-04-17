@@ -563,6 +563,110 @@
     showMinimalPlayer(workout, phaseData);
   }
 
+  // ── Exercise info map ────────────────────────────────────────
+  // emoji: shown as visual in the player
+  // yt:    YouTube search query → opens "how to" in new tab
+  // desc:  one-line plain-English description shown below the cue
+
+  var EXERCISE_INFO = {
+    // ── Yoga / Yin ───────────────────────────────────────────
+    "child's pose":            { emoji:'🧘', yt:'childs pose yoga how to', desc:'Kneel, sit back on heels, fold forward with arms stretched out.' },
+    "supine twist (r)":        { emoji:'🌀', yt:'supine spinal twist yoga how to', desc:'Lie on back, knee to chest then drop it across your body.' },
+    "supine twist (l)":        { emoji:'🌀', yt:'supine spinal twist yoga how to', desc:'Same as right side — switch legs.' },
+    "happy baby":              { emoji:'👶', yt:'happy baby pose yoga how to', desc:'On your back, grab outer feet and gently rock side to side.' },
+    "legs up the wall":        { emoji:'🦵', yt:'legs up the wall pose how to', desc:'Lie on back, swing legs straight up against a wall.' },
+    "savasana":                { emoji:'😌', yt:'savasana corpse pose how to', desc:'Lie completely flat, arms by sides, eyes closed. Rest.' },
+    "butterfly pose":          { emoji:'🦋', yt:'butterfly pose yoga how to', desc:'Sit tall, soles of feet together, knees drop out to sides.' },
+    "dragon pose (r)":         { emoji:'🐉', yt:'dragon pose yin yoga how to', desc:'Low lunge — right foot forward, back knee on floor, sink hips.' },
+    "dragon pose (l)":         { emoji:'🐉', yt:'dragon pose yin yoga how to', desc:'Same as right — left foot forward.' },
+    "sphinx pose":             { emoji:'🏛️', yt:'sphinx pose yoga how to', desc:'Lie face down, prop up on forearms, gently arch back.' },
+    "reclining bound angle":   { emoji:'🦋', yt:'reclining bound angle pose how to', desc:'On back, soles together, knees fall wide. Rest hands on belly.' },
+    "corpse pose":             { emoji:'😌', yt:'savasana corpse pose how to', desc:'Completely flat on your back. Let go of everything.' },
+    "pigeon pose (r)":         { emoji:'🕊️', yt:'pigeon pose yoga how to', desc:'Right shin across mat, back leg straight behind, fold forward.' },
+    "pigeon pose (l)":         { emoji:'🕊️', yt:'pigeon pose yoga how to', desc:'Left shin across mat — same as right side.' },
+    "90/90 hip stretch":       { emoji:'📐', yt:'90 90 hip stretch how to', desc:'Both legs at 90° angles. Sit tall, square hips.' },
+    "seated forward fold":     { emoji:'🙇', yt:'seated forward fold yoga how to', desc:'Legs straight, flex feet, hinge from hips and reach forward.' },
+    "world's greatest stretch (r)": { emoji:'🌍', yt:"world's greatest stretch how to", desc:'Lunge forward, plant same-side hand, rotate opposite arm to sky.' },
+    "world's greatest stretch (l)": { emoji:'🌍', yt:"world's greatest stretch how to", desc:'Same as right — switch sides.' },
+
+    // ── Breathwork ───────────────────────────────────────────
+    "4-7-8 breathing":         { emoji:'💨', yt:'4 7 8 breathing technique how to', desc:'Inhale 4 counts, hold 7, exhale slowly for 8. Repeat 4×.' },
+    "box breathing":           { emoji:'⬜', yt:'box breathing technique how to', desc:'Inhale 4, hold 4, exhale 4, hold 4. Trace a box in your mind.' },
+
+    // ── Light recovery ───────────────────────────────────────
+    "slow march (in place)":   { emoji:'🚶', yt:'marching in place exercise', desc:'Lift knees alternately while swinging arms. Slow and controlled.' },
+    "neck rolls":              { emoji:'🔄', yt:'neck rolls stretching how to', desc:'Ear to shoulder, roll chin to chest, repeat other side. Slow.' },
+    "shoulder circles":        { emoji:'🔄', yt:'shoulder circles exercise how to', desc:'Roll shoulders forward in big circles, then reverse.' },
+    "standing hip sway":       { emoji:'🌊', yt:'standing hip circles exercise', desc:'Hands on hips, draw slow circles with your hips. Both directions.' },
+
+    // ── Strength — Lower ─────────────────────────────────────
+    "goblet squat":            { emoji:'🏋️', yt:'goblet squat how to', desc:'Hold weight at chest. Squat deep, elbows inside knees.' },
+    "romanian deadlift":       { emoji:'🏋️', yt:'romanian deadlift how to beginners', desc:'Hinge at hips with soft knees, lower weight down shins, drive hips forward.' },
+    "reverse lunges":          { emoji:'🦵', yt:'reverse lunge how to', desc:'Step one foot back, lower back knee toward floor. Keep front shin vertical.' },
+    "glute bridge":            { emoji:'🍑', yt:'glute bridge exercise how to', desc:'On back, feet flat, drive hips up, squeeze glutes at the top.' },
+    "sumo squat pulse":        { emoji:'🦵', yt:'sumo squat pulse how to', desc:'Wide stance, toes out, squat low and pulse with tiny up-down movements.' },
+
+    // ── Strength — Upper ─────────────────────────────────────
+    "push-up (any level)":     { emoji:'💪', yt:'how to do a push up for beginners', desc:'Plank position, lower chest to floor, press back up. Knees OK.' },
+    "tricep dips (chair)":     { emoji:'💺', yt:'tricep dips using a chair how to', desc:'Hands on chair edge, lower body by bending elbows straight back.' },
+    "pike shoulder press":     { emoji:'⬆️', yt:'pike push up shoulder press how to', desc:'Hips high in downward dog shape, bend elbows to lower head toward floor.' },
+    "plank hold":              { emoji:'🏔️', yt:'how to do a plank properly', desc:'Forearms or hands on floor, body in a straight line. Core tight.' },
+    "superman hold":           { emoji:'🦸', yt:'superman exercise how to', desc:'Face down, simultaneously lift arms and legs off floor. Hold.' },
+
+    // ── Power / Full Body ────────────────────────────────────
+    "jump squat":              { emoji:'⬆️', yt:'jump squat how to', desc:'Squat down, then explode upward into a jump. Land softly.' },
+    "push-up to t":            { emoji:'✈️', yt:'push up with rotation T push up how to', desc:'Do a push-up, then rotate body open and raise one arm to ceiling.' },
+    "lateral lunge":           { emoji:'↔️', yt:'lateral lunge how to', desc:'Step wide to one side, sit into that hip, keep other leg straight.' },
+    "renegade row":            { emoji:'🚣', yt:'renegade row exercise how to', desc:'In high plank, row one dumbbell to hip. Keep hips square.' },
+    "mountain climbers":       { emoji:'🧗', yt:'mountain climbers exercise how to', desc:'High plank. Drive knees to chest one at a time as fast as you can.' },
+
+    // ── HIIT ─────────────────────────────────────────────────
+    "burpee":                  { emoji:'💥', yt:'how to do a burpee for beginners', desc:'Squat down, jump feet back to plank, do push-up, jump feet in, jump up.' },
+    "high knees":              { emoji:'🏃', yt:'high knees exercise how to', desc:'Run in place, driving knees up to hip height. Pump arms.' },
+    "speed skater":            { emoji:'⛸️', yt:'speed skater exercise how to', desc:'Leap side to side, landing on one foot, opposite hand reaching down.' },
+    "plank jack":              { emoji:'⭐', yt:'plank jacks exercise how to', desc:'In high plank, jump feet wide then back together. Like a jumping jack.' },
+    "squat jump (explosive)":  { emoji:'💥', yt:'explosive jump squat how to', desc:'Squat deep then drive upward with maximum power. Land softly.' },
+    "push-up to clap":         { emoji:'👏', yt:'clapping push up how to', desc:'Explosive push-up — push hard enough to clap hands mid-air.' },
+    "sprint in place":         { emoji:'💨', yt:'sprint in place high intensity', desc:'Run on the spot at maximum speed. Full effort for the full interval.' },
+    "box jump (or step-up)":   { emoji:'📦', yt:'box jump how to beginners', desc:'Swing arms, bend knees, jump onto a box. Land with both feet.' },
+    "tuck jump":               { emoji:'🦘', yt:'tuck jump exercise how to', desc:'Jump up and pull both knees to your chest at the peak.' },
+    "plank to downdog sprint": { emoji:'🔁', yt:'plank to downward dog exercise', desc:'Alternate quickly between plank and downward dog position.' },
+    "jumping jacks":           { emoji:'⭐', yt:'jumping jacks exercise how to', desc:'Jump feet wide while raising arms overhead. Jump back together.' },
+
+    // ── Dance Cardio ─────────────────────────────────────────
+    "side step + clap":        { emoji:'💃', yt:'side step touch aerobics', desc:'Step right, tap left foot in. Step left, tap right foot in. Clap each time.' },
+    "grapevine":               { emoji:'🍇', yt:'grapevine step aerobics how to', desc:'Step side, cross behind, step side, tap. Think side-cross-side-tap.' },
+    "cha-cha step":            { emoji:'💃', yt:'cha cha step aerobics how to', desc:'Quick-quick-slow rhythm. Step forward, back, then shuffle side.' },
+    "pivot turns":             { emoji:'🌀', yt:'pivot turn dance fitness', desc:'Step, then pivot on the ball of your foot to turn quarter circle.' },
+    "hip circle sway":         { emoji:'🌊', yt:'hip sway dance exercise', desc:'Arms up, draw full circles with hips — front, side, back, side.' },
+
+    // ── Pilates ──────────────────────────────────────────────
+    "dead bug":                { emoji:'🐛', yt:'dead bug exercise how to', desc:'On back, arms up, legs tabletop. Lower opposite arm and leg. Exhale down.' },
+    "single leg stretch":      { emoji:'🦵', yt:'pilates single leg stretch how to', desc:'Shoulders off floor, pull one knee to chest while other leg extends.' },
+    "roll-up":                 { emoji:'🌀', yt:'pilates roll up how to', desc:'Lie flat, slowly peel spine off floor vertebra by vertebra to sit up.' },
+    "side-lying leg lift (r)": { emoji:'🦵', yt:'side lying leg lift how to', desc:'On your right side, lift top leg straight up. Toes pointed or flexed.' },
+    "side-lying leg lift (l)": { emoji:'🦵', yt:'side lying leg lift how to', desc:'On your left side — same movement.' },
+    "plank reach":             { emoji:'🏔️', yt:'plank arm reach exercise how to', desc:'In plank, alternate extending one arm forward. Keep hips completely still.' },
+
+    // ── Barre ────────────────────────────────────────────────
+    "parallel pliés":          { emoji:'🩰', yt:'parallel plié barre how to', desc:'Heels together, toes slightly apart, bend knees straight over toes. Pulse.' },
+    "turnout pliés":           { emoji:'🩰', yt:'plié squat barre how to', desc:'Wide stance, toes turned out, lower straight down. Squeeze inner thighs up.' },
+    "standing arabesque (r)":  { emoji:'🦩', yt:'standing arabesque barre how to', desc:'Balance on left leg, right leg extends straight behind. Core tight.' },
+    "standing arabesque (l)":  { emoji:'🦩', yt:'standing arabesque barre how to', desc:'Balance on right leg, left leg extends behind.' },
+    "curtsy lunge":            { emoji:'🫅', yt:'curtsy lunge how to', desc:'Step one foot behind and across, lower into a curtsy. Squeeze standing glute.' },
+    "calf raises":             { emoji:'🦶', yt:'calf raises how to', desc:'Rise up onto toes slowly, lower back down slowly. Control the descent.' },
+  };
+
+  function getExerciseInfo(name) {
+    if (!name) return null;
+    var key = name.toLowerCase().trim();
+    return EXERCISE_INFO[key] || { emoji: '💪', yt: name + ' exercise how to', desc: '' };
+  }
+
+  function ytSearchUrl(query) {
+    return 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query);
+  }
+
   // ── Minimal fallback player ──────────────────────────────────
   function showMinimalPlayer(workout, phaseData) {
     var existing = document.getElementById('phase-player-overlay');
@@ -584,26 +688,70 @@
       var mv = m(), pct = timeLeft / dur();
       var next = workout.moves[mi + 1] || (round < totalRounds ? workout.moves[0] : null);
       var circ = 2 * Math.PI * 54;
+      var info = isRest ? null : getExerciseInfo(mv.name);
+      var nextInfo = next ? getExerciseInfo(next.name) : null;
+
       overlay.innerHTML =
-        '<button id="pp-close" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.1);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem;font-family:inherit">✕</button>' +
-        '<div style="position:absolute;top:1rem;left:1rem;font-size:.7rem;font-weight:700;background:' + phaseData.color + ';color:#fff;padding:.3rem .7rem;border-radius:99px">' + phaseData.emoji + ' ' + workout.title + '</div>' +
-        '<div style="font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:' + (isRest ? '#94a3b8' : phaseData.color) + ';margin-bottom:1rem">' + (isRest ? 'REST' : 'WORK') + '</div>' +
-        '<div style="position:relative;width:160px;height:160px;margin-bottom:1.25rem">' +
+        // Close + phase label
+        '<button id="pp-close" style="position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.1);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem;font-family:inherit;z-index:1">✕</button>' +
+        '<div style="position:absolute;top:1rem;left:1rem;font-size:.62rem;font-weight:700;background:' + phaseData.color + ';color:#fff;padding:.25rem .6rem;border-radius:99px;max-width:52%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + phaseData.emoji + ' ' + workout.title + '</div>' +
+
+        // WORK / REST label
+        '<div style="font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:' + (isRest ? '#64748b' : phaseData.color) + ';margin-top:3.5rem;margin-bottom:.4rem">' + (isRest ? '— REST —' : 'WORK') + '</div>' +
+
+        // Big emoji illustration — always works, no broken images
+        '<div style="font-size:4.5rem;line-height:1;margin-bottom:.4rem;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))">' +
+          (isRest ? '😮‍💨' : (info ? info.emoji : '💪')) +
+        '</div>' +
+
+        // Timer ring
+        '<div style="position:relative;width:120px;height:120px;margin-bottom:.5rem">' +
           '<svg style="position:absolute;inset:0;transform:rotate(-90deg)" viewBox="0 0 120 120">' +
-            '<circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8"/>' +
-            '<circle id="pp-ring" cx="60" cy="60" r="54" fill="none" stroke="' + (isRest ? '#475569' : phaseData.color) + '" stroke-width="8" stroke-dasharray="' + circ + '" stroke-dashoffset="' + (circ * (1 - pct)) + '" stroke-linecap="round" style="transition:stroke-dashoffset .9s linear"/>' +
+            '<circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="7"/>' +
+            '<circle id="pp-ring" cx="60" cy="60" r="54" fill="none" stroke="' + (isRest ? '#475569' : phaseData.color) + '" stroke-width="7" stroke-dasharray="' + circ + '" stroke-dashoffset="' + (circ * (1 - pct)) + '" stroke-linecap="round" style="transition:stroke-dashoffset .9s linear"/>' +
           '</svg>' +
           '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">' +
-            '<div id="pp-time" style="font-size:3rem;font-weight:800;line-height:1">' + timeLeft + '</div>' +
-            '<div style="font-size:.65rem;color:#94a3b8;margin-top:.15rem">Round ' + round + '/' + totalRounds + '</div>' +
+            '<div id="pp-time" style="font-size:2.4rem;font-weight:800;line-height:1">' + timeLeft + '</div>' +
+            '<div style="font-size:.58rem;color:#94a3b8;margin-top:.1rem">Round ' + round + '/' + totalRounds + '</div>' +
           '</div>' +
         '</div>' +
-        '<div style="font-size:1.4rem;font-weight:800;text-align:center;margin-bottom:.35rem">' + mv.name + '</div>' +
-        '<div style="font-size:.8rem;color:#94a3b8;text-align:center;margin-bottom:1.5rem;max-width:280px">' + (mv.mod || '') + '</div>' +
-        (next ? '<div style="font-size:.72rem;color:#64748b;margin-bottom:1.5rem">Next: ' + (isRest ? mv.name : next.name) + '</div>' : '<div style="font-size:.72rem;color:#10b981;margin-bottom:1.5rem;font-weight:700">Last exercise!</div>') +
+
+        // Exercise name
+        '<div style="font-size:1.1rem;font-weight:800;text-align:center;margin-bottom:.2rem;max-width:290px;line-height:1.2;padding:0 1rem">' + mv.name + '</div>' +
+
+        // Plain-English what-to-do description
+        (info && info.desc
+          ? '<div style="font-size:.7rem;color:#cbd5e1;text-align:center;margin-bottom:.2rem;max-width:270px;line-height:1.45;padding:0 .5rem">' + info.desc + '</div>'
+          : '') +
+
+        // Coach cue (from move.mod)
+        (mv.mod
+          ? '<div style="font-size:.66rem;color:' + phaseData.color + ';font-weight:600;text-align:center;margin-bottom:.4rem;max-width:260px">💡 ' + mv.mod + '</div>'
+          : '<div style="margin-bottom:.4rem"></div>') +
+
+        // YouTube "How To" link
+        (!isRest && info
+          ? '<a href="' + ytSearchUrl(info.yt) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.3rem;font-size:.63rem;color:#94a3b8;text-decoration:none;border:1px solid rgba(255,255,255,.12);border-radius:99px;padding:.28rem .65rem;margin-bottom:.55rem;cursor:pointer">' +
+              '<svg width="10" height="10" viewBox="0 0 24 24" fill="#ff0000"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1C4.5 20.5 12 20.5 12 20.5s7.5 0 9.4-.6a3 3 0 002.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.8 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>' +
+              'Watch how to do this' +
+            '</a>'
+          : '') +
+
+        // Next exercise preview
+        (isRest && next
+          ? '<div style="display:flex;align-items:center;gap:.6rem;background:rgba(255,255,255,.06);border-radius:10px;padding:.45rem .7rem;margin-bottom:.6rem;max-width:280px">' +
+              '<div style="font-size:1.5rem;flex-shrink:0">' + (nextInfo ? nextInfo.emoji : '💪') + '</div>' +
+              '<div><div style="font-size:.56rem;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Up next</div><div style="font-size:.78rem;font-weight:700">' + next.name + '</div></div>' +
+            '</div>'
+          : next && !isRest
+            ? '<div style="font-size:.64rem;color:#64748b;margin-bottom:.6rem">Next: <strong style="color:#94a3b8">' + next.name + ' ' + (nextInfo ? nextInfo.emoji : '') + '</strong></div>'
+            : '<div style="font-size:.64rem;color:#10b981;margin-bottom:.6rem;font-weight:700">🏁 Last exercise!</div>'
+        ) +
+
+        // Controls
         '<div style="display:flex;gap:.75rem">' +
-          '<button id="pp-skip" style="background:rgba(255,255,255,.08);border:none;color:#fff;padding:.7rem 1.4rem;border-radius:10px;cursor:pointer;font-size:.85rem;font-family:inherit">Skip →</button>' +
-          '<button id="pp-pause" style="background:' + phaseData.color + ';border:none;color:#fff;padding:.7rem 1.6rem;border-radius:10px;cursor:pointer;font-size:.85rem;font-weight:700;font-family:inherit">' + (paused ? '▶ Resume' : '⏸ Pause') + '</button>' +
+          '<button id="pp-skip" style="background:rgba(255,255,255,.08);border:none;color:#fff;padding:.6rem 1.2rem;border-radius:10px;cursor:pointer;font-size:.8rem;font-family:inherit">Skip →</button>' +
+          '<button id="pp-pause" style="background:' + phaseData.color + ';border:none;color:#fff;padding:.6rem 1.4rem;border-radius:10px;cursor:pointer;font-size:.8rem;font-weight:700;font-family:inherit">' + (paused ? '▶ Resume' : '⏸ Pause') + '</button>' +
         '</div>';
 
       overlay.querySelector('#pp-close').onclick  = function() { clearInterval(timer); overlay.remove(); };
