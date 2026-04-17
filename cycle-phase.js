@@ -91,7 +91,17 @@
   }
 
   function pickWorkout(phaseData, cycleDay) {
-    if (!isPaid()) return null;
+   if (!isPaid()) {
+  return {
+    title: "Starter Preview Session",
+    rounds: 1,
+    moves: [
+      { name: "Squat", work: 30, rest: 10, image: "assets/squat.jpg" },
+      { name: "Push-Up", work: 30, rest: 10, image: "assets/pushup.jpg" }
+    ],
+    locked: true
+  };
+}
     if (!isPro()) return phaseData.workouts[0];
     var weekNum = Math.floor((cycleDay - 1) / 7);
     return phaseData.workouts[weekNum % phaseData.workouts.length];
