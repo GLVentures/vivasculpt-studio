@@ -26,10 +26,10 @@
   ─────────────────────────────────────────────────────────────── */
   var EXERCISE_IMAGES = {
     // ── Already in your assets/ folder ──────────────────────
-    'squat':               'assets/squats.jpg',
-    'goblet squat':        'assets/squats.jpg',
-    'sumo squat pulse':    'assets/squats.jpg',
-    'jump squat':          'assets/squats.jpg',
+    'squat':               'assets/squat.jpg',
+    'goblet squat':        'assets/squat.jpg',
+    'sumo squat pulse':    'assets/squat.jpg',
+    'jump squat':          'assets/squat.jpg',
     'plank hold':          'assets/plank.jpg',
     'plank jack':          'assets/plank.jpg',
     'plank reach':         'assets/plank.jpg',
@@ -47,7 +47,7 @@
     'lateral lunge':       'assets/lunge.jpg',
     'curtsy lunge':        'assets/lunge.jpg',
 
-    'glute bridge':        'assets/glute-bridge.jpg',
+    'glute bridge':        'assets/glutebridges.jpg',
     'romanian deadlift':   'assets/deadlift.jpg',
 
     'burpee':              'assets/burpee.jpg',
