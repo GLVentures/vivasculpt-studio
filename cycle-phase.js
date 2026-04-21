@@ -347,7 +347,7 @@
           '<div style="font-weight:700;font-size:.9rem;color:#1e293b;margin-bottom:.3rem">Cycle-synced workouts</div>' +
           '<div style="font-size:.75rem;color:#64748b;margin-bottom:.85rem;line-height:1.45">Get workouts matched to your exact phase — gentle yoga during your period, strength in follicular, HIIT at ovulation, pilates in luteal.</div>' +
           '<button onclick="if(typeof switchTab===\'function\')switchTab(\'pricing\')" style="background:' + color + ';color:#fff;border:none;border-radius:10px;padding:.6rem 1.2rem;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;width:100%">Unlock Phase Workouts →</button>' +
-          '<div style="font-size:.65rem;color:#94a3b8;margin-top:.5rem">Starter $14/mo · Pro $29/mo · 7-day free trial</div>' +
+          '<div style="font-size:.65rem;color:#94a3b8;margin-top:.5rem">Starter $14/mo · Pro $29/mo</div>' +
         '</div></div>';
     }
 
