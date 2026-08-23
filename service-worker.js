@@ -8,7 +8,7 @@
    or `python -m http.server 8080` instead.
    ===================================================== */
 
-const CACHE_NAME = 'vivasculpt-v3';
+const CACHE_NAME = 'vivasculpt-v10';
 
 const CORE_FILES = [
   '/',
