@@ -432,9 +432,9 @@
       var p = PHASE_DATA[key];
       var phaseDays = {
         menstrual:  '1–5',
-        follicular: '6–13',
-        ovulation:  '14–15',
-        luteal:     '16–28'
+        follicular: '6–14',
+        ovulation:  '15–16',
+        luteal:     '17–28'
       };
       var active = (key === phaseName);
       return '<div style="flex:1;background:' + p.bg + ';border:1px solid ' + p.border + ';border-radius:8px;padding:.4rem .35rem;text-align:center;' + (active ? 'outline:2px solid ' + p.color + ';' : '') + '">' +
